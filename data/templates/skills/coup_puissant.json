@@ -1,0 +1,23 @@
+{
+  "id": "coup_puissant",
+  "name": "Coup Puissant",
+  "description": "Un coup lent et lourd, préparé une fraction de seconde de trop, mais qui porte.",
+  "level": 3,
+  "kind": "active",
+  "unlock_condition": {
+    "type": "level",
+    "min": 3
+  },
+  "damage_type": "physical",
+  "cooldown_seconds": 12,
+  "mana_cost": 25,
+  "telegraph_seconds": 0,
+  "avoidable_by": null,
+  "effects": [
+    {
+      "type": "damage",
+      "power": 0.8,
+      "base": 29
+    }
+  ]
+}

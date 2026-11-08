@@ -1,0 +1,60 @@
+{
+  "id": "enchantement",
+  "name": "Enchantement",
+  "description": "Grave une rune dans un équipement pour le renforcer. Un objet ne s'enchante qu'une fois.",
+  "profession_required": {
+    "profession_id": "enchanteur"
+  },
+  "parameters": [
+    {
+      "id": "intensite_rune",
+      "label": "Intensité de la rune",
+      "type": "choice",
+      "options": [
+        "faible",
+        "stable",
+        "instable",
+        "profonde"
+      ]
+    }
+  ],
+  "mode": "enchant",
+  "item_types": [
+    {
+      "id": "force",
+      "label": "Force",
+      "stats": [
+        "atk"
+      ]
+    },
+    {
+      "id": "arcane",
+      "label": "Arcane",
+      "stats": [
+        "int"
+      ]
+    },
+    {
+      "id": "garde",
+      "label": "Garde",
+      "stats": [
+        "def",
+        "hp"
+      ]
+    },
+    {
+      "id": "vivacite",
+      "label": "Vivacité",
+      "stats": [
+        "agi"
+      ]
+    },
+    {
+      "id": "sagesse",
+      "label": "Sagesse",
+      "stats": [
+        "sag"
+      ]
+    }
+  ]
+}

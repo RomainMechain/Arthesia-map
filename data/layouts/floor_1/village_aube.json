@@ -1,0 +1,119 @@
+{
+  "zone_id": "village_aube",
+  "status": "plan v2 - en attente de validation",
+  "size_tiles": [80, 54],
+  "tile_size": 16,
+  "player_metrics": {
+    "speed_px_s": 80,
+    "speed_tiles_s": 5,
+    "view_tiles": [30, 17],
+    "interact_radius_px": 24,
+    "min_corridor_tiles": 2,
+    "notes": "Carte ~2,7 x 3,2 écrans : la caméra suit toujours le joueur. Arrivée -> place ~5 s, place -> chaque sortie ~8 s, tour du quartier des artisans ~12 s."
+  },
+  "intent": {
+    "role": "hub social et artisanal, aucun combat, intensité 0",
+    "golden_path": ["spawn", "place_centrale", "npc_garin", "exit_rive_paisible"],
+    "second_loop": ["npc_yvenne", "npc_aldric", "exit_sentier_lisiere"],
+    "craft_loop": ["rue_artisans_sud", "ws_forge", "ws_alchimie", "ws_enchantement", "route_rive"],
+    "teaches": ["se déplacer", "parler à un PNJ", "accepter une quête", "acheter", "fabriquer", "changer de zone"],
+    "reading": "Ouest : arrivée et artisans de la pierre et du tissu. Centre : place, auberge, échoppe. Sud : la rue des Artisans longe le ruisseau (forge, alchimie) et finit au coin architecte (autel, enchantement), puis rejoint la route de la rive : une boucle. Est : maisons, champs, et les deux sorties dans l'ordre de la progression (sud-est puis nord-est)."
+  },
+  "spawn": { "pos": [10, 27], "label": "Cercle d'arrivée" },
+  "regions": [
+    { "id": "foret_nord", "kind": "forest_wall", "poly": [[0,0],[64,0],[64,3],[50,5],[36,4],[24,3],[16,2],[6,4],[4,12],[3,22],[0,22]] },
+    { "id": "foret_ouest_arrivee", "kind": "forest_wall", "poly": [[0,22],[3,22],[4,25],[3,30],[4,33],[0,34]] },
+    { "id": "foret_ouest_sud", "kind": "forest_wall", "poly": [[0,34],[4,34],[6,40],[4,45],[0,45]] },
+    { "id": "foret_est", "kind": "forest_wall", "poly": [[72,0],[80,0],[80,46],[77,45],[74,38],[73,26],[75,14],[73,6]] },
+    { "id": "foret_sud", "kind": "forest_wall", "poly": [[0,49],[18,50],[36,49],[52,50],[60,51],[62,54],[0,54]] },
+    { "id": "foret_sud_est", "kind": "forest_wall", "poly": [[70,54],[80,54],[80,53],[72,52]] },
+    { "id": "carriere", "kind": "rock", "poly": [[5,5],[14,4],[17,8],[13,10],[6,10]] },
+    { "id": "place_centrale", "kind": "square", "circle": [34, 27, 6] },
+    { "id": "terrasse_auberge", "kind": "square", "rect": [30, 20, 9, 1] },
+    { "id": "parvis_autel", "kind": "ruin_floor", "circle": [37, 41, 3.5] },
+    { "id": "jardin_herbes", "kind": "field", "rect": [23, 31, 5, 3] },
+    { "id": "champ_ble", "kind": "field", "rect": [63, 20, 8, 5] },
+    { "id": "verger", "kind": "orchard", "rect": [50, 7, 6, 5] }
+  ],
+  "paths": [
+    { "id": "route_ouest", "kind": "road_main", "width": 3, "points": [[7,27],[28,27]] },
+    { "id": "route_lisiere", "kind": "road", "width": 2, "points": [[39,23],[48,19],[58,13],[64,7],[67,3],[68,0]] },
+    { "id": "route_rive", "kind": "road", "width": 2, "points": [[39,31],[48,35],[56,41],[60,46],[66,50],[80,50]] },
+    { "id": "rue_artisans_nord", "kind": "road", "width": 2, "points": [[19,26],[19,14],[14,11]] },
+    { "id": "rue_artisans_sud", "kind": "road", "width": 2, "points": [[20,28],[20,36]] },
+    { "id": "rue_ruisseau", "kind": "road", "width": 2, "points": [[12,36],[46,36],[48,35]] },
+    { "id": "allee_place_autel", "kind": "lane", "width": 2, "points": [[34,33],[34,36]] },
+    { "id": "allee_maison_ouest", "kind": "lane", "width": 1, "points": [[10,31],[10,28]] },
+    { "id": "allee_maison_nord", "kind": "lane", "width": 1, "points": [[13,22],[13,26]] },
+    { "id": "allee_maison_est_1", "kind": "lane", "width": 1, "points": [[46,17],[47,19]] },
+    { "id": "allee_maison_est_2", "kind": "lane", "width": 1, "points": [[54,28],[51,33]] },
+    { "id": "allee_maison_est_3", "kind": "lane", "width": 1, "points": [[62,32],[58,39]] },
+    { "id": "allee_couture", "kind": "lane", "width": 1, "points": [[23,13],[19,15]] }
+  ],
+  "water": [
+    { "id": "ruisseau", "kind": "stream", "width": 3, "points": [[0,46],[14,47],[28,46],[42,47],[56,46],[66,47],[80,46]], "solid": true }
+  ],
+  "buildings": [
+    { "id": "auberge", "kind": "inn", "rect": [29, 13, 11, 7], "door": [34, 19], "label": "Auberge" },
+    { "id": "ws_cuisine_b", "kind": "workshop", "rect": [23, 15, 5, 4], "door": [25, 18], "label": "Cuisine" },
+    { "id": "ws_couture_b", "kind": "workshop", "rect": [21, 8, 6, 4], "door": [23, 11], "label": "Couture" },
+    { "id": "ws_sculpture_b", "kind": "workshop", "rect": [9, 12, 6, 4], "door": [12, 15], "label": "Sculpture" },
+    { "id": "ws_forge_b", "kind": "workshop", "rect": [12, 39, 7, 5], "door": [15, 43], "label": "Forge" },
+    { "id": "ws_alchimie_b", "kind": "workshop", "rect": [22, 39, 6, 4], "door": [24, 42], "label": "Alchimie" },
+    { "id": "ws_enchantement_b", "kind": "workshop_ruin", "rect": [42, 40, 5, 4], "door": [44, 43], "label": "Enchantement" },
+    { "id": "etal_thessaly", "kind": "stall", "rect": [41, 24, 4, 2] },
+    { "id": "maison_1", "kind": "house", "rect": [44, 12, 5, 4], "door": [46, 15] },
+    { "id": "maison_2", "kind": "house", "rect": [52, 24, 5, 4], "door": [54, 27] },
+    { "id": "maison_3", "kind": "house", "rect": [60, 28, 5, 4], "door": [62, 31] },
+    { "id": "maison_4", "kind": "house", "rect": [8, 31, 5, 4], "door": [10, 31] },
+    { "id": "maison_5", "kind": "house", "rect": [11, 18, 5, 4], "door": [13, 21] },
+    { "id": "pont", "kind": "bridge", "rect": [58, 44, 4, 5], "walkable": true }
+  ],
+  "landmarks": [
+    { "id": "puits_central", "pos": [34, 27], "rank": 1, "label": "Puits central", "why": "centre du hub, Mère Yvenne y est assise (description du PNJ)" },
+    { "id": "auberge", "pos": [34, 15], "rank": 1, "label": "Auberge d'Aldric", "why": "plus grand bâtiment, enseigne dorée" },
+    { "id": "autel_ventes", "pos": [37, 41], "rank": 1, "label": "Autel des Ventes", "why": "pierre architecte aux runes cyan à moitié éteintes, premier indice que l'aube est fabriquée" },
+    { "id": "forge_ruisseau", "pos": [15, 40], "rank": 2, "label": "Forge du Ruisseau", "why": "cheminée fumante visible de loin, lueur orangée, roue à eau sur le ruisseau" },
+    { "id": "carriere", "pos": [10, 7], "rank": 2, "label": "Vieille carrière", "why": "blocs taillés : la pierre des Architectes, matière de la sculpture" },
+    { "id": "porte_lisiere", "pos": [67, 4], "rank": 2, "label": "Arche de la Lisière", "why": "sortie nord-est, guirlandes de lanternes" },
+    { "id": "ponton_garin", "pos": [54, 46], "rank": 2, "label": "Ponton de Garin", "why": "sortie sud-est, filets et tonneaux" }
+  ],
+  "entries": {
+    "npc_yvenne": { "pos": [32, 28], "label": "Mère Yvenne", "note": "banc près du puits" },
+    "quest_silence_bois": { "at": "npc_yvenne" },
+    "quest_offrandes_aube": { "at": "npc_yvenne" },
+    "quest_lumiere_vacille": { "at": "npc_yvenne" },
+    "npc_aldric": { "pos": [35, 21], "label": "Aldric", "note": "devant la porte de l'auberge" },
+    "quest_marche_equitable": { "at": "npc_aldric" },
+    "npc_garin": { "pos": [54, 43], "label": "Garin", "note": "à l'orée du chemin de la rive, avant le pont" },
+    "quest_intro_peche": { "at": "npc_garin" },
+    "shop_echoppe": { "pos": [43, 25], "label": "Thessaly", "note": "derrière l'étal" },
+    "market_autel": { "pos": [37, 41], "label": "Autel des Ventes" }
+  },
+  "extra_entries": {
+    "_note": "Entrées propres à la carte, absentes de data/zones (ateliers non placés dans le modèle par noeuds).",
+    "ws_forge": { "template_type": "workshop", "template_id": "forge", "pos": [20, 42], "label": "Forge" },
+    "ws_alchimie": { "template_type": "workshop", "template_id": "alchimie", "pos": [29, 41], "label": "Alchimie" },
+    "ws_couture": { "template_type": "workshop", "template_id": "couture", "pos": [23, 12], "label": "Couture" },
+    "ws_enchantement": { "template_type": "workshop", "template_id": "enchantement", "pos": [48, 42], "label": "Enchantement" },
+    "ws_sculpture": { "template_type": "workshop", "template_id": "sculpture", "pos": [12, 16], "label": "Sculpture" },
+    "ws_cuisine": { "template_type": "workshop", "template_id": "cuisine", "pos": [25, 19], "label": "Cuisine" }
+  },
+  "exits": [
+    { "id": "exit_sentier_lisiere", "to": "sentier_lisiere", "label": "Sentier de la Lisière", "rect": [66, 0, 4, 1], "arrival": [68, 2], "direction": "nord-est (position 30,32 sur la carte de nœuds)" },
+    { "id": "exit_rive_paisible", "to": "rive_paisible", "label": "Rive Paisible", "rect": [79, 49, 1, 3], "arrival": [77, 50], "direction": "sud-est (position 28,68 sur la carte de nœuds)" }
+  ],
+  "dressing_rules": [
+    "Lisières de forêt : arbres serrés sur 2 à 3 tuiles d'épaisseur, bord irrégulier, arbres plus petits et buissons devant (dégradé de densité), jamais d'arbre isolé collé au mur.",
+    "Fleurs en bandes de 1 tuile le long des routes, absentes des 2 tuiles autour des portes.",
+    "Chaque maison : 1 petit jardin ou une clôture d'un côté, 1 objet de vie (tonneau, banc, linge, bois coupé).",
+    "Place : 6 lanternes sur le pourtour, 2 guirlandes de fanions entre l'auberge et l'étal ; centre vide sauf le puits (lisibilité, croisement des joueurs).",
+    "Ateliers : chacun a une cour de travail devant la porte avec ses objets métier (enclume et tas de minerai ; alambics et bocaux ; métier à tisser et linge ; blocs et statue inachevée ; four et marmite ; pierres runiques). Le joueur doit reconnaître l'atelier à sa cour avant d'en lire le nom.",
+    "Forge : fumée en particules, lueur orangée la nuit... qui ne vient jamais (aube éternelle) : lueur douce permanente.",
+    "Enchantement : petit pavillon de pierre architecte, mêmes dalles et runes cyan que l'autel, il forme avec lui le coin architecte du village.",
+    "Arbres isolés seulement dans les espaces ouverts, par 2 ou 3, à au moins 3 tuiles d'une route ; le verger en rangs réguliers.",
+    "Ruisseau : roseaux par grappes sur les berges, pierres plates, aucun décor sur les 2 tuiles autour du pont.",
+    "Champs : rangs réguliers clôturés, épouvantail dans le champ de blé.",
+    "Guidage : routes plus claires que l'herbe, lanternes qui mènent aux deux arches de sortie."
+  ]
+}

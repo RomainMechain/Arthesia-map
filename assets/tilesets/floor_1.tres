@@ -1,0 +1,116 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_base.png" id="1_c88s3"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_fields.png" id="2_qtqoy"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_ruins.png" id="3_moex6"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_dirt.png" id="4_cfhp7"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_cobble.png" id="5_hx0k3"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_water.png" id="6_kds1f"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6hhh2"]
+texture = ExtResource("1_c88s3")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hphdg"]
+texture = ExtResource("2_qtqoy")
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xfdq1"]
+texture = ExtResource("3_moex6")
+0:0/0 = 0
+1:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jkct3"]
+texture = ExtResource("4_cfhp7")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sc7ei"]
+texture = ExtResource("5_hx0k3")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l3wv4"]
+texture = ExtResource("6_kds1f")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_6hhh2")
+sources/1 = SubResource("TileSetAtlasSource_hphdg")
+sources/2 = SubResource("TileSetAtlasSource_xfdq1")
+sources/3 = SubResource("TileSetAtlasSource_jkct3")
+sources/4 = SubResource("TileSetAtlasSource_sc7ei")
+sources/5 = SubResource("TileSetAtlasSource_l3wv4")
+metadata/sources = {
+"ground_base": 0,
+"ground_fields": 1,
+"ground_ruins": 2,
+"overlay_cobble": 4,
+"overlay_dirt": 3,
+"overlay_water": 5
+}
