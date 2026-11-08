@@ -37,6 +37,7 @@ func _build(b: Dictionary, floor_id: String) -> Node2D:
 	root.set_script(load("res://game/zone.gd"))
 	root.set("zone_id", b.zone_id)
 	root.set("zone_name", b.name)
+	root.set("floor_id", floor_id)
 
 	var mod := CanvasModulate.new()
 	mod.name = "Ambiance"
@@ -115,6 +116,7 @@ func _build(b: Dictionary, floor_id: String) -> Node2D:
 		a.set_script(load("res://game/zone_exit.gd"))
 		a.set("target_zone", e.to)
 		a.set("label", e.label)
+		a.set("arrival", Vector2(e.arrival[0], e.arrival[1]))
 		var r: Array = e.rect
 		a.add_child(_rect_shape(Rect2(r[0], r[1], max(r[2], T), max(r[3], T))))
 		exits.add_child(a)
@@ -190,7 +192,16 @@ func _interactable(it: Dictionary) -> Node2D:
 	var n := Node2D.new()
 	n.name = it.entry_id
 	n.position = Vector2(it.x, it.y)
-	n.set_script(load("res://game/interactable.gd"))
+	if it.has("mob"):
+		n.set_script(load("res://game/mob.gd"))
+		n.set("leash", float(it.mob.leash))
+		n.set("temper", it.mob.temper)
+		n.set("info", "Combat : bientôt disponible.")
+	else:
+		n.set_script(load("res://game/interactable.gd"))
+	if it.has("resource"):
+		var r: Dictionary = it.resource
+		n.set("info", "Récolte (%d s) : %s — bientôt disponible." % [r.gather_time, ", ".join(PackedStringArray(r.yields))])
 	n.set("entry_id", it.entry_id)
 	n.set("template_type", it.template_type)
 	n.set("template_id", it.template_id)
@@ -201,18 +212,20 @@ func _interactable(it: Dictionary) -> Node2D:
 	var top := -16.0
 	if it.has("sprite"):
 		var tex: Texture2D = load(it.sprite)
+		var nf: int = int(it.get("frames", 4))
 		var s := Sprite2D.new()
 		s.name = "Sprite"
 		s.texture = tex
-		s.hframes = 4
+		s.hframes = nf
 		s.centered = false
-		s.offset = Vector2(-8, -tex.get_height())
+		s.offset = Vector2(-floori(tex.get_width() / float(nf) / 2.0), -tex.get_height())
 		n.add_child(s)
 		top = -tex.get_height() - 2.0
-		var body := StaticBody2D.new()
-		body.name = "Collision"
-		body.add_child(_rect_shape(Rect2(-5, -4, 10, 4)))
-		n.add_child(body)
+		if not it.has("mob") and not it.has("resource"):   # PNJ : on ne les traverse pas
+			var body := StaticBody2D.new()
+			body.name = "Collision"
+			body.add_child(_rect_shape(Rect2(-5, -4, 10, 4)))
+			n.add_child(body)
 	n.add_child(_named(_label(it.name, top - 12.0, 10, Color("fff4d6")), "Nom"))
 	n.add_child(_named(_label("", top - 32.0, 20, Color("ffe08a")), "Marqueur"))
 	return n
@@ -295,6 +308,25 @@ func _fx(f: Dictionary) -> CPUParticles2D:
 			g2.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
 			g2.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
 			p.color_ramp = g2
+		"mist":
+			p.texture = load("res://assets/art/fx/brume.png")
+			p.amount = 3
+			p.lifetime = 9.0
+			p.preprocess = 9.0
+			p.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+			p.emission_rect_extents = Vector2(f.w, f.h) / 2.0
+			p.direction = Vector2(1, 0)
+			p.spread = 20.0
+			p.gravity = Vector2.ZERO
+			p.initial_velocity_min = 1.5
+			p.initial_velocity_max = 3.5
+			p.scale_amount_min = 1.0
+			p.scale_amount_max = 1.6
+			var g3 := Gradient.new()
+			g3.offsets = PackedFloat32Array([0.0, 0.3, 0.7, 1.0])
+			g3.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 0.9), Color(1, 1, 1, 0.9), Color(1, 1, 1, 0)])
+			p.color_ramp = g3
+			p.z_index = 1                              # au-dessus du sol et des fougères
 	return p
 
 

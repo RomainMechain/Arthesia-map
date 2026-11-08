@@ -28,6 +28,7 @@ func _run() -> void:
 		for i in 3:
 			await process_frame
 		cam.reset_smoothing()
+		zone._dialog.visible = false
 		if parts.size() > 2:                              # x,y:nom:entry_id -> ouvre son dialogue
 			zone._open(zone.find_child(parts[2], true, false))
 		for i in 20:

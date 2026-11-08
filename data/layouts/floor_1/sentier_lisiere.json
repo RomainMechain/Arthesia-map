@@ -1,0 +1,80 @@
+{
+  "zone_id": "sentier_lisiere",
+  "status": "plan v1",
+  "biome": "foret",
+  "size_tiles": [64, 44],
+  "tile_size": 16,
+  "player_metrics": {
+    "speed_tiles_s": 5,
+    "view_tiles": [30, 17],
+    "notes": "Carte ~2,1 x 2,6 écrans. Entrée (sud) -> sortie est par le sentier : ~16 s. Chaque clairière est à 2-4 s du sentier."
+  },
+  "intent": {
+    "role": "transition village -> forêt, combat léger (niv. 1-3), cueillette de base",
+    "golden_path": ["entree_sud", "pierres_taillees", "chene_ancien", "exit_foret_ancienne"],
+    "side_pockets": ["clairiere_lapins", "nid_renard", "abri_aurin", "clairiere_loups", "mare_mousse", "pre_oiseaux"],
+    "pacing": "Calme à l'entrée (lapins, cueillette), Aurin à mi-chemin donne la quête des loups, les loups sont dans une poche à l'écart du sentier (jamais sur le chemin : on choisit d'y aller).",
+    "reading": "Les arbres s'épaississent et s'assombrissent d'ouest en est : le sentier mène vers la Forêt des Anciens. Les pierres trop régulières et le grand chêne sont les repères du chemin."
+  },
+  "spawn": {"pos": [12, 40], "label": "Entrée depuis Val-de-l'Aube"},
+  "forest_fill": {"margin": 1.6, "dark_from_x": 30},
+  "regions": [
+    {"id": "entree", "kind": "clearing", "rect": [7, 35, 10, 9]},
+    {"id": "clairiere_lapins", "kind": "clearing", "circle": [8, 29, 4.6]},
+    {"id": "nid_renard", "kind": "clearing", "circle": [11, 19, 3.2]},
+    {"id": "pierres", "kind": "clearing", "circle": [27, 27, 2.8]},
+    {"id": "chene", "kind": "clearing", "circle": [38, 25, 4.2]},
+    {"id": "abri_aurin", "kind": "clearing", "circle": [26, 13, 4.6]},
+    {"id": "clairiere_loups", "kind": "clearing", "circle": [45, 30, 5.6]},
+    {"id": "mare_mousse", "kind": "clearing", "circle": [55, 37, 4.6]},
+    {"id": "pre_oiseaux", "kind": "clearing", "circle": [50, 7, 4.4]},
+    {"id": "sortie_est", "kind": "clearing", "rect": [58, 9, 6, 6]}
+  ],
+  "paths": [
+    {"id": "sentier", "kind": "trail", "width": 2,
+     "points": [[12, 44], [12, 39], [14, 34], [19, 31], [25, 28], [31, 24], [37, 21], [44, 19], [51, 15], [57, 12], [64, 12]]},
+    {"id": "allee_lapins", "kind": "lane", "width": 2, "points": [[13, 36], [10, 32]]},
+    {"id": "allee_renard", "kind": "lane", "width": 2, "points": [[8, 25], [10, 21]]},
+    {"id": "allee_aurin", "kind": "lane", "width": 2, "points": [[31, 24], [29, 19], [27, 16]]},
+    {"id": "allee_loups", "kind": "lane", "width": 2, "points": [[42, 20], [44, 25]]},
+    {"id": "allee_mare", "kind": "lane", "width": 2, "points": [[49, 33], [53, 35]]},
+    {"id": "allee_pre", "kind": "lane", "width": 2, "points": [[51, 15], [50, 11]]}
+  ],
+  "water": [
+    {"id": "mare", "kind": "pond", "width": 3.2, "points": [[52, 37], [54, 38], [57, 37.6], [58.5, 39]]}
+  ],
+  "buildings": [],
+  "landmarks": [
+    {"id": "panneau_entree", "pos": [14, 40], "rank": 2, "label": "Poteau indicateur", "why": "confirme l'entrée et la direction de la forêt"},
+    {"id": "chene_ancien", "pos": [38, 24], "rank": 1, "label": "Grand chêne de la Lisière", "why": "repère central visible au-dessus des arbres, la racine dorée à ses pieds"},
+    {"id": "abri_aurin", "pos": [25, 11], "rank": 1, "label": "Abri d'Aurin", "why": "auvent de branches tressées, un peu à l'écart du sentier (description du PNJ)"},
+    {"id": "feu_aurin", "pos": [23, 14], "rank": 3, "label": "Feu de camp"}
+  ],
+  "entries": {
+    "lapin_spawn": {"pos": [8, 29], "pack": 3, "radius": 3.2},
+    "terriers_de_lapins_noeud": {"pos": [5, 27]},
+    "champignons_noeud": {"pos": [4, 31]},
+    "renardeau_spawn": {"pos": [11, 19], "pack": 1, "radius": 2.0},
+    "bois_mort_de_lisiere_noeud": {"pos": [9, 38]},
+    "pierres_taillees_enfouies_noeud": {"pos": [27, 28]},
+    "racine_noeud": {"pos": [40, 26]},
+    "aurin_presence": {"pos": [28, 13], "label": "Aurin", "note": "devant son auvent"},
+    "aurin_quete": {"at": "aurin_presence"},
+    "loup_dore_spawn": {"pos": [43, 29], "pack": 2, "radius": 3.6},
+    "loup_dore_spawn_2": {"pos": [47, 32], "pack": 2, "radius": 3.6},
+    "mousse_noeud": {"pos": [56, 34]},
+    "oiseau_spawn": {"pos": [50, 7], "pack": 3, "radius": 3.0}
+  },
+  "exits": [
+    {"id": "exit_village_aube", "to": "village_aube", "label": "Val-de-l'Aube", "rect": [10, 43, 4, 1], "arrival": [12, 40]},
+    {"id": "exit_foret_ancienne", "to": "foret_ancienne", "label": "Forêt des Anciens", "rect": [63, 10, 1, 4], "arrival": [60, 12]}
+  ],
+  "ambient": {"modulate": "#f6efd8", "mist": true},
+  "dressing_rules": [
+    "Forêt partout hors du sentier et des clairières : arbres serrés au-delà de 1,6 tuile du terrain ouvert, plus clairs à l'ouest (lisière), plus sombres à l'est (vers les Anciens).",
+    "Bande de lisière (0 à 1,6 tuile) : fougères, buissons, souches, champignons ; jamais sur le sentier.",
+    "Brume dorée dans les clairières, au ras des fougères.",
+    "Les loups restent dans leur clairière : le sentier n'est jamais menacé, on choisit d'aller les combattre.",
+    "Ressources posées au bord des clairières, au pied d'un élément qui les explique (racine sous le chêne, mousse au bord de la mare, terriers sous les fougères)."
+  ]
+}

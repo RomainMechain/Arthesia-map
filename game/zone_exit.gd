@@ -1,11 +1,12 @@
 extends Area2D
-## Sortie vers une zone voisine (connexion du Floor). Le chargement de la zone cible
-## viendra quand elle sera construite ; pour l'instant on l'annonce.
+## Sortie vers une zone voisine (connexion du Floor).
+## `arrival` : point où le joueur apparaît dans CETTE zone quand il revient de `target_zone`.
 
 signal exit_reached(target_zone: String, label: String)
 
 @export var target_zone := ""
 @export var label := ""
+@export var arrival := Vector2.ZERO
 
 
 func _ready() -> void:

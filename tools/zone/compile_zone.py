@@ -83,7 +83,34 @@ class Zone:
         self.layers = []
         self.floor_props, self.props, self.colliders = [], [], []
         self.fx = []
+        self.interactables = []
         self.doors = [b["door"] for b in self.lay["buildings"] if "door" in b]
+        self.forest = self.lay.get("forest_fill")
+        self.open_d = self._open_distance() if self.forest else None
+
+    # -- forêt « par défaut » : distance au terrain ouvert (sentier, clairières), en tuiles
+    def open_dist(self, p):
+        best = 1e9
+        for pth in self.lay["paths"]:
+            best = min(best, poly_dist(p, pth["points"]) - pth["width"] / 2)
+        for r in self.lay["regions"]:
+            if r["kind"] != "clearing":
+                continue
+            if "circle" in r:
+                cx, cy, rad = r["circle"]
+                best = min(best, math.hypot(p[0] - cx, p[1] - cy) - rad)
+            else:
+                x, y, w, h = r["rect"]
+                dx = max(x - p[0], 0, p[0] - (x + w))
+                dy = max(y - p[1], 0, p[1] - (y + h))
+                best = min(best, math.hypot(dx, dy))
+        return best
+
+    def _open_distance(self):
+        return [[self.open_dist((tx + 0.5, ty + 0.5)) for tx in range(self.W)] for ty in range(self.H)]
+
+    def dense(self, tx, ty):
+        return self.open_d[ty][tx] > self.forest["margin"]
 
     # -- occupation
     def block_rect(self, x, y, w, h):
@@ -131,6 +158,8 @@ class Zone:
                 # herbe sombre seulement au cœur des forêts : la lisière garde l'herbe claire
                 dark = any(in_poly(c, f["poly"]) and poly_dist(c, f["poly"] + f["poly"][:1]) > 1.6
                            for f in forests)
+                if self.forest:                     # sous le couvert : herbe sombre
+                    dark = self.open_d[ty][tx] > self.forest["margin"] + 0.9
                 cells.append([tx, ty, self.rng.randrange(4), 1 if dark else 0])
         self.add_layer("sol", "ground_base", cells)
 
@@ -142,7 +171,8 @@ class Zone:
             return False
 
         rock = [r for r in lay["regions"] if r["kind"] == "rock"]
-        dirt = self.corners(lambda p: int(on_path(p, ("road_main", "road", "lane"))
+        dirt_kinds = ("trail",) if self.forest else ("road_main", "road", "lane")   # en forêt, les allées restent herbeuses
+        dirt = self.corners(lambda p: int(on_path(p, dirt_kinds)
                                           or any(in_poly(p, r["poly"]) for r in rock)))
         self.overlay_layer("terre", "overlay_dirt", 2, dirt)
 
@@ -177,7 +207,7 @@ class Zone:
         for ty in range(self.H):
             for tx in range(self.W):
                 c = (tx + 0.5, ty + 0.5)
-                if on_path(c, ("road_main", "road", "lane")) or any(shape_contains(s, c) for s in squares) \
+                if on_path(c, ("road_main", "road", "lane", "trail")) or any(shape_contains(s, c) for s in squares) \
                         or any(poly_dist(c, w["points"]) <= w["width"] / 2 + 0.6 for w in lay["water"]):
                     self.blocked[ty][tx] = True
         for f in fields:
@@ -270,12 +300,33 @@ class Zone:
             self.prop("props/village/puits.png", x + 0.5, y + 1.5, cols=[(-13, -9, 26, 9)], kind="landmark")
         # cercle d'arrivée des Marqués : pierres runiques autour du point d'apparition
         sx, sy = lay["spawn"]["pos"]
-        for deg in (60, 100, 140, 220, 260, 300):
-            a = math.radians(deg)
-            px_, py_ = sx + 0.5 + math.cos(a) * 3.0, sy + 0.6 + math.sin(a) * 2.6
-            self.prop("props/objets/pierre_runique.png", px_, py_, cols=[(-3, -3, 6, 3)], kind="landmark")
-            self.block_rect(px_ - 0.5, py_ - 1, 1, 1)
-        self.fx.append({"kind": "fireflies_rune", "x": round((sx + 0.5) * T), "y": round((sy + 0.5) * T)})
+        if lay["spawn"].get("rune_circle"):
+            for deg in (60, 100, 140, 220, 260, 300):
+                a = math.radians(deg)
+                px_, py_ = sx + 0.5 + math.cos(a) * 3.0, sy + 0.6 + math.sin(a) * 2.6
+                self.prop("props/objets/pierre_runique.png", px_, py_, cols=[(-3, -3, 6, 3)], kind="landmark")
+                self.block_rect(px_ - 0.5, py_ - 1, 1, 1)
+            self.fx.append({"kind": "fireflies_rune", "x": round((sx + 0.5) * T), "y": round((sy + 0.5) * T)})
+        # repères de la forêt
+        if "panneau_entree" in lm:
+            x, y = lm["panneau_entree"]["pos"]
+            self.prop("props/foret/panneau.png", x + 0.5, y + 1, cols=[(-2, -3, 5, 3)], kind="landmark")
+            self.block_rect(x, y, 1, 1)
+        if "chene_ancien" in lm:
+            x, y = lm["chene_ancien"]["pos"]
+            self.prop("props/foret/chene_ancien.png", x + 0.5, y + 1, cols=[(-14, -8, 28, 8)], kind="landmark")
+            self.block_rect(x - 2, y - 1, 5, 2)
+        if "abri_aurin" in lm:
+            x, y = lm["abri_aurin"]["pos"]
+            self.prop("props/foret/auvent_aurin.png", x + 0.5, y + 1,
+                      cols=[(-26, -10, 52, 10)], kind="landmark")
+            self.block_rect(x - 2, y - 2, 6, 3)
+        if "feu_aurin" in lm:
+            x, y = lm["feu_aurin"]["pos"]
+            self.prop("props/foret/feu_camp.png", x + 0.5, y + 1, cols=[(-7, -5, 14, 5)], kind="landmark")
+            self.fx.append({"kind": "embers", "x": round((x + 0.5) * T), "y": round((y + 0.6) * T)})
+            self.fx.append({"kind": "smoke_light", "x": round((x + 0.5) * T), "y": round((y + 0.4) * T)})
+            self.block_rect(x - 0.5, y, 2, 1)
         if "porte_lisiere" in lm:
             x, y = lm["porte_lisiere"]["pos"]
             self.prop("props/village/arche_lisiere.png", x + 0.5, y + 1,
@@ -299,11 +350,13 @@ class Zone:
 
         def tpl(kind, tid):
             folder = {"npc": "npcs", "shop": "shops", "player_market": "player_markets",
-                      "quest_giver": "quests", "workshop": "workshops"}[kind]
+                      "quest_giver": "quests", "workshop": "workshops", "monster": "monsters",
+                      "resource": "resources", "item": "items"}[kind]
             p = tpl_dir / folder / f"{tid}.json"
             return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
-        self.interactables = []
+        prof_names = {"herboristerie": "herboristerie", "bucheronnage": "bûcheronnage",
+                      "archeologie": "archéologie", "chasse": "chasse"}
         hosted = {}
         for eid, e in lay["entries"].items():
             if "at" in e:
@@ -324,10 +377,48 @@ class Zone:
             item = {"entry_id": eid, "template_type": kind, "template_id": tid,
                     "name": t.get("name", e.get("label", eid)), "role": t.get("role", ""),
                     "x": round((x + 0.5) * T), "y": round((y + 1) * T), "quests": quests}
+            if kind == "monster":
+                # une entrée = un point d'apparition ; on y place la meute (pack) qui erre autour
+                pack, radius = e.get("pack", 1), e.get("radius", 2.5)
+                rare = entry.get("rarity") == "rare"
+                for k in range(pack):
+                    a = k * math.tau / pack + self.rng.uniform(-0.4, 0.4)
+                    rr = 0 if pack == 1 else radius * 0.5
+                    self.interactables.append({
+                        **item, "entry_id": f"{eid}_{k + 1}" if pack > 1 else eid,
+                        "x": round((x + 0.5 + math.cos(a) * rr) * T), "y": round((y + 1 + math.sin(a) * rr) * T),
+                        "sprite": res(f"monsters/{tid}_idle.png"), "frames": 6,
+                        "role": f"Niv. {t.get('level', 1)}" + (" · rare" if rare else ""),
+                        "dialogues": [t.get("description", "")],
+                        "mob": {"leash": round(radius * T), "level": t.get("level", 1),
+                                "temper": {"lapin_bondissant": "shy", "renardeau_curieux": "shy",
+                                           "oiseau_chanteur": "shy"}.get(tid, "watch"),
+                                "spawn": entry["spawn"]}})
+                continue
+            if kind == "resource":
+                prof = t.get("profession_required") or {}
+                yields = []
+                for yd in t.get("yields", []):
+                    it_name = tpl("item", yd["item_id"]).get("name", yd["item_id"])
+                    q = f"{yd['quantity_min']}" if yd["quantity_min"] == yd["quantity_max"] \
+                        else f"{yd['quantity_min']}-{yd['quantity_max']}"
+                    yields.append(f"{q} × {it_name}")
+                item.update({
+                    "sprite": res(f"props/ressources/{tid}.png"), "frames": 1,
+                    "role": f"{prof_names.get(prof.get('profession_id'), prof.get('profession_id', ''))}"
+                            f" niv. {prof.get('min_level', 1)}",
+                    "dialogues": [t.get("description", "")],
+                    "resource": {"gather_time": t.get("gather_time_seconds", 3), "yields": yields,
+                                 "stock": entry["spawn"].get("stock")}})
+                self.interactables.append(item)
+                self.block_rect(x - 0.5, y - 0.5, 2, 2)
+                continue
             if kind == "npc":
+                item["frames"] = 4
                 item["sprite"] = res(f"characters/npcs/{tid}_idle.png")
                 item["dialogues"] = t.get("dialogues", [])
             elif kind == "shop":
+                item["frames"] = 4
                 item["sprite"] = res("characters/npcs/thessaly_idle.png")
                 item["y"] -= 12                         # derrière le comptoir : visible de la taille à la tête
                 item["dialogues"] = [t.get("description", "")]
@@ -444,7 +535,9 @@ class Zone:
                     self.block_rect(p[0] - 0.5, p[1] - 1, 1, 1)
                     placed += 1
         for pid in ("route_lisiere", "route_rive"):
-            pth = next(p for p in lay["paths"] if p["id"] == pid)
+            pth = next((p for p in lay["paths"] if p["id"] == pid), None)
+            if pth is None:
+                continue
             for i, (p, n) in enumerate(polyline_samples(pth["points"], 7)):
                 if i == 0:
                     continue
@@ -517,18 +610,109 @@ class Zone:
             self.prop("props/objets/caisse.png", x + 0.6, y - 0.7, cols=[(-5, -5, 10, 5)])
             self.prop("props/objets/tonneau.png", x + 0.1, y - 1.5, cols=[(-4, -5, 8, 5)])
 
+    # -- biome forêt : la forêt remplit tout ce qui n'est ni sentier ni clairière
+    def build_forest_fill(self):
+        m = self.forest["margin"]
+        dark_x = self.forest.get("dark_from_x", self.W)
+        light = ["arbre_aube_a", "arbre_aube_b", "arbre_aube_c"]
+        dark = ["arbre_sombre_a", "arbre_sombre_b", "arbre_sombre_c"]
+        step, row, y = 1.6, 0, -0.4
+        while y <= self.H + 2.4:
+            x = -0.8 + (step / 2 if row % 2 else 0)
+            while x <= self.W + 0.8:
+                p = (x + self.rng.uniform(-0.4, 0.4), y + self.rng.uniform(-0.3, 0.3))
+                d = self.open_dist((p[0], p[1] - 0.4))
+                if d > m - 0.5:
+                    # plus sombre vers l'est (la Forêt des Anciens) et au cœur des massifs
+                    p_dark = min(1.0, max(0.0, (p[0] - 8) / max(1, dark_x - 8))) * 0.8 + (0.3 if d > m + 2 else 0)
+                    if d < m + 0.4:
+                        p_dark *= 0.4                     # la lisière reste claire
+                    pool = dark if self.rng.random() < p_dark else light
+                    edge = d < m + 0.3
+                    self.prop(f"props/vegetation/{self.rng.choice(pool)}.png", p[0], p[1],
+                              cols=[(-5, -4, 10, 4)] if edge else None, kind="forest")
+                x += step
+            y += step * 0.85
+            row += 1
+        # collisions : rangées de tuiles du massif (au-delà de la marge)
+        for ty in range(self.H):
+            run = None
+            for tx in range(self.W + 1):
+                solid = tx < self.W and self.open_d[ty][tx] > m + 0.2
+                if solid and run is None:
+                    run = tx
+                elif not solid and run is not None:
+                    self.colliders.append({"rect": [run * T, ty * T, (tx - run) * T, T]})
+                    run = None
+                if solid:
+                    self.blocked[ty][tx] = True
+
+    def build_undergrowth(self):
+        m = self.forest["margin"]
+        ferns = ["fougere_a", "fougere_b", "fougere_c"]
+        for ty in range(self.H):
+            for tx in range(self.W):
+                d = self.open_d[ty][tx]
+                if self.blocked[ty][tx] or d > m + 0.3:
+                    continue
+                p = (tx + self.rng.uniform(0.15, 0.85), ty + self.rng.uniform(0.5, 1.0))
+                if self.on_road(p, 0.5):
+                    continue
+                r = self.rng.random()
+                if d > 0:                                 # bande de lisière
+                    if r < 0.34:
+                        self.prop(f"props/foret/{self.rng.choice(ferns)}.png", *p, kind="undergrowth")
+                    elif r < 0.42:
+                        rel = self.rng.choice(["buisson_a", "buisson_b", "buisson_sombre"])
+                        self.prop(f"props/vegetation/{rel}.png", *p, cols=[(-6, -4, 12, 4)])
+                        self.block_rect(p[0] - 0.5, p[1] - 1, 1, 1)
+                    elif r < 0.445 and d > 0.5:
+                        self.prop("props/foret/souche.png", *p, cols=[(-6, -5, 12, 5)])
+                        self.block_rect(p[0] - 0.5, p[1] - 1, 1, 1)
+                    elif r < 0.455 and d > 0.6 and self.free(p[0] + 1, p[1] - 0.5):
+                        self.prop("props/foret/tronc_couche.png", *p, cols=[(-16, -7, 32, 6)])
+                        self.block_rect(p[0] - 1.5, p[1] - 1, 3, 1)
+                    elif r < 0.50:
+                        self.prop("props/foret/champignons_deco.png", *p, floor=True)
+                else:                                     # dans les clairières : clairsemé
+                    if r < 0.035 and d > -1.5:
+                        self.prop(f"props/foret/{self.rng.choice(ferns)}.png", *p, kind="undergrowth")
+                    elif r < 0.06:
+                        self.prop(f"props/vegetation/fleurs_{self.rng.choice('abc')}.png", *p, floor=True)
+
+    def build_mist(self):
+        if not self.lay.get("ambient", {}).get("mist"):
+            return
+        for r in self.lay["regions"]:
+            if r["kind"] != "clearing":
+                continue
+            if "circle" in r:
+                cx, cy, rad = r["circle"]
+                w = h = rad * 1.4
+            else:
+                x, y, w, h = r["rect"]
+                cx, cy = x + w / 2, y + h / 2
+                w, h = w * 0.7, h * 0.7
+            self.fx.append({"kind": "mist", "x": round(cx * T), "y": round(cy * T),
+                            "w": round(w * T), "h": round(h * T)})
+
     def compile(self):
         lay = self.lay
         self.build_ground()
         self.build_buildings()
         self.build_landmarks()
         self.build_entries()
-        self.build_garin_dock()
-        self.build_fields()
-        self.build_orchard()
-        self.build_lanterns()
-        self.build_forests()
-        self.build_open_trees()
+        if self.forest:
+            self.build_forest_fill()
+            self.build_undergrowth()
+            self.build_mist()
+        else:
+            self.build_garin_dock()
+            self.build_fields()
+            self.build_orchard()
+            self.build_lanterns()
+            self.build_forests()
+            self.build_open_trees()
         self.build_stream_banks()
         self.build_flowers()
         W, H = self.W * T, self.H * T
@@ -551,7 +735,7 @@ class Zone:
             "layers": self.layers, "floor_props": self.floor_props, "props": self.props,
             "colliders": self.colliders, "interactables": self.interactables, "fx": self.fx,
             "exits": exits, "spawn": [(sx + 0.5) * T, (sy + 1) * T],
-            "ambient": {"modulate": "#fff4e0"},
+            "ambient": {"modulate": lay.get("ambient", {}).get("modulate", "#fff4e0")},
         }
 
 
@@ -572,10 +756,10 @@ def render_preview(build, out):
             tile = atlas.crop((ax * T, ay * T, ax * T + T, ay * T + T))
             img.alpha_composite(tile, (tx * T, ty * T))
 
-    def draw(item, frame_w=None):
+    def draw(item, nframes=None):
         spr = load(item["sprite"])
-        if frame_w:
-            spr = spr.crop((0, 0, frame_w, spr.height))
+        if nframes and nframes > 1:
+            spr = spr.crop((0, 0, spr.width // nframes, spr.height))
         x, y = int(item["x"]) - spr.width // 2, int(item["y"]) - spr.height
         if -spr.width < x < W and -spr.height < y < H:
             img.alpha_composite(spr, (max(0, x), max(0, y)),
@@ -586,9 +770,9 @@ def render_preview(build, out):
     drawables = [(p["y"], p, None) for p in build["props"]]
     for it in build["interactables"]:
         if "sprite" in it:
-            drawables.append((it["y"], it, 16))
+            drawables.append((it["y"], it, it.get("frames", 4)))
     drawables.append((build["spawn"][1], {"sprite": res("characters/player/player_idle_down.png"),
-                                          "x": build["spawn"][0], "y": build["spawn"][1]}, 16))
+                                          "x": build["spawn"][0], "y": build["spawn"][1]}, 4))
     for _, item, fw in sorted(drawables, key=lambda d: d[0]):
         draw(item, fw)
     img.save(out)

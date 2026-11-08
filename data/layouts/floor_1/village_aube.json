@@ -19,7 +19,7 @@
     "teaches": ["se déplacer", "parler à un PNJ", "accepter une quête", "acheter", "fabriquer", "changer de zone"],
     "reading": "Ouest : arrivée et artisans de la pierre et du tissu. Centre : place, auberge, échoppe. Sud : la rue des Artisans longe le ruisseau (forge, alchimie) et finit au coin architecte (autel, enchantement), puis rejoint la route de la rive : une boucle. Est : maisons, champs, et les deux sorties dans l'ordre de la progression (sud-est puis nord-est)."
   },
-  "spawn": { "pos": [10, 27], "label": "Cercle d'arrivée" },
+  "spawn": { "pos": [10, 27], "label": "Cercle d'arrivée", "rune_circle": true },
   "regions": [
     { "id": "foret_nord", "kind": "forest_wall", "poly": [[0,0],[64,0],[64,3],[50,5],[36,4],[24,3],[16,2],[6,4],[4,12],[3,22],[0,22]] },
     { "id": "foret_ouest_arrivee", "kind": "forest_wall", "poly": [[0,22],[3,22],[4,25],[3,30],[4,33],[0,34]] },

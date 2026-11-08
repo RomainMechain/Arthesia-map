@@ -637,6 +637,8 @@ def main():
     for tid in NPC_KEYS:
         sv(npc(tid), f"characters/npcs/{tid}_idle.png")
     sv(field_tiles(), "tiles/floor_1/ground_fields.png")
+    import lisiere_assets                                        # Sentier de la Lisière
+    lisiere_assets.main(standalone=False)
     sb.write_manifest()
     print(f"OK - {len(sb.SAVED)} assets au total")
 

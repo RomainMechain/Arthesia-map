@@ -4,6 +4,7 @@ extends Node2D
 
 @export var zone_id := ""
 @export var zone_name := ""
+@export var floor_id := "floor_1"
 
 const TAP_RADIUS := 16.0
 
@@ -21,10 +22,23 @@ var _toast_t := 0.0
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
 	_build_ui()
+	var gs := _game_state()
 	for ex in find_children("*", "Area2D", true, false):
 		if ex.has_signal("exit_reached"):
 			ex.exit_reached.connect(_on_exit)
+			# on revient d'une zone voisine : apparaître devant la sortie qui y mène
+			if gs and gs.arrival_from != "" and ex.target_zone == gs.arrival_from:
+				player.global_position = ex.arrival
+	if gs:
+		gs.arrival_from = ""
+		gs.current_zone = zone_id
+		gs.floor_id = floor_id
+	player.get_node("Camera2D").reset_smoothing.call_deferred()
 	toast(zone_name, 2.5)
+
+
+func _game_state() -> Node:
+	return get_node_or_null("/root/GameState")
 
 
 func _process(delta: float) -> void:
@@ -94,8 +108,15 @@ func _open(it: Node2D) -> void:
 	_dialog.visible = true
 
 
-func _on_exit(_target: String, label: String) -> void:
-	toast("→ %s (zone à venir)" % label, 2.0)
+func _on_exit(target: String, label: String) -> void:
+	var gs := _game_state()
+	if gs and gs.has_zone(target):
+		if not gs.is_travelling():
+			player.stop()
+			_dialog.visible = false
+			gs.travel(zone_id, target)
+	else:
+		toast("→ %s (zone à venir)" % label, 2.0)
 
 
 func toast(text: String, seconds: float) -> void:

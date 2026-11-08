@@ -597,7 +597,7 @@ def write_manifest():
                    "license": "propriété du projet Arthesia", "creator": "Claude (code)"},
         "verification": {"native_scale_reviewed": True, "in_engine_reviewed": False,
                          "technical_checks_passed": True, "approved_by": ""},
-    } for rel, (w, h) in SAVED]
+    } for rel, (w, h) in dict(SAVED).items()]
     out = ROOT / "art" / "asset_manifest.json"
     out.write_text(json.dumps({"schema_version": 1,
                                "art_direction_brief": "docs/art_direction.md",

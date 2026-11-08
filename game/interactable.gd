@@ -10,6 +10,8 @@ extends Node2D
 @export var dialogues: PackedStringArray = []
 ## [{entry_id, quest_id, name, spawn}] — quêtes proposées par ce PNJ
 @export var quests: Array = []
+## Ligne d'information affichée sous le texte (récolte, combat à venir...)
+@export var info := ""
 
 const INTERACT_RADIUS := 26.0
 
@@ -67,4 +69,6 @@ func interact() -> Dictionary:
 		extra = "Quête : " + ", ".join(q.map(func(x): return x.name))
 	elif not locked_hints().is_empty():
 		extra = locked_hints()[0].spawn.hint
+	elif info != "":
+		extra = info
 	return {"name": display_name, "role": role, "text": line, "extra": extra}
