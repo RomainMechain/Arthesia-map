@@ -151,5 +151,54 @@ func _run() -> void:
 	await _wait(3.6)
 	_check(gs.crafting.is_empty() and at._info.text != "", "résultat affiché : %s" % at._info.text.left(70))
 
+	# --- suivi des recettes faites (Carnet › Recettes)
+	var mine: Dictionary = gs.profile.crafts.get(CraftRules.recipe_key("forge", "arme", recipe), {})
+	_check(int(mine.get("count", 0)) == 2, "recette faite 2 fois, au mieux %s" % mine.get("best", "?"))
+
+	# --- enchantement : un équipement + au moins un réactif, une seule fois
+	await _wait(0.5)
+	while z.hud.reward.visible:
+		z.hud.reward._next()
+	gs.settings.craft_ai = false
+	gs.add_item("dague_villageoise", 1)
+	gs.add_item("poil_de_loup_dore", 2)
+	_check(gs.craft_check("enchantement", "force", {"dague_villageoise": 1}) != "", "enchantement sans réactif refusé : %s"
+		% gs.craft_check("enchantement", "force", {"dague_villageoise": 1}))
+	_check(gs.craft_check("enchantement", "force", {"poil_de_loup_dore": 1}) != "", "enchantement sans équipement refusé")
+	var ench := {"dague_villageoise": 1, "poil_de_loup_dore": 1}
+	_check(gs.craft_start("enchantement", "force", ench) == "", "enchantement lancé")
+	got = ""
+	gs.craft_done.connect(_on_done, CONNECT_ONE_SHOT)
+	t_end = Time.get_ticks_msec() + 6000
+	while got == "" and Time.get_ticks_msec() < t_end:
+		await process_frame
+	var e_id := got.get_slice("|", 0)
+	var et: Dictionary = gs.tpl("items", e_id)
+	var base_atk := float(gs.tpl("items", "dague_villageoise").equipment.stat_bonuses.get("atk", 0))
+	_check(et.get("enchanted", false) and float(et.equipment.stat_bonuses.get("atk", 0)) > base_atk,
+		"« %s » : ATK %s -> %s" % [et.get("name"), base_atk, et.equipment.stat_bonuses.get("atk")])
+	_check(gs.ingredient_block("enchantement", e_id) != "" and gs.ingredient_block("forge", e_id) != "",
+		"objet enchanté : %s" % gs.ingredient_block("enchantement", e_id))
+
+	# --- Carnet › Recettes : préparer l'établi, l'atelier le reprend
+	gs.add_item("croc_d_or_pur", 1)
+	gs.add_item("branche_morte", 2)
+	gs.prepared_bench = {"key": CraftRules.recipe_key("forge", "arme", recipe), "workshop": "forge", "type": "arme",
+		"inputs": recipe.duplicate()}
+	z.hud.open_workshop("forge")
+	_check(at._type == "arme" and at._bench == recipe and gs.prepared_bench.is_empty(), "établi préparé repris : %s" % [at._bench])
+	z.hud.toggle_carnet()
+	z.hud.carnet._tabs.current_tab = 6
+	z.hud.carnet.refresh()
+	_check(z.hud.carnet._recipe_sel != "", "Carnet › Recettes : %d recettes" % gs.craft_cache.recipes.size())
+	z.hud.toggle_carnet()
+
+	# --- mini-carte et carte de la zone
+	_check(z.hud.minimap.available() and z.hud.minimap.visible, "mini-carte affichée")
+	z.hud.toggle_map()
+	_check(z.hud.bigmap.visible and not z.hud.minimap.visible, "carte de la zone ouverte (M)")
+	z.hud.toggle_map()
+	_check(not z.hud.bigmap.visible and z.hud.minimap.visible, "carte refermée")
+
 	print("\n%d échec(s)" % _fail)
 	quit(_fail)

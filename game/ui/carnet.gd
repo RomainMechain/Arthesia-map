@@ -15,6 +15,7 @@ var _selected_item := ""
 var _slot := "weapon"
 var _quest_sel := ""
 var _map_sel := ""
+var _recipe_sel := ""
 
 const STATS := ["hp", "atk", "def", "agi", "int", "sag"]
 const STAT_NAMES := {"hp": "Points de vie", "atk": "Attaque", "def": "Défense", "agi": "Agilité",
@@ -67,7 +68,7 @@ func _ready() -> void:
 	_tabs.focus_mode = Control.FOCUS_NONE
 	_tabs.set_anchors_preset(Control.PRESET_FULL_RECT)
 	holder.add_child(_tabs)
-	for t in ["Personnage", "Équipement", "Compétences", "Sac", "Quêtes", "Carte"]:
+	for t in ["Personnage", "Équipement", "Compétences", "Sac", "Quêtes", "Carte", "Recettes"]:
 		_pages[t] = _spread(t)
 	_tabs.tab_changed.connect(func(_i): refresh())
 	var close := Button.new()
@@ -313,6 +314,7 @@ func refresh() -> void:
 	_build_sac(_pages["Sac"][0], _pages["Sac"][1])
 	_build_quetes(_pages["Quêtes"][0], _pages["Quêtes"][1])
 	_build_carte(_pages["Carte"][0], _pages["Carte"][1])
+	_build_recettes(_pages["Recettes"][0], _pages["Recettes"][1])
 	for t in _pages:
 		for page in _pages[t]:
 			_fit(page)
@@ -361,10 +363,14 @@ func _change(k: String, d: int) -> void:
 
 
 func _commit() -> void:
+	# on vide d'abord les points en attente : chaque spend_point redessine le Carnet, qui annulerait
+	# sinon le reste (« plus de points en attente que de points libres »)
+	var todo: Dictionary = _pending.duplicate()
 	for k in STATS:
-		for i in _pending[k]:
-			_gs.spend_point(k)
 		_pending[k] = 0
+	for k in STATS:
+		for i in int(todo[k]):
+			_gs.spend_point(k)
 	refresh()
 
 
@@ -685,24 +691,13 @@ func _build_comp(left: VBoxContainer, right: VBoxContainer) -> void:
 		if _selected_skill != "" else "Choisis une compétence à droite, puis son emplacement.",
 		GOOD if _selected_skill != "" else INK_FAINT, 10, true)
 	_spacer(left)
-	_section(left, "Métiers")
+	var crafts: Array = ["forgeron", "couturier", "sculpteur", "alchimiste", "cuisinier", "enchanteur"]
 	var profs: Array = ["herboristerie", "bucheronnage", "peche", "archeologie", "chasse"]
 	for p2 in p.get("professions", {}):
-		if not p2 in profs:
+		if not p2 in profs and not p2 in crafts:
 			profs.append(p2)
-	var j := 0
-	for p2 in profs:
-		var r := _row(left, j)
-		j += 1
-		var n := _label(r, _gs.PROF_NAMES.get(p2, p2), INK)
-		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var pb := UISkin.Bar.new("bar_xp", Vector2(50, 5))
-		pb.set_value(_gs.prof_xp(p2) / _gs.prof_to_next(_gs.prof_level(p2)))
-		pb.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		r.add_child(pb)
-		var lv := _label(r, "niv. %d" % _gs.prof_level(p2), INK_SOFT)
-		lv.custom_minimum_size = Vector2(32, 0)
-		lv.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_prof_rows(left, "Métiers de récolte", profs)
+	_prof_rows(left, "Métiers d'artisanat", crafts)
 	# --- droite : liste des compétences + détail
 	_section(right, "Compétences", "%d connues" % p.skills.size(), INK_FAINT)
 	var list := _scroll(right)
@@ -746,6 +741,23 @@ func _build_comp(left: VBoxContainer, right: VBoxContainer) -> void:
 		_label(d, _effect_text(sk), GOOD)
 	else:
 		_label(d, "Touche une compétence pour lire sa description.", INK_FAINT, 10, true)
+
+
+func _prof_rows(left: VBoxContainer, title: String, profs: Array) -> void:
+	_section(left, title)
+	var j := 0
+	for p2 in profs:
+		var r := _row(left, j)
+		j += 1
+		var n := _label(r, _gs.PROF_NAMES.get(p2, p2), INK)
+		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var pb := UISkin.Bar.new("bar_xp", Vector2(50, 5))
+		pb.set_value(_gs.prof_xp(p2) / _gs.prof_to_next(_gs.prof_level(p2)))
+		pb.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		r.add_child(pb)
+		var lv := _label(r, "niv. %d" % _gs.prof_level(p2), INK_SOFT)
+		lv.custom_minimum_size = Vector2(32, 0)
+		lv.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 
 # --------------------------------------------------------------------------- Sac
@@ -922,6 +934,97 @@ func _build_quetes(left: VBoxContainer, right: VBoxContainer) -> void:
 	if st2 == "complete":
 		_spacer(right)
 		_label(right, "Retourne voir celui qui te l'a confiée.", ACCENT, 10, true)
+
+
+# --------------------------------------------------------------------------- Recettes
+const WS_ORDER := ["forge", "couture", "sculpture", "alchimie", "cuisine", "enchantement"]
+
+
+func _build_recettes(left: VBoxContainer, right: VBoxContainer) -> void:
+	var recipes: Dictionary = _gs.craft_cache.recipes
+	_section(left, "Recettes", "%d connue%s" % [recipes.size(), "s" if recipes.size() > 1 else ""], INK_FAINT)
+	if recipes.is_empty():
+		_label(left, "Aucune recette pour l'instant. Dans un atelier du village, pose des ingrédients et "
+			+ "tente une combinaison : chaque recette inédite est inventée une fois, puis consignée ici.", INK_FAINT, 10, true)
+		_section(right, "Recette")
+		return
+	if not recipes.has(_recipe_sel):
+		_recipe_sel = ""
+	var i := 0
+	for ws in WS_ORDER:
+		var keys: Array = recipes.keys().filter(func(k): return recipes[k].get("workshop", "") == ws)
+		if keys.is_empty():
+			continue
+		keys.sort_custom(func(a, b): return float(recipes[a].get("found", 0)) > float(recipes[b].get("found", 0)))
+		_label(left, _gs.tpl("workshops", ws).get("name", ws), ACCENT)
+		for key in keys:
+			if _recipe_sel == "":
+				_recipe_sel = key
+			var k2: String = key
+			var it: Dictionary = _gs.tpl("items", recipes[key].item)
+			var mine: Dictionary = _gs.profile.crafts.get(key, {})
+			var r := _row(left, i, key == _recipe_sel, func(): _recipe_sel = k2; refresh())
+			i += 1
+			r.add_child(_icon(UISkin.item_icon(recipes[key].item)))
+			var n := _label(r, it.get("name", "?"), INK)
+			n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			if not mine.is_empty():
+				var best: String = mine.best
+				_label(r, "×%d" % int(mine.count),
+					Color(CraftRules.RANK_COLORS[best]).darkened(0.35) if best != "commun" else INK_SOFT)
+	# --- droite : la recette choisie
+	var rec: Dictionary = recipes[_recipe_sel]
+	var ws_id: String = rec.workshop
+	var ty_label := ""
+	for t in _gs.workshop_types(ws_id):
+		if t.id == rec.type:
+			ty_label = t.label
+	_section(right, _gs.tpl("workshops", ws_id).get("name", ws_id), ty_label, INK_FAINT)
+	var it2: Dictionary = _gs.tpl("items", rec.item)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 5)
+	right.add_child(head)
+	head.add_child(_big_icon(UISkin.item_icon(rec.item)))
+	var hv := VBoxContainer.new()
+	hv.add_theme_constant_override("separation", 0)
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hv)
+	_label(hv, it2.get("name", "?"), INK, 10, true)
+	_label(hv, "niveau %d  ·  cohérence %s%s" % [int(it2.get("level", 1)), rec.get("coherence", "normale"),
+		"  ·  à nommer" if rec.get("pending", false) else ""], INK_SOFT, 10, true)
+	if it2.has("equipment"):
+		_label(right, _bonus_text(rec.item), GOOD, 10, true)
+	elif it2.has("consumable"):
+		_label(right, EFFECT.get(it2.consumable.effect_type, "%d") % int(it2.consumable.amount), GOOD)
+	_label(right, it2.get("description", ""), INK_SOFT, 10, true)
+	_section(right, "Ingrédients")
+	var j := 0
+	var enough := true
+	for iid in rec.inputs:
+		var need := int(rec.inputs[iid])
+		var have: int = _gs.item_count(iid)
+		enough = enough and have >= need
+		var r2 := _row(right, j)
+		j += 1
+		r2.add_child(_icon(UISkin.item_icon(iid)))
+		var n2 := _label(r2, _gs.item_name(iid), INK)
+		n2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_label(r2, "%d / %d" % [mini(have, need), need], GOOD if have >= need else ACCENT)
+	var mine2: Dictionary = _gs.profile.crafts.get(_recipe_sel, {})
+	_label(right, ("Faite %d fois, au mieux %s." % [int(mine2.count), CraftRules.RANK_NAMES[mine2.best]]) if not mine2.is_empty()
+		else "Découverte sur ce PC, jamais faite dans cette partie.", INK_FAINT, 10, true)
+	var prepared: bool = _gs.prepared_bench.get("key", "") == _recipe_sel
+	var acts := HBoxContainer.new()
+	acts.alignment = BoxContainer.ALIGNMENT_END
+	right.add_child(acts)
+	acts.add_child(_button(" Établi prêt " if prepared else " Préparer l'établi ", func():
+		_gs.prepared_bench = {"key": _recipe_sel, "workshop": ws_id, "type": rec.type, "inputs": rec.inputs.duplicate()}
+		refresh(), prepared))
+	if prepared:
+		_label(right, "Va à l'atelier (%s) : les ingrédients que tu as seront déjà posés." %
+			_gs.tpl("workshops", ws_id).get("name", ws_id).to_lower(), GOOD, 10, true)
+	elif not enough:
+		_label(right, "Il te manque des ingrédients : ceux que tu as seront posés quand même.", INK_FAINT, 10, true)
 
 
 # --------------------------------------------------------------------------- Carte de l'étage

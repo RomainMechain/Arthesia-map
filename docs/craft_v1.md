@@ -48,5 +48,21 @@ le départ (test solo).
 - Cache des recettes et objets : `user://arthesia_craft.json`, partagé par toutes les parties du PC
   (« Nouvelle partie » ne l'efface pas).
 - Réglage `craft_ai` (vrai par défaut) : faux pour forcer les noms provisoires.
-- L'enchantement (ajouter 20-40 % du budget à un équipement) n'est pas encore ouvert.
 - Tests : `tools/godot/craft_test.gd` (sans IA), `-- --ai` pour un vrai appel.
+
+## Enchantement
+
+On pose **un équipement** (un seul exemplaire) et **au moins un réactif**, et on choisit l'orientation de
+la rune (Force, Arcane, Garde, Vivacité, Sagesse). Le niveau de la recette est celui de l'équipement.
+L'objet enchanté est une copie de l'équipement (forme de base) qui gagne 20 / 30 / 40 % du budget de
+stats de son niveau (cohérence aucune / normale / rare) sur les stats de l'orientation, garde son icône,
+et ne peut plus être ni réenchanté ni réutilisé comme ingrédient. Le rang ne baisse jamais : un
+équipement rare donne au moins un objet rare (plancher appliqué aux chances affichées). Claude le
+renomme en gardant l'objet reconnaissable (section « enchantement » de `craft_prompt.md`).
+
+## Carnet › Recettes
+
+Toutes les recettes connues sur ce PC, par atelier : l'objet, ses stats, sa description, les
+ingrédients (ce qu'on a / ce qu'il faut), combien de fois on l'a faite dans cette partie et le meilleur
+rang obtenu (`profile.crafts`). « Préparer l'établi » : à la prochaine ouverture de cet atelier, les
+ingrédients qu'on possède sont déjà posés.

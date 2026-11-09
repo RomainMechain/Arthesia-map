@@ -9,6 +9,7 @@ var _type := ""
 var _bench := {}                     # item_id -> quantité posée
 var _title: Label
 var _prof: Label
+var _prof_bar: UISkin.Bar
 var _bag: VBoxContainer
 var _types: HFlowContainer
 var _bench_box: VBoxContainer
@@ -38,10 +39,16 @@ func _ready() -> void:
 	vb.add_child(top)
 	_title = UISkin.ink(Label.new(), UISkin.INK, 20)
 	top.add_child(_title)
-	_prof = UISkin.ink(Label.new(), UISkin.INK_SOFT)
-	_prof.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_prof.size_flags_vertical = Control.SIZE_SHRINK_END
-	top.add_child(_prof)
+	# métier de l'atelier : niveau + barre d'XP
+	var pv := VBoxContainer.new()
+	pv.add_theme_constant_override("separation", 1)
+	pv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pv.size_flags_vertical = Control.SIZE_SHRINK_END
+	top.add_child(pv)
+	_prof = UISkin.ink(Label.new(), UISkin.INK)
+	pv.add_child(_prof)
+	_prof_bar = UISkin.Bar.new("bar_xp", Vector2(110, 5))
+	pv.add_child(_prof_bar)
 	var close := Button.new()
 	close.text = " Fermer "
 	close.focus_mode = Control.FOCUS_NONE
@@ -134,11 +141,20 @@ func open(id: String) -> void:
 	if _type == "" or not types.any(func(t): return t.id == _type):
 		_type = types[0].id if not types.is_empty() else ""
 	_bench = {}
+	# établi préparé depuis le Carnet › Recettes
+	var prep: Dictionary = _gs.prepared_bench
+	if prep.get("workshop", "") == id:
+		_type = prep.type
+		for iid in prep.inputs:
+			var n: int = mini(int(prep.inputs[iid]), _gs.item_count(iid))
+			if n > 0:
+				_bench[iid] = n
+		_gs.prepared_bench = {}
 	var w: Dictionary = _gs.tpl("workshops", id)
 	_info.text = w.get("description", "")
 	if id == "enchantement":
-		_info.text = "L'enchantement (ajouter des stats à un équipement) viendra plus tard."
-	elif not _gs.craft_ai.available() or not _gs.settings.get("craft_ai", true):
+		_info.text = "Pose un équipement et au moins un réactif, choisis l'orientation de la rune. Un objet ne s'enchante qu'une fois."
+	if not _gs.craft_ai.available() or not _gs.settings.get("craft_ai", true):
 		_info.text += "  Claude n'est pas joignable ici : les recettes inédites recevront un nom provisoire."
 	_gs.craft_retry_pending()
 	refresh()
@@ -194,7 +210,9 @@ func refresh() -> void:
 	var w: Dictionary = _gs.tpl("workshops", workshop)
 	var prof: String = _gs.craft_profession(workshop)
 	_title.text = w.get("name", workshop) + " "
-	_prof.text = "%s niv. %d" % [_gs.PROF_NAMES.get(prof, prof), _gs.prof_level(prof)]
+	var lv: int = _gs.prof_level(prof)
+	_prof.text = "%s · niveau %d   %d / %d XP" % [_gs.PROF_NAMES.get(prof, prof), lv, int(_gs.prof_xp(prof)), _gs.prof_to_next(lv)]
+	_prof_bar.set_value(_gs.prof_xp(prof) / _gs.prof_to_next(lv))
 	# sac : d'abord ce qui peut aller sur l'établi
 	_clear(_bag)
 	var ids: Array = _gs.profile.inventory.keys()
@@ -227,8 +245,9 @@ func refresh() -> void:
 	_clear(_bench_box)
 	if _bench.is_empty():
 		var e2 := UISkin.ink(Label.new(), UISkin.INK_FAINT)
-		e2.text = "Touche un objet de ton sac pour le poser ici (%d sortes, %d en tout au plus)." % [
-			CraftRules.MAX_INPUTS, CraftRules.MAX_TOTAL]
+		e2.text = ("Pose un équipement à enchanter puis un ou plusieurs réactifs." if workshop == "enchantement"
+			else "Touche un objet de ton sac pour le poser ici (%d sortes, %d en tout au plus)." % [
+			CraftRules.MAX_INPUTS, CraftRules.MAX_TOTAL])
 		e2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		_bench_box.add_child(e2)
 	for id in _bench:
@@ -246,7 +265,8 @@ func _update_preview() -> void:
 	elif pv.is_empty():
 		_preview.text = "Choisis quoi fabriquer, puis pose des ingrédients."
 	elif pv.known:
-		_preview.text = "Recette connue : %s (niv. %d)." % [pv.item.get("name", "?"), int(pv.level)]
+		var mine: Dictionary = _gs.profile.crafts.get(pv.key, {})
+		_preview.text = "Recette connue : %s (niv. %d)." % [pv.item.get("name", "?"), int(pv.level)] + 			("  Faite %d fois, au mieux %s." % [int(mine.count), CraftRules.RANK_NAMES[mine.best]] if not mine.is_empty() else "")
 	else:
 		_preview.text = "Recette inédite : Claude inventera l'objet (niv. %d). Elle sera ensuite toujours la même." % int(pv.level)
 	if not pv.is_empty() and not busy:
@@ -323,7 +343,7 @@ func _stats_line(item_id: String) -> String:
 	if t.has("equipment"):
 		var parts := []
 		for k in t.equipment.get("stat_bonuses", {}):
-			parts.append("+%d %s" % [int(t.equipment.stat_bonuses[k]), k.to_upper()])
+			parts.append("+%s %s" % [str(snappedf(float(t.equipment.stat_bonuses[k]), 0.1)).trim_suffix(".0").replace(".", ","), k.to_upper()])
 		line += "  (" + ", ".join(PackedStringArray(parts)) + ", niv. %d)" % int(t.equipment.get("level_required", 1))
 	elif t.has("consumable"):
 		line += "  (%s %d)" % ["soigne" if t.consumable.effect_type == "heal" else "mana +", int(t.consumable.amount)]

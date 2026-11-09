@@ -16,6 +16,7 @@ signal objective_changed
 signal title_unlocked(title_id: String)
 signal settings_changed
 signal craft_done(item_id: String, discovered: bool)
+signal skill_unlocked(skill_id: String)
 
 const SAVE_PATH := "user://arthesia_save.json"
 const SETTINGS_PATH := "user://arthesia_settings.json"
@@ -95,7 +96,7 @@ func reset_profile() -> void:
 		"alloc": {"hp": 0, "atk": 0, "def": 0, "agi": 0, "int": 0, "sag": 0},
 		"gold": 0, "inventory": {}, "kills": {}, "quests": {}, "visited": [],
 		"skills": [], "bar": ["", "", "", ""], "equipment": {},
-		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {},
+		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {},
 		"tutorial": {"step": 0, "seen": {}, "kills_at_step": 0},
 	}
 	recompute_stats(true)
@@ -307,6 +308,10 @@ const CRAFT_PROF_NAMES := {"forgeron": "Forgeron", "couturier": "Couturier", "sc
 var craft_cache := {"items": {}, "recipes": {}}
 ## Fabrication en cours : {workshop, type, inputs, key, ready_at, waiting_ai, discovered}
 var crafting := {}
+## Dernière fabrication (pour la fenêtre de résultat) : {item, prof, xp, level, level_up, discovered}
+var last_craft := {}
+## Établi préparé depuis le Carnet › Recettes : {workshop, type, inputs}, repris à l'ouverture de l'atelier
+var prepared_bench := {}
 var craft_ai: Node
 var _item_index: Array = []
 
@@ -380,6 +385,8 @@ func ingredient_block(workshop: String, item_id: String) -> String:
 	var lvl := prof_level(craft_profession(workshop))
 	if int(t.get("level", 1)) > lvl:
 		return "%s niv. %d requis" % [CRAFT_PROF_NAMES.get(craft_profession(workshop), "métier"), int(t.get("level", 1))]
+	if t.get("enchanted", false):
+		return "déjà enchanté : il ne resservira plus"
 	if int(t.get("generation", 0)) > CraftRules.MAX_GENERATION:
 		return "déjà trop transformé pour resservir"
 	return ""
@@ -387,7 +394,7 @@ func ingredient_block(workshop: String, item_id: String) -> String:
 
 ## "" si la combinaison peut être tentée, sinon la raison.
 func craft_check(workshop: String, type_id: String, inputs: Dictionary) -> String:
-	if not CraftRules.PROFESSION.has(workshop) or workshop == "enchantement":
+	if not CraftRules.PROFESSION.has(workshop):
 		return "cet atelier n'est pas encore ouvert"
 	if not crafting.is_empty():
 		return "une fabrication est déjà en cours"
@@ -407,7 +414,26 @@ func craft_check(workshop: String, type_id: String, inputs: Dictionary) -> Strin
 			return why
 	if total > CraftRules.MAX_TOTAL:
 		return "%d ingrédients au plus sur l'établi" % CraftRules.MAX_TOTAL
+	if workshop == "enchantement":
+		var eq := _enchant_target(inputs)
+		if eq == "":
+			return "pose un équipement à enchanter (un seul)"
+		if int(inputs[eq]) != 1:
+			return "un seul exemplaire de l'équipement"
+		if inputs.size() < 2:
+			return "ajoute au moins un réactif pour graver la rune"
 	return ""
+
+
+## L'équipement posé sur l'établi d'enchantement ("" s'il n'y en a pas exactement un).
+func _enchant_target(inputs: Dictionary) -> String:
+	var found := ""
+	for id in inputs:
+		if tpl("items", id).get("category") == "equipment":
+			if found != "":
+				return ""
+			found = id
+	return found
 
 
 func _inputs_info(inputs: Dictionary) -> Dictionary:
@@ -426,7 +452,11 @@ func _inputs_info(inputs: Dictionary) -> Dictionary:
 		var rk := CraftRules.rank_index(item_rank(id))
 		steps += rk
 		best = maxi(best, rk)
-	return {"level": CraftRules.result_level(levels, qtys), "value": value, "generation": gen + 1,
+	var lvl := CraftRules.result_level(levels, qtys)
+	var eq := _enchant_target(inputs)
+	if eq != "":
+		lvl = int(tpl("items", eq).get("level", 1))
+	return {"level": lvl, "value": value, "generation": gen + 1,
 		"rank_steps": steps, "best_rank": best}
 
 
@@ -439,9 +469,16 @@ func craft_preview(workshop: String, type_id: String, inputs: Dictionary) -> Dic
 	var rec: Dictionary = craft_cache.recipes.get(key, {})
 	var coh: String = rec.get("coherence", "normale")
 	var steps: int = maxi(0, prof_level(craft_profession(workshop)) - int(info.level)) + int(info.rank_steps)
+	var odds := CraftRules.rarity_odds(coh, steps, int(info.best_rank))
+	var eq := _enchant_target(inputs) if workshop == "enchantement" else ""
+	if eq != "":                                     # un enchantement ne fait jamais baisser le rang
+		var fl := CraftRules.rank_index(item_rank(eq))
+		for i in fl:
+			odds[fl] += odds[i]
+			odds[i] = 0.0
 	return {"key": key, "known": not rec.is_empty(), "level": info.level,
 		"item": tpl("items", rec.item) if not rec.is_empty() else {},
-		"coherence": coh, "odds": CraftRules.rarity_odds(coh, steps, int(info.best_rank))}
+		"coherence": coh, "odds": odds}
 
 
 ## Lance une fabrication : les ingrédients sont pris tout de suite. Recette inédite : Claude invente
@@ -493,14 +530,23 @@ func _craft_finish() -> void:
 	var pv := craft_preview(c.workshop, c.type, c.inputs)
 	var rank := CraftRules.roll_rank(pv.odds, randf())
 	var out_id := CraftRules.variant_id(base_id, rank)
+	var mine: Dictionary = profile.crafts.get(c.key, {"count": 0, "best": "commun"})
+	mine.count = int(mine.count) + 1
+	if CraftRules.rank_index(rank) > CraftRules.rank_index(str(mine.best)):
+		mine.best = rank
+	profile.crafts[c.key] = mine
 	_give(out_id, 1)
 	var e: Dictionary = profile.professions.get(prof, {"level": 1, "xp": 0.0})
-	e.xp = float(e.xp) + CraftRules.craft_xp(int(e.level), int(base.get("level", 1)), c.discovered)
+	var gained := CraftRules.craft_xp(int(e.level), int(base.get("level", 1)), c.discovered)
+	var lvl0 := int(e.level)
+	e.xp = float(e.xp) + gained
 	while e.xp >= prof_to_next(int(e.level)):
 		e.xp -= prof_to_next(int(e.level))
 		e.level = int(e.level) + 1
 		notice.emit("%s : niveau %d !" % [CRAFT_PROF_NAMES.get(prof, prof), e.level])
 	profile.professions[prof] = e
+	last_craft = {"item": out_id, "prof": prof, "xp": gained, "level": int(e.level), "level_up": int(e.level) > lvl0,
+		"discovered": c.discovered}
 	item_gained.emit(out_id, 1)
 	craft_done.emit(out_id, c.discovered)
 	_refresh_quests()
@@ -517,7 +563,8 @@ func _on_ai_finished(job: String, res: Dictionary) -> void:
 			var ai: Dictionary = res.item
 			t.name = str(ai.get("name", t.name))
 			t.description = str(ai.get("description", t.description))
-			t.icon = _pick_icon(t, str(ai.get("icon_from", "")))
+			if not t.get("enchanted", false):
+				t.icon = _pick_icon(t, str(ai.get("icon_from", "")))
 			rec.pending = false
 			_forget_item(rec.item)
 			_craft_save()
@@ -558,6 +605,15 @@ func _ai_request(workshop: String, type_id: String, inputs: Dictionary) -> Dicti
 	for k in ["slot", "stats", "effect_type", "names"]:
 		if ty.has(k):
 			td[k] = ty[k]
+	if workshop == "enchantement":
+		var eq := _enchant_target(inputs)
+		var et := tpl("items", eq)
+		td.category = "equipment"
+		return {"workshop": {"id": workshop, "name": w.get("name", workshop), "description": w.get("description", "")},
+			"type_demande": td, "objet_a_enchanter": {"id": eq, "name": et.get("name", eq),
+				"description": et.get("description", ""), "slot": et.get("equipment", {}).get("slot", ""),
+				"level": et.get("level", 1)},
+			"inputs": ins.filter(func(x): return x.id != eq), "icon_candidates": [{"id": eq, "name": et.get("name", eq)}]}
 	return {"workshop": {"id": workshop, "name": w.get("name", workshop), "description": w.get("description", "")},
 		"type_demande": td, "inputs": ins, "icon_candidates": _icon_candidates(ty)}
 
@@ -609,6 +665,9 @@ func _new_recipe(workshop: String, type_id: String, inputs: Dictionary, ai: Dict
 	while craft_cache.items.has(id) or FileAccess.file_exists("res://data/templates/items/%s.json" % id):
 		id = "craft_%s_%d" % [base, n]
 		n += 1
+	if workshop == "enchantement":
+		_new_enchant(key, id, inputs, ty, ai, coh, pending)
+		return
 	var t := {"id": id, "name": str(ai.get("name", ty.label)), "description": str(ai.get("description", "")),
 		"category": cat, "level": lvl, "base_value": CraftRules.base_value(cat, lvl, info.value),
 		"stack_size": 1 if cat == "equipment" else 20, "generation": info.generation,
@@ -631,8 +690,43 @@ func _new_recipe(workshop: String, type_id: String, inputs: Dictionary, ai: Dict
 	_craft_save()
 
 
+## Enchantement : copie de l'équipement (sa forme de base, rang commun) + 20-40 % de son budget sur
+## l'orientation choisie. L'objet enchanté ne resservira plus jamais.
+func _new_enchant(key: String, id: String, inputs: Dictionary, ty: Dictionary, ai: Dictionary, coh: String,
+		pending: bool) -> void:
+	var eq := _enchant_target(inputs)
+	var own := eq.get_slice("~", 0)
+	var base_eq := tpl("items", own)
+	var t: Dictionary = base_eq.duplicate(true)
+	t.erase("rarity")
+	var lvl := int(base_eq.get("level", 1))
+	t.id = id
+	t.name = str(ai.get("name", base_eq.get("name", own)))
+	t.description = str(ai.get("description", base_eq.get("description", "")))
+	t.generation = CraftRules.ENCHANTED_GENERATION
+	t.enchanted = true
+	t.crafted = {"workshop": "enchantement", "type": ty.id, "coherence": coh, "from": own}
+	t.equipment.stat_bonuses = CraftRules.enchant_bonuses(base_eq.equipment.get("stat_bonuses", {}), lvl, coh,
+		ai.get("stat_weights", {}), ty.get("stats", ["atk"]))
+	var reagents := 0.0
+	for rid in inputs:
+		if rid != eq:
+			reagents += float(tpl("items", rid).get("base_value", 1)) * int(inputs[rid])
+	t.base_value = int(round(float(base_eq.get("base_value", 1)) + reagents * 0.85))
+	t.icon = own if ResourceLoader.exists("res://assets/art/ui/items/%s.png" % own) else str(base_eq.get("icon", ""))
+	craft_cache.items[id] = t
+	craft_cache.recipes[key] = {"item": id, "coherence": coh, "pending": pending, "workshop": "enchantement",
+		"type": ty.id, "inputs": inputs.duplicate(), "found": Time.get_unix_time_from_system()}
+	_forget_item(id)
+	_craft_save()
+
+
 ## Nom de secours (Claude indisponible) : « Lame d'Écorce », renommée plus tard.
 func _fallback_identity(workshop: String, ty: Dictionary, inputs: Dictionary) -> Dictionary:
+	if workshop == "enchantement":
+		var own := _enchant_target(inputs).get_slice("~", 0)
+		return {"id": "%s_%s" % [own, ty.id], "name": "%s runé (%s)" % [item_name(own), str(ty.label).to_lower()],
+			"description": "Une rune encore sans nom a été gravée dans cet objet.", "coherence": "normale"}
 	var dom := ""
 	var best := -1.0
 	for id in inputs:
@@ -741,6 +835,7 @@ func check_unlocks(announce := true) -> void:
 					profile.bar[free] = path
 			if announce:
 				notice.emit("Nouvelle compétence : %s" % sk.get("name", path))
+				skill_unlocked.emit(path)
 	profile_changed.emit()
 
 
@@ -1191,7 +1286,7 @@ func _load() -> bool:
 	if not (d is Dictionary) or int(d.get("version", 0)) != SAVE_VERSION:
 		return false                              # (migrations : à ajouter ici quand la version change)
 	profile = d
-	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes"]:          # sauvegardes plus anciennes
+	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts"]:          # sauvegardes plus anciennes
 		if not profile.has(k):
 			profile[k] = [] if k in ["visited", "titles"] else {}
 	if not profile.has("title"):

@@ -27,6 +27,9 @@ const ODDS := {"aucune": [92.0, 7.0, 1.0, 0.0, 0.0], "normale": [70.0, 22.0, 7.0
 	"rare": [25.0, 35.0, 27.0, 10.0, 3.0]}
 ## Budget de stats selon la cohérence (part du budget du niveau).
 const BUDGET := {"aucune": 0.7, "normale": 1.0, "rare": 1.15}
+## Enchantement : part du budget de l'équipement ajoutée selon la cohérence (20 à 40 %).
+const ENCHANT := {"aucune": 0.2, "normale": 0.3, "rare": 0.4}
+const ENCHANTED_GENERATION := 99      # un objet enchanté ne sert plus jamais d'ingrédient
 const EFFECT := {"aucune": 0.8, "normale": 1.0, "rare": 1.2}
 ## Chaque cran (niveau de métier d'avance, rang d'un ingrédient) fait monter cette part des chances
 ## d'un rang ; au plus MAX_SHIFT.
@@ -98,6 +101,35 @@ static func value_target(category: String, level: int) -> int:
 static func base_value(category: String, level: int, inputs_value: float) -> int:
 	var t := float(value_target(category, level))
 	return maxi(1, int(round(clampf(inputs_value * 0.85, t * 0.7, t * 1.3))))
+
+
+## Bonus d'enchantement : 20-40 % du budget de l'équipement, sur les stats de l'orientation choisie,
+## ajoutés aux stats de l'objet (au moins +1).
+static func enchant_bonuses(base: Dictionary, level: int, coherence: String, weights: Dictionary, stats: Array) -> Dictionary:
+	var w := {}
+	for k in weights:
+		if k in stats and float(weights[k]) > 0.0:
+			w[k] = float(weights[k])
+	if w.is_empty():
+		w[stats[0]] = 7.0
+		if stats.size() > 1:
+			w[stats[1]] = 3.0
+	var total := 0.0
+	for k in w:
+		total += w[k]
+	var pts := equipment_points(level) * float(ENCHANT.get(coherence, 0.3))
+	var out := base.duplicate()
+	var added := false
+	var keys: Array = w.keys()
+	keys.sort_custom(func(a, b): return w[a] > w[b])
+	for k in keys:
+		var v := int(round(pts * w[k] / total / POINT[k]))
+		if v >= 1:
+			out[k] = snappedf(float(out.get(k, 0)) + v, 0.1)   # les objets du jeu ont des stats décimales (1,4)
+			added = true
+	if not added:
+		out[keys[0]] = snappedf(float(out.get(keys[0], 0)) + 1.0, 0.1)
+	return out
 
 
 ## Stats d'un équipement : répartit le budget (points équivalents) selon les poids de l'IA.
@@ -177,8 +209,9 @@ static func apply_rank(base: Dictionary, rank: String) -> Dictionary:
 	if t.has("equipment"):
 		var sb: Dictionary = t.equipment.get("stat_bonuses", {})
 		for k in sb:                               # dès « rare », au moins +1 même sur une petite stat
-			var x := int(sb[k])
-			sb[k] = maxi(int(round(float(x) * RANK_STATS[rank])), x + (1 if rank_index(rank) >= 2 else 0))
+			var x := float(sb[k])
+			var v := snappedf(x * RANK_STATS[rank], 0.1) if x != floorf(x) else roundf(x * RANK_STATS[rank])
+			sb[k] = maxf(v, x + (1.0 if rank_index(rank) >= 2 else 0.0))
 	if t.has("consumable"):
 		t.consumable.amount = int(round(float(t.consumable.amount) * RANK_EFFECT[rank]))
 	return t

@@ -12,6 +12,8 @@ extends Node2D
 @export var zone_type := "town"
 ## Hauts-fonds praticables : polygones (px) où le joueur est ralenti et fait des éclaboussures
 @export var slow_polys: Array = []
+## Image de la mini-carte (1 px par tuile), générée par tools/zone/compile_zone.py
+@export var minimap_path := ""
 
 var _splash_t := 0.0
 
@@ -57,6 +59,7 @@ func _ready() -> void:
 		gs.notice.connect(_on_notice)
 		gs.quest_changed.connect(_on_quest_changed)
 		gs.title_unlocked.connect(_on_title)
+		gs.leveled_up.connect(_on_level)
 		gs.profile_changed.connect(_refresh_markers)
 	player.defeated.connect(_on_defeated)
 	player.get_node("Camera2D").reset_smoothing.call_deferred()
@@ -75,7 +78,7 @@ func _exit_tree() -> void:
 	var gs := _game_state()
 	if gs:
 		for pair in [[gs.notice, _on_notice], [gs.quest_changed, _on_quest_changed], [gs.profile_changed, _refresh_markers],
-				[gs.title_unlocked, _on_title]]:
+				[gs.title_unlocked, _on_title], [gs.leveled_up, _on_level]]:
 			if (pair[0] as Signal).is_connected(pair[1]):
 				(pair[0] as Signal).disconnect(pair[1])
 
@@ -142,6 +145,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		if k == KEY_ESCAPE:
 			hud.toggle_menu()
+			get_viewport().set_input_as_handled()
+			return
+		if k == KEY_M:
+			hud.toggle_map()
 			get_viewport().set_input_as_handled()
 			return
 		if k == KEY_TAB:
@@ -451,10 +458,13 @@ func _on_defeated() -> void:
 
 
 ## Nouveau titre : bandeau doré et gerbe de lumière autour du joueur.
-func _on_title(tid: String) -> void:
-	var gs := _game_state()
-	toast("Nouveau titre : " + (gs.tpl("titles", tid).get("name", tid) if gs else tid), 3.5)
-	burst(player.global_position + Vector2(0, -12), Color("ffe08a"), 26, 50.0)
+func _on_title(_tid: String) -> void:
+	burst(player.global_position + Vector2(0, -12), Color("ffe08a"), 26, 50.0)   # la carte : hud.reward
+
+
+## Niveau supérieur : une gerbe de lumière dorée autour du joueur (la carte : hud.reward).
+func _on_level(_level: int) -> void:
+	burst(player.global_position + Vector2(0, -12), Color("fff4d6"), 34, 60.0)
 
 
 func _on_notice(text: String) -> void:

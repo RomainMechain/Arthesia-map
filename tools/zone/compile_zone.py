@@ -1007,9 +1007,70 @@ def render_preview(build, out):
     img.save(out)
 
 
+# --------------------------------------------------------------------------- mini-carte
+# Un pixel par tuile, couleurs de la palette : herbe, couvert forestier, chemins, eau (claire,
+# profonde, hauts-fonds), pontons, galets, pavés, champs, bâtiments. Lue par game/ui/minimap.gd.
+MINI = {
+    "herbe": (116, 168, 67), "foret": (47, 90, 58), "terre": (212, 162, 101), "paves": (196, 181, 156),
+    "champs": (245, 184, 74), "dalles": (148, 134, 114), "galets": (236, 226, 207), "eau": (82, 170, 184),
+    "profonde": (36, 78, 112), "basses": (143, 216, 208), "ponton": (168, 116, 63), "batiment": (168, 58, 64),
+    "pont": (168, 116, 63),
+}
+LAYER_COLOR = {"terre": "terre", "champs": "champs", "paves": "paves", "dalles": "dalles", "galets": "galets",
+               "eau": "eau", "profonde": "profonde", "eau_basses": "basses", "eau_marais": "basses",
+               "ponton": "ponton"}
+
+
+def render_minimap(z, out):
+    img = Image.new("RGB", (z.W, z.H), MINI["herbe"])
+    px = img.load()
+    for layer in z.layers:
+        name = layer["name"]
+        if name == "sol":
+            for tx, ty, _v, row in layer["cells"]:
+                if row == 1:
+                    px[tx, ty] = MINI["foret"]
+            continue
+        key = name.removesuffix("_plein").removesuffix("_bord")
+        col = LAYER_COLOR.get(key)
+        if not col:
+            continue
+        edge = name.endswith("_bord")
+        for c in layer["cells"]:
+            tx, ty = c[0], c[1]
+            if 0 <= tx < z.W and 0 <= ty < z.H:
+                if edge and key in ("eau", "profonde", "eau_basses", "eau_marais", "galets"):
+                    idx = c[3] * 4 + c[2]            # tuile de bord : au moins 2 coins dedans
+                    if bin(idx).count("1") < 2:
+                        continue
+                px[tx, ty] = MINI[col]
+    if z.forest:                                          # le couvert, là où l'on ne passe pas
+        for ty in range(z.H):
+            for tx in range(z.W):
+                if z.open_d[ty][tx] > z.forest["margin"] + 0.2 and not (z.lakes and z.in_lake((tx + 0.5, ty + 0.5))):
+                    px[tx, ty] = MINI["foret"]
+    for r in z.lay["regions"]:
+        if r["kind"] == "forest_wall":
+            for ty in range(z.H):
+                for tx in range(z.W):
+                    if in_poly((tx + 0.5, ty + 0.5), r["poly"]):
+                        px[tx, ty] = MINI["foret"]
+    for b in z.lay["buildings"]:
+        x, y, w, h = b["rect"]
+        col = MINI["pont"] if b["kind"] == "bridge" else MINI["batiment"]
+        for ty in range(int(y), int(y + h)):
+            for tx in range(int(x), int(x + w)):
+                if 0 <= tx < z.W and 0 <= ty < z.H:
+                    px[tx, ty] = col
+    out.parent.mkdir(parents=True, exist_ok=True)
+    img.save(out)
+
+
 def main(floor, zone_id):
     z = Zone(floor, zone_id)
     build = z.compile()
+    render_minimap(z, ROOT / ART / "minimap" / f"{zone_id}.png")
+    build["minimap"] = res(f"minimap/{zone_id}.png")
     out = ROOT / "data" / "build" / f"{zone_id}.build.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(build, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

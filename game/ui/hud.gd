@@ -33,6 +33,9 @@ var _potion: Control
 var carnet: Control
 var shop: Control
 var atelier: Control
+var reward: Control
+var minimap: Control
+var bigmap: Control
 var menu: Control
 var _menu_btn: Control
 var _guide: Control
@@ -248,7 +251,11 @@ func _ready() -> void:
 	_quest_list = VBoxContainer.new()
 	_quest_list.add_theme_constant_override("separation", 0)
 	_quest_box.add_child(_quest_list)
-	_root.add_child(_place(_quest_box, 1, 0, -69, 4, 0, 0))
+	_root.add_child(_place(_quest_box, 1, 0, -90, 4, 0, 0))
+	# mini-carte sous les boutons du coin ; la toucher ouvre la carte de la zone
+	minimap = (load("res://game/ui/minimap.gd") as GDScript).new()
+	minimap.tapped.connect(toggle_map)
+	_root.add_child(_place(minimap, 1, 0, -86, 36, 82, 58))
 
 	# --- fil d'annonces
 	_feed = VBoxContainer.new()
@@ -302,6 +309,16 @@ func _ready() -> void:
 	atelier = (load("res://game/ui/atelier.gd") as GDScript).new()
 	atelier.visible = false
 	proot.add_child(atelier)
+	bigmap = (load("res://game/ui/minimap.gd") as GDScript).new()
+	bigmap.full = true
+	bigmap.visible = false
+	bigmap.tapped.connect(toggle_map)
+	proot.add_child(_place(bigmap, 0.5, 0.5, -224, -124, 448, 248))
+	(func():
+		var z := get_parent()
+		minimap.setup(z)
+		bigmap.setup(z)
+		bigmap.visible = false).call_deferred()
 	# guidage de l'accueil : chevron / flèche vers la cible de l'objectif
 	_guide = GuideArrow.new()
 	_guide.hud = self
@@ -339,6 +356,13 @@ func _ready() -> void:
 	_hint_box.visible = false
 	_root.add_child(_hint_box)
 	# le menu passe au-dessus de tout (bandeau de zone, dialogues), sur un voile sombre
+	# récompenses (niveau, titre, compétence, craft) : au-dessus du Carnet et de l'atelier, sous le menu
+	var reward_layer := CanvasLayer.new()
+	reward_layer.layer = 18
+	add_child(reward_layer)
+	reward = (load("res://game/ui/reward_popup.gd") as GDScript).new()
+	reward.theme = UISkin.theme()
+	reward_layer.add_child(reward)
 	var top_layer := CanvasLayer.new()
 	top_layer.layer = 20
 	top_layer.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -372,7 +396,7 @@ func _exit_tree() -> void:
 
 ## Vrai si une position d'écran tombe sur un élément d'interface (le toucher ne doit pas déplacer).
 func blocks(screen_pos: Vector2) -> bool:
-	for c in [_attack, carnet, shop, atelier, menu, _carnet_btn, _menu_btn, _potion, _hint_box] + _slots:
+	for c in [_attack, carnet, shop, atelier, reward, minimap, bigmap, menu, _carnet_btn, _menu_btn, _potion, _hint_box] + _slots:
 		if c.visible and c.get_global_rect().has_point(screen_pos):
 			return true
 	return false
@@ -391,9 +415,11 @@ func open_workshop(id: String) -> void:
 
 
 func toggle_menu() -> void:
-	if shop.visible or atelier.visible:            # Échap ferme d'abord la fenêtre ouverte
+	if shop.visible or atelier.visible or bigmap.visible:   # Échap ferme d'abord la fenêtre ouverte
 		shop.visible = false
 		atelier.visible = false
+		bigmap.visible = false
+		minimap.visible = minimap.available()
 		return
 	if menu.visible:
 		menu.close()
@@ -408,9 +434,24 @@ func _on_hint(_key: String, text: String) -> void:
 	_hint_queue.append(text)
 
 
+## Carte de la zone en grand (touche M, ou toucher la mini-carte).
+func toggle_map() -> void:
+	if not minimap.available():
+		return
+	var open := not bigmap.visible
+	carnet.visible = false
+	shop.visible = false
+	atelier.visible = false
+	bigmap.visible = open
+	minimap.visible = not open
+
+
 func toggle_carnet() -> void:
 	shop.visible = false
 	atelier.visible = false
+	if bigmap.visible:
+		bigmap.visible = false
+		minimap.visible = minimap.available()
 	carnet.visible = not carnet.visible
 	if carnet.visible:
 		carnet.refresh()
@@ -497,7 +538,7 @@ func _refresh_static() -> void:
 	var worn: String = p.get("title", "")
 	_title_label.text = _gs.tpl("titles", worn).get("name", "") if worn != "" else ""
 	_xp_bar.set_value(float(p.xp) / CombatRules.xp_to_next(p.level))
-	# suivi des quêtes
+	# objectif de l'accueil (premières minutes seulement)
 	for c in _quest_list.get_children():
 		_quest_list.remove_child(c)
 		c.queue_free()
@@ -519,25 +560,7 @@ func _refresh_static() -> void:
 		ot.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		ot.custom_minimum_size = Vector2(150, 26)            # deux lignes réservées
 		_quest_list.add_child(ot)
-	for qid in p.quests:
-		var st: String = p.quests[qid].state
-		if st != "active" and st != "complete":
-			continue
-		any = true
-		var head := HBoxContainer.new()
-		head.add_theme_constant_override("separation", 2)
-		var ic := TextureRect.new()
-		ic.texture = UISkin.icon("quete")
-		ic.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-		ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		head.add_child(ic)
-		head.add_child(UISkin.ink(_mk(_gs.tpl("quests", qid).get("name", qid)), UISkin.INK))
-		_quest_list.add_child(head)
-		if st == "complete":
-			_quest_list.add_child(UISkin.ink(_mk("  » à rendre"), Color("a83a40")))
-		else:
-			for t in _gs.quest_progress_text(qid):
-				_quest_list.add_child(UISkin.ink(_mk("  · " + t), UISkin.INK_SOFT))
+	# (les quêtes en cours ne s'affichent plus à l'écran : elles sont dans le Carnet › Quêtes)
 	_quest_box.visible = any
 	# bouton d'attaque : l'arme portée (sinon le poing)
 	var w: String = _gs.equipped("weapon")

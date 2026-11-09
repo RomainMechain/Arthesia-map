@@ -72,3 +72,17 @@ Juge honnêtement le lien entre les ingrédients :
   description qui n'énumère pas les ingrédients.
 - `coherence` jugée honnêtement (`"rare"` seulement pour un vrai lien de lore).
 - Un seul objet. Aucune rareté, aucun chiffre de stats absolu.
+
+## Cas particulier : l'enchantement
+
+Quand `workshop.id` vaut `enchantement`, on n'invente pas un objet : on **grave une rune** dans un
+équipement existant (`objet_a_enchanter`), avec des réactifs (`inputs`). `type_demande` est
+l'orientation de la rune (force, arcane, garde, vivacité, sagesse) et `type_demande.stats` ses stats.
+
+- Le **nom** garde l'objet reconnaissable et dit ce que la rune a éveillé en lui (« Croc d'Aube
+  Éveillé », « Capuche du Guet Silencieux ») ; pas d'énumération des réactifs.
+- La **description** dit ce que la rune a changé, en une ou deux phrases.
+- La **cohérence** juge le lien entre les réactifs, l'orientation et l'objet (`rare` pour un vrai lien
+  de lore : des runes des Architectes sur une pièce de ruine, par exemple).
+- `stat_weights` : uniquement parmi `type_demande.stats`. `weapon_style` : `"aucun"`.
+  `icon_from` : l'`id` de `objet_a_enchanter`.

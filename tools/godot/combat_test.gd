@@ -153,6 +153,19 @@ func _run() -> void:
 	carnet._commit()
 	_check(gs.profile.unspent == pts0 - 1 and absf(gs.fighter.stat("hp") - hp_base - 25.0) < 0.01,
 		"fiche : annulation puis 1 point validé en PV (+25)")
+	# plusieurs stats d'un coup (bug : seul le premier point passait)
+	gs.profile.unspent = maxi(int(gs.profile.unspent), 4)
+	var pts1: int = gs.profile.unspent
+	var a0: int = gs.profile.alloc.atk
+	var d0: int = gs.profile.alloc.def
+	var ag0: int = gs.profile.alloc.agi
+	carnet._change("atk", 1)
+	carnet._change("atk", 1)
+	carnet._change("def", 1)
+	carnet._change("agi", 1)
+	carnet._commit()
+	_check(gs.profile.unspent == pts1 - 4 and gs.profile.alloc.atk == a0 + 2 and gs.profile.alloc.def == d0 + 1
+		and gs.profile.alloc.agi == ag0 + 1, "fiche : 2 ATK + 1 DEF + 1 AGI validés ensemble (%d points restants)" % gs.profile.unspent)
 	_z().hud.toggle_carnet()
 
 	# 5 ter) commerce et équipement

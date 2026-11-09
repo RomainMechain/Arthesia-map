@@ -39,6 +39,7 @@ func _build(b: Dictionary, floor_id: String) -> Node2D:
 	root.set("zone_name", b.name)
 	root.set("floor_id", floor_id)
 	root.set("zone_type", b.get("zone_type", "wilderness"))
+	root.set("minimap_path", b.get("minimap", ""))
 	root.set("slow_polys", b.get("slow_polys", []))
 
 	var mod := CanvasModulate.new()
