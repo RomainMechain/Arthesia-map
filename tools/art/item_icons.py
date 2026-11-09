@@ -990,6 +990,7 @@ ITEMS = {
     "lance_du_seuil": ("spear", "iron", "wood"), "larme_d_aube": ("drop", "gold", "gold"),
     "minerai_de_fer_dore": ("ore", "stone", "gold"), "mousse_lumineuse_aube": ("moss", "leaf", "stone"),
     "noyau_d_aube_intact": ("orb", "gold", "gold"), "noyau_d_automate": ("core", "bronze", "bronze"),
+    "eclat_d_aube_fige": ("shard", "gold", "gold"),
     "or_pale": ("ingot", "gold", "gold"), "pain_de_miel": ("bread", "amber", "gold"),
     "pain_du_pelerin": ("bread", "palewood", "wood"), "patte_de_lapin": ("paw", "cream", "cream"),
     "peau_d_anguille": ("pelt", "night", "night"), "pendentif_du_veilleur": ("amulet", "bronze", "gold"),

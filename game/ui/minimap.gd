@@ -95,6 +95,9 @@ func _draw() -> void:
 	for ex in (zone.get_node_or_null("Sorties").get_children() if zone and zone.get_node_or_null("Sorties") else []):
 		if ex.get_child_count() == 0:
 			continue
+		var gsx := get_node_or_null("/root/GameState")
+		if ex.get("secret") and gsx and not gsx.zone_unlocked(ex.get("target_zone")):
+			continue
 		var wp: Vector2 = ex.global_position + (ex.get_child(0) as Node2D).position
 		var mp := _to_map(wp, v).clamp(r.position + Vector2(2, 2), r.end - Vector2(3, 3))
 		_dot(mp, 3, C_EXIT)
@@ -128,11 +131,21 @@ func _draw() -> void:
 					_dot(mp2, 3, C_RUNE)
 			"ferry":
 				_dot(mp2, 2, Color("a8743f"))
+	var marked_pos = null
 	for m in get_tree().get_nodes_in_group("mobs"):
 		if m.is_alive() and not m.get("submerged"):
 			var mp3 := _to_map((m as Node2D).global_position, v)
-			if r.grow(-1).has_point(mp3):
+			if m.get("dormant") or (m.get("temper") == "ambusher" and not m.get("provoked")):
+				continue                                 # un arbre mort, un lynx dans la lumière : rien à voir
+			if m.get("marked"):
+				marked_pos = (m as Node2D).global_position
+			elif r.grow(-1).has_point(mp3):
 				_dot(mp3, 2, C_MOB)
+	# créature marquée : repère doré qui pulse, sur la mini-carte seulement (pas l'endroit exact en grand)
+	if marked_pos != null and not full:
+		var mp5 := _to_map(marked_pos, v).clamp(r.position + Vector2(3, 3), r.end - Vector2(4, 4))
+		var pulse := 0.5 + 0.5 * sin(_t * 5.0)
+		_dot(mp5, 4, Color("f5b84a").lerp(Color("fff4d6"), pulse))
 	for n in get_tree().get_nodes_in_group("interactables"):
 		var mk2: Label = n.get("marker") if n.get("leash") == null else null
 		if mk2 == null or not (mk2.text in ["!", "?"]):

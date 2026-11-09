@@ -14,8 +14,11 @@ extends Node2D
 @export var slow_polys: Array = []
 ## Image de la mini-carte (1 px par tuile), générée par tools/zone/compile_zone.py
 @export var minimap_path := ""
+## Humeur musicale imposée par la zone (« tension »…) ; vide = selon le type de zone
+@export var music_mood := ""
 
 var _splash_t := 0.0
+var rare_spawner: Node = null
 
 const TAP_RADIUS := 16.0
 
@@ -56,7 +59,12 @@ func _ready() -> void:
 		gs.arrival_from = ""
 		gs.floor_id = floor_id
 		gs.enter_zone(zone_id, zone_type)
-		Sfx.enter_zone(zone_id, zone_type)
+		Sfx.enter_zone(zone_id, zone_type, music_mood)
+	if zone_type in ["wilderness", "water", "danger", "ruins"]:   # apparitions rares : zones de combat
+		rare_spawner = (load("res://game/rare_spawner.gd") as GDScript).new()
+		rare_spawner.name = "ApparitionsRares"
+		rare_spawner.zone = self
+		add_child(rare_spawner)
 		gs.notice.connect(_on_notice)
 		gs.quest_changed.connect(_on_quest_changed)
 		gs.title_unlocked.connect(_on_title)
@@ -440,6 +448,10 @@ func _refresh_markers() -> void:
 func _on_exit(target: String, label: String) -> void:
 	var gs := _game_state()
 	if gs and not gs.zone_unlocked(target):                # zone verrouillée : son indice
+		var ex_node := get_node_or_null("Sorties")
+		for ex in (ex_node.get_children() if ex_node else []):
+			if ex.get("target_zone") == target and ex.get("secret"):
+				return                                     # sortie cachée : rien ne la trahit
 		var hint: String = gs.zone_info(target).get("hint", "")
 		toast(label + " — verrouillée", 2.5)
 		if hud and hint != "":

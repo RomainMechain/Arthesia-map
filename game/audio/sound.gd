@@ -17,11 +17,11 @@ const FADE := 2.0
 const MOOD := {"town": "calme", "camp": "calme", "wilderness": "calme", "water": "calme", "passage": "calme",
 	"danger": "tension", "ruins": "tension", "boss": "boss"}
 ## Zone -> ambiance (sinon selon le type)
-const AMBIENCE := {"village_aube": "village", "sentier_lisiere": "foret", "rive_paisible": "rive"}
+const AMBIENCE := {"village_aube": "village", "sentier_lisiere": "foret", "rive_paisible": "rive",
+	"foret_ancienne": "foret_profonde"}
 const AMBIENCE_BY_TYPE := {"town": "village", "camp": "village", "wilderness": "foret", "water": "rive"}
 
-var _pool: Array[AudioStreamPlayer] = []
-var _next := 0
+var _players := {}                                 # nom du bruitage -> son lecteur
 var _cache := {}
 var _last_play := {}
 var _music: Array[AudioStreamPlayer] = []          # deux lecteurs pour les fondus
@@ -43,11 +43,6 @@ func _ready() -> void:
 			var i := AudioServer.bus_count - 1
 			AudioServer.set_bus_name(i, b)
 			AudioServer.set_bus_send(i, "Master")
-	for i in 10:
-		var p := AudioStreamPlayer.new()
-		p.bus = "Effets"
-		add_child(p)
-		_pool.append(p)
 	for i in 2:
 		var m := AudioStreamPlayer.new()
 		m.bus = "Musique"
@@ -99,25 +94,32 @@ func _stream(path: String) -> AudioStream:
 ## Joue un bruitage. `pitch_var` : variation aléatoire de hauteur (évite la répétition mécanique).
 ## `min_gap` : deux mêmes sons ne se chevauchent pas plus souvent que ça (pas, impacts en série).
 func play(name: String, volume_db := 0.0, pitch_var := 0.06, min_gap := 0.03) -> void:
-	var st := _stream(SFX_DIR % name)
-	if st == null:
-		return
 	var now := Time.get_ticks_msec() / 1000.0
 	if now - float(_last_play.get(name, -10.0)) < min_gap:
 		return
+	var p: AudioStreamPlayer = _players.get(name)
+	if p == null:
+		var st := _stream(SFX_DIR % name)
+		if st == null:
+			return
+		# un lecteur par bruitage, son flux ne change jamais (changer le flux d'un lecteur qui joue
+		# encore fait planter le moteur) ; plusieurs voix à la fois pour les sons rapprochés
+		p = AudioStreamPlayer.new()
+		p.bus = "Effets"
+		p.stream = st
+		p.max_polyphony = 4
+		add_child(p)
+		_players[name] = p
 	_last_play[name] = now
-	var p: AudioStreamPlayer = _pool[_next]
-	_next = (_next + 1) % _pool.size()
-	p.stream = st
 	p.volume_db = volume_db
 	p.pitch_scale = 1.0 + randf_range(-pitch_var, pitch_var)
 	p.play()
 
 
 # --------------------------------------------------------------------------- zone : ambiance + musique
-func enter_zone(zone_id: String, zone_type: String) -> void:
+func enter_zone(zone_id: String, zone_type: String, mood := "") -> void:
 	_zone_id = zone_id
-	_zone_mood = MOOD.get(zone_type, "calme")
+	_zone_mood = mood if mood != "" else MOOD.get(zone_type, "calme")
 	_mood_stack.clear()
 	set_ambience(AMBIENCE.get(zone_id, AMBIENCE_BY_TYPE.get(zone_type, "")))
 	_update_music()

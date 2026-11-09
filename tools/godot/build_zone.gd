@@ -40,6 +40,7 @@ func _build(b: Dictionary, floor_id: String) -> Node2D:
 	root.set("floor_id", floor_id)
 	root.set("zone_type", b.get("zone_type", "wilderness"))
 	root.set("minimap_path", b.get("minimap", ""))
+	root.set("music_mood", b.get("music_mood", ""))
 	root.set("slow_polys", b.get("slow_polys", []))
 
 	var mod := CanvasModulate.new()
@@ -120,6 +121,7 @@ func _build(b: Dictionary, floor_id: String) -> Node2D:
 		a.set("target_zone", e.to)
 		a.set("label", e.label)
 		a.set("arrival", Vector2(e.arrival[0], e.arrival[1]))
+		a.set("secret", bool(e.get("hidden", false)))
 		var r: Array = e.rect
 		a.add_child(_rect_shape(Rect2(r[0], r[1], max(r[2], T), max(r[3], T))))
 		exits.add_child(a)
@@ -201,6 +203,9 @@ func _interactable(it: Dictionary) -> Node2D:
 		n.set("temper", it.mob.temper)
 		n.set("respawn_seconds", float(it.mob.respawn))
 		n.set("aggro", float(it.mob.get("aggro", 64)))
+		var cond = it.mob.get("spawn", {}).get("condition")
+		if cond is Dictionary:
+			n.set("spawn_condition", cond)
 	else:
 		n.set_script(load("res://game/interactable.gd"))
 	if it.has("resource"):

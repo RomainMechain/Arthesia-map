@@ -1,0 +1,10 @@
+{
+  "id": "eclat_d_aube_fige",
+  "name": "Éclat d'Aube Figée",
+  "category": "material",
+  "level": 1,
+  "rarity": "epique",
+  "base_value": 30,
+  "stack_size": 10,
+  "description": "Un éclat de lumière solide, tiède, tombé d'une bête que l'aube avait marquée. Il ne s'éteint pas. Les artisans disent qu'il porte chance à tout ce qu'il touche."
+}

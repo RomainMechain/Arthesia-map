@@ -14,10 +14,10 @@ static func play(name: String, volume_db := 0.0, pitch_var := 0.06, min_gap := 0
 		s.play(name, volume_db, pitch_var, min_gap)
 
 
-static func enter_zone(zone_id: String, zone_type: String) -> void:
+static func enter_zone(zone_id: String, zone_type: String, mood := "") -> void:
 	var s := _s()
 	if s:
-		s.enter_zone(zone_id, zone_type)
+		s.enter_zone(zone_id, zone_type, mood)
 
 
 static func title_screen() -> void:

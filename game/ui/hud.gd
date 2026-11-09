@@ -86,7 +86,7 @@ class SkillSlot extends Control:
 			var isz := icon.get_size() * icon_scale
 			draw_texture_rect(icon, Rect2(c - isz / 2.0, isz), false,
 				Color(0.6, 0.55, 0.7, 0.35) if ghost else (Color.WHITE if usable else Color(0.55, 0.55, 0.75, 0.8)))
-		if cd > 0.02:                                    # voile circulaire, comme une ombre qui tourne
+		if cd > 0.04 and (size.x / 2.0 - 4.0) * TAU * cd > 4.0:   # voile circulaire (jamais une forme trop fine)
 			var r := size.x / 2.0 - 4.0
 			var pts := PackedVector2Array([c])
 			var a0 := -PI / 2.0

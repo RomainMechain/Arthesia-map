@@ -180,3 +180,18 @@ ainsi aux 40-50 % de puissance tirés de l'équipement que vise le document d'é
 - **Hauts-fonds** : eau praticable, vitesse ×0,65, éclaboussures.
 - **Pêche** : récolte classique (barre de récolte, 4 s), sur 3 postes : anse, embouchure, ponton de l'îlot.
 - **Découvertes** : une note dans le Carnet (Quêtes › Notes) et 5 % de l'XP du niveau, une seule fois.
+
+## 11. Forêt des Anciens : nouveaux tempéraments, apparitions conditionnelles et rares
+
+- **Charger** (sanglier des fougères) : ses coups « charge » (`charge: true`) le projettent le long de la
+  ligne annoncée au sol (72 px, 0,8 s d'annonce) ; on l'évite en s'écartant sur le côté.
+- **Ambusher** (lynx à robe claire) : presque invisible (opacité 16 %) tant qu'on n'est pas à ~50 px,
+  ni sur la mini-carte ; il se révèle et bondit presque sans temps d'arrêt.
+- **Guardian** (ours moussu) : lent (×0,6), étreinte annoncée en cercle (1 s).
+- **Dormant** (Veilleur d'écorce, élite) : un chêne mort parmi d'autres jusqu'à ce qu'on approche à
+  40 px (ou qu'on le frappe) ; racines en cercle (1,5 s d'annonce) et pulsation runique (0,9 s).
+- **Apparition conditionnelle** (`spawn.condition` des données de zone) : la bête n'existe pas tant que
+  la condition est fausse (vérifiée toutes les 2 s). Le Veilleur : 40 sangliers abattus.
+- **Créatures marquées par l'aube** (apparitions rares, `game/rare_spawner.gd`) : toutes les 15-25 min
+  passées dans une zone de combat ; PV ×2,5, ATK ×1,4, DEF ×1,2, niv. +1, rang élite ; Éclat d'Aube
+  Figée (épique) + butin double ; s'évanouit après 5 min si personne ne la trouve. Titres à 3 et 10.

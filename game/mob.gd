@@ -3,7 +3,13 @@ extends Node2D
 ## Tempérament (déduit de la description, docs/combat_v1.md) :
 ##   calm      : fuit le joueur, ne riposte que si on la frappe (lapin, oiseau) ;
 ##   predator  : attaque quand on entre dans son rayon (loup) ;
-##   skittish  : approche, mord, puis s'enfuit un moment (renardeau).
+##   skittish  : approche, mord, puis s'enfuit un moment (renardeau) ;
+##   sentinel  : immobile à son poste (héron) ; swimmer : plonge et ressurgit (anguille) ;
+##   charger   : fonce en ligne droite sur ses coups « charge » (sanglier) ;
+##   ambusher  : presque invisible dans la lumière tant qu'on n'est pas tout près (lynx) ;
+##   guardian  : lent, ne quitte pas son chemin (ours) ;
+##   dormant   : passe pour un arbre mort jusqu'à ce qu'on l'approche (Veilleur d'écorce).
+## `spawn_condition` : la bête n'apparaît qu'une fois la condition remplie (ex. 40 sangliers abattus).
 ## IA de combat (combat_engine.monster_tick) : parmi les coups prêts, tirage pondéré par `weight`.
 ## Un coup avec telegraph_seconds > 0 s'annonce au sol ; sortir de la zone l'évite.
 
@@ -17,6 +23,8 @@ extends Node2D
 @export var respawn_seconds := 45.0
 ## Rayon où une bête prédatrice (ou sentinelle, ou nageuse) repère le joueur
 @export var aggro := 64.0
+## Condition d'apparition (data/zones : spawn.condition) ; vide = toujours là
+@export var spawn_condition: Dictionary = {}
 
 const AGGRO_RADIUS := 64.0
 const NOTICE_DIST := 56.0
@@ -32,6 +40,12 @@ var provoked := false
 ## Nageuse sous l'eau : invisible et intouchable pendant la plongée
 var submerged := false
 var _boss_music := false
+## Créature marquée par l'aube (apparition rare, game/rare_spawner.gd) : plus forte, dorée, ne revient pas
+var marked := false
+var _glow_t := 0.0
+var dormant := false                # endormie (Veilleur) : un arbre mort, jusqu'au réveil
+var _waiting := false               # pas encore apparue (condition non remplie)
+var _cond_t := 0.0
 
 var _home := Vector2.ZERO
 var _goal := Vector2.ZERO
@@ -75,11 +89,58 @@ func _ready() -> void:
 	var m := get_node_or_null("Marqueur")
 	if m:
 		m.visible = false
+	var old_alert := get_node_or_null("Alerte")
+	if old_alert:                                  # copie d'une bête (créature marquée) : on repart de zéro
+		old_alert.free()
 	_alert = Sprite2D.new()                        # « ! » rouge : la bête t'a pris pour cible
+	_alert.name = "Alerte"
 	_alert.texture = UISkin.tex("marker_alert")
 	_alert.position = Vector2(0, (sprite.offset.y if sprite else -16.0) - 8.0)
 	_alert.visible = false
 	add_child(_alert)
+	if temper == "dormant":
+		dormant = true
+	if not spawn_condition.is_empty() and not marked:
+		_waiting = true
+		visible = false
+		remove_from_group("mobs")
+
+
+## Devient une créature marquée par l'aube : PV ×2,5, attaque ×1,4, défense ×1,2, un niveau de plus,
+## rang « élite » (plus d'XP), plus grande, un halo doré et des grains de lumière. Elle chasse.
+func make_marked() -> void:
+	marked = true
+	var st: Dictionary = fighter.base.duplicate()
+	st.hp = float(st.get("hp", 50)) * 2.5
+	st.atk = float(st.get("atk", 10)) * 1.4
+	st.def = float(st.get("def", 5)) * 1.2
+	fighter.role = "elite"
+	fighter.setup(st, fighter.level + 1)
+	fighter.display_name = "%s (aube figée)" % tpl.get("name", display_name)
+	if name_label:
+		name_label.text = "%s  niv. %d" % [fighter.display_name, fighter.level]
+	if temper == "calm" or temper == "skittish":
+		temper = "predator"
+	aggro = maxf(aggro, 70.0)
+	leash = maxf(leash, 64.0)
+	scale = Vector2(1.2, 1.2)
+	var p := CPUParticles2D.new()
+	p.name = "LueurMarque"
+	p.amount = 10
+	p.lifetime = 1.4
+	p.position = Vector2(0, -10)
+	p.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	p.emission_rect_extents = Vector2(9, 7)
+	p.direction = Vector2(0, -1)
+	p.spread = 30.0
+	p.gravity = Vector2.ZERO
+	p.initial_velocity_min = 5.0
+	p.initial_velocity_max = 11.0
+	var g := Gradient.new()
+	g.set_color(0, Color(1.0, 0.9, 0.55, 1.0))
+	g.set_color(1, Color(1.0, 0.9, 0.55, 0.0))
+	p.color_ramp = g
+	add_child(p)
 
 
 func is_alive() -> bool:
@@ -97,6 +158,18 @@ func _player_ok() -> bool:
 func _process(delta: float) -> void:
 	if state == "dead":
 		return
+	if _waiting:                                     # apparition conditionnelle : vérifiée toutes les 2 s
+		_cond_t -= delta
+		if _cond_t <= 0.0:
+			_cond_t = 2.0
+			var gsw := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+			if gsw and gsw.eval_condition(spawn_condition):
+				_waiting = false
+				visible = true
+				add_to_group("mobs")
+				modulate.a = 0.0
+				create_tween().tween_property(self, "modulate:a", 1.0, 1.5)
+		return
 	_t += delta
 	fighter.tick(delta)
 	var to_p := (_player.global_position - global_position) if is_instance_valid(_player) else Vector2.INF
@@ -111,10 +184,19 @@ func _process(delta: float) -> void:
 		_alert.position.y = (sprite.offset.y if sprite else -16.0) - 8.0 - roundf(minf(k * 12.0, 2.0))
 		_alert.visible = _alert_t > 0.0
 
+	if dormant:                                      # un chêne mort parmi d'autres… jusqu'à ce qu'on approche
+		if _player_ok() and dist < aggro:
+			_wake()
+		elif sprite:
+			sprite.frame = 1 if fmod(_t, 7.0) > 6.6 else 0
+			return
+	if temper == "ambusher" and sprite:              # le lynx se fond dans la lumière
+		var target_a := 1.0 if provoked or dist < aggro * 1.15 else 0.16
+		sprite.modulate.a = move_toward(sprite.modulate.a, target_a, delta * (4.0 if target_a > 0.5 else 0.8))
 	# déclencheurs d'engagement
 	if not provoked and _player_ok():
-		if temper in ["predator", "sentinel", "swimmer"] and dist < aggro:
-			_engage()
+		if temper in ["predator", "sentinel", "swimmer", "charger", "ambusher", "guardian"] and dist < aggro:
+			_engage(0.15 if temper == "ambusher" else ALERT_PAUSE)
 		elif temper == "skittish" and dist < NOTICE_DIST:
 			_engage()
 	if provoked and (not _player_ok() or dist > GIVE_UP_DIST or position.distance_to(_home) > MAX_CHASE_FROM_HOME):
@@ -187,6 +269,26 @@ func _engage(pause := ALERT_PAUSE) -> void:
 			fighter.start_cooldown(mv.id, pause + (randf_range(0.4, 0.9) if mv.get("weight", 1) > 1 else float(mv.cooldown_seconds) * 0.5))
 
 
+## Le Veilleur se réveille : l'écorce craque, les lignes cyan s'allument, il se déplie.
+func _wake() -> void:
+	dormant = false
+	temper = "predator"
+	Sfx.play("telegraph")
+	var z := _zone()
+	if z:
+		z.burst(global_position + Vector2(0, -20), Color("948672"), 16, 30.0, true, Vector2(10, 14))
+		z.burst(global_position + Vector2(0, -24), Color("5ae8e0"), 8, 18.0, true, Vector2(4, 8))
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	if gs:
+		gs.notice.emit("Le chêne mort se déplie dans un craquement de bois sec…")
+	_engage(0.9)
+
+
+## Vitesse selon le tempérament (l'ours gardien est lent).
+func _speed_k() -> float:
+	return 0.6 if temper == "guardian" else 1.0
+
+
 func _end_boss_music() -> void:
 	if _boss_music:
 		_boss_music = false
@@ -215,7 +317,7 @@ func _chase(to_p: Vector2, dist: float, delta: float) -> bool:
 	if temper == "sentinel" and dist > reach:
 		return false                                  # le héron ne quitte pas son poste
 	if dist > reach:
-		return _walk_to(_player.global_position - to_p.normalized() * (reach * 0.6), SPEED * 2.3, delta)
+		return _walk_to(_player.global_position - to_p.normalized() * (reach * 0.6), SPEED * 2.3 * _speed_k(), delta)
 	if sprite and absf(to_p.x) > 1.0:
 		sprite.flip_h = to_p.x < 0.0
 	if not mv.is_empty():
@@ -294,6 +396,16 @@ func _resolve_pending() -> void:
 			zz.burst(global_position, Color("d4f4ec"), 10, 30.0, true, Vector2(6, 1))
 	if _pending.has("node") and is_instance_valid(_pending.node):
 		_pending.node.queue_free()
+	if mv.get("charge", false) and state != "dive":
+		var reach := float(CombatRules.area_of(mv).get("range", 60)) * 0.85
+		var to: Vector2 = global_position + _pending.dir * reach
+		var local_to: Vector2 = get_parent().to_local(to) if get_parent() else to
+		local_to = _home + (local_to - _home).limit_length(leash * 2.5)
+		create_tween().tween_property(self, "position", local_to, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		Sfx.play("swing_heavy", -2.0)
+		var zc := _zone()
+		if zc:
+			zc.burst(global_position, Color("d4a265"), 8, 20.0, false, Vector2(5, 1))
 	var z := _zone()
 	var area: Dictionary = _pending.get("area", CombatRules.area_of(mv))
 	if z:
@@ -340,6 +452,9 @@ func react(r: Dictionary, from: Vector2) -> void:
 	if not fighter.alive():
 		_die()
 		return
+	if dormant:
+		_wake()
+		return
 	_engage(0.15)
 
 
@@ -354,9 +469,15 @@ func _die() -> void:
 	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
 	if gs:
 		gs.on_kill(template_id, fighter.level, fighter.role)
+		if marked:
+			gs.on_marked_kill()
 	var z := _zone()
 	if z:
-		z.drop_loot(global_position + Vector2(0, -6), _roll_loot())
+		var loot := _roll_loot()
+		if marked:                                   # l'éclat d'aube figée, et le butin en double
+			loot = loot + _roll_loot()
+			loot.append(["eclat_d_aube_fige", 1])
+		z.drop_loot(global_position + Vector2(0, -6), loot)
 	# la lumière de l'aube les quitte : figé blanc, puis grains dorés qui montent
 	if _mat:
 		_mat.set_shader_parameter("flash", 1.0)
@@ -373,6 +494,9 @@ func _die() -> void:
 		visible = false
 		if _mat:
 			_mat.set_shader_parameter("flash", 0.0))
+	if marked:                                       # une créature marquée ne revient pas
+		get_tree().create_timer(1.0).timeout.connect(queue_free)
+		return
 	get_tree().create_timer(respawn_seconds).timeout.connect(_respawn)
 
 
@@ -447,6 +571,11 @@ func _clamp_home(p: Vector2) -> Vector2:
 func _animate(delta: float, moving: bool) -> void:
 	if not sprite:
 		return
+	if marked and state != "dead":
+		_glow_t += delta
+		var k := 0.5 + 0.5 * sin(_glow_t * 3.0)
+		sprite.self_modulate = Color(1.0, 1.0, 1.0).lerp(Color(1.0, 0.86, 0.45), 0.25 + 0.35 * k)
+		queue_redraw()
 	_anim_t += delta * (9.0 if moving else 2.5)
 	# planche : 0-1 repos (1 = clignement, oreille, note figée), 2-5 déplacement, 6 élan, 7 frappe
 	var has_attack := sprite.hframes >= 8
@@ -473,6 +602,12 @@ func _flash() -> void:
 
 
 func _draw() -> void:
+	if marked and state != "dead":                   # halo d'aube au sol, qui respire
+		var k := 0.5 + 0.5 * sin(_glow_t * 3.0)
+		draw_set_transform(Vector2(0, -1), 0.0, Vector2(1.0, 0.45))
+		for i in 3:
+			draw_circle(Vector2.ZERO, 16.0 + i * 5.0 + k * 3.0, Color(1.0, 0.85, 0.4, (0.34 - i * 0.09) * (0.6 + 0.4 * k)))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	# barre de PV au-dessus des bêtes blessées
 	if state == "dead" or fighter.hp >= fighter.max_hp() or not sprite:
 		return

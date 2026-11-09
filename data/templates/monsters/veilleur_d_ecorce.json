@@ -20,7 +20,12 @@
       "power": 0.25,
       "weight": 3,
       "telegraph_seconds": 0,
-      "avoidable_by": null
+      "avoidable_by": null,
+      "area": {
+        "shape": "arc",
+        "range": 34,
+        "angle": 120
+      }
     },
     {
       "id": "racines_etouffantes",
@@ -29,7 +34,11 @@
       "power": 1.265,
       "weight": 1,
       "telegraph_seconds": 1.5,
-      "avoidable_by": "esquive"
+      "avoidable_by": "esquive",
+      "area": {
+        "shape": "circle",
+        "radius": 40
+      }
     },
     {
       "id": "pulsation_runique",
@@ -37,8 +46,12 @@
       "cooldown_seconds": 5,
       "power": 0.375,
       "weight": 1,
-      "telegraph_seconds": 0,
-      "avoidable_by": null
+      "telegraph_seconds": 0.9,
+      "avoidable_by": "esquive",
+      "area": {
+        "shape": "circle",
+        "radius": 56
+      }
     }
   ],
   "phases": null,

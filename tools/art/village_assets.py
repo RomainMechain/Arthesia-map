@@ -575,6 +575,14 @@ NPC_KEYS = {
                           "P": P["earth3"], "p": P["earth4"]},
     "maelis_passeuse": {"H": P["earth4"], "L": P["earth3"], "h": P["outline"],
                         "T": P["water3"], "t": P["water4"], "B": P["red1"], "G": P["red0"]},
+    # Forêt des Anciens : Isarn (bûcheron taciturne, chemise de laine rouge sombre, barbe grise),
+    # Vesna (traqueuse, cuir couleur de feuilles mortes, cheveux roux)
+    "isarn_bucheron": {"H": P["stone2"], "L": P["stone1"], "h": P["stone3"],
+                       "T": P["red1"], "t": P["wine"], "B": P["earth4"], "G": P["stone1"],
+                       "P": P["earth4"], "p": P["outline"]},
+    "vesna_traqueuse": {"H": P["red0"], "L": P["sun3"], "h": P["red1"],
+                        "T": P["earth2"], "t": P["earth3"], "B": P["earth4"], "G": P["sun3"],
+                        "P": P["earth3"], "p": P["earth4"]},
 }
 
 
@@ -651,6 +659,8 @@ def main():
     player_sheet.main()
     import rive_assets                                           # Rive Paisible
     rive_assets.main()
+    import foret_assets                                          # Forêt des Anciens
+    foret_assets.main()
     import lisiere_assets                                        # Sentier de la Lisière
     lisiere_assets.main(standalone=False)
     sb.write_manifest()

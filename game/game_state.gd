@@ -97,7 +97,7 @@ func reset_profile() -> void:
 		"alloc": {"hp": 0, "atk": 0, "def": 0, "agi": 0, "int": 0, "sag": 0},
 		"gold": 0, "inventory": {}, "kills": {}, "quests": {}, "visited": [],
 		"skills": [], "bar": ["", "", "", ""], "equipment": {},
-		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {},
+		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {},
 		"tutorial": {"step": 0, "seen": {}, "kills_at_step": 0},
 	}
 	recompute_stats(true)
@@ -1044,7 +1044,8 @@ func objective() -> Dictionary:
 func _total_kills() -> int:
 	var n := 0
 	for k in profile.kills:
-		n += int(profile.kills[k])
+		if k != "marque":                          # compteur des créatures marquées, déjà compté par espèce
+			n += int(profile.kills[k])
 	return n
 
 
@@ -1161,6 +1162,14 @@ func eval_condition(c) -> bool:
 
 
 # --------------------------------------------------------------------------- combat
+## Une créature marquée par l'aube vaincue : compteur des titres de chasse (kill_count « marque »).
+func on_marked_kill() -> void:
+	profile.kills["marque"] = int(profile.kills.get("marque", 0)) + 1
+	notice.emit("La lumière figée se libère : Éclat d'Aube Figée !")
+	check_unlocks()
+	save()
+
+
 func on_kill(monster_id: String, level: int, role: String) -> void:
 	profile.kills[monster_id] = int(profile.kills.get(monster_id, 0)) + 1
 	gain_xp(CombatRules.monster_xp(level, role, profile.level))
@@ -1294,7 +1303,7 @@ func _load() -> bool:
 	if not (d is Dictionary) or int(d.get("version", 0)) != SAVE_VERSION:
 		return false                              # (migrations : à ajouter ici quand la version change)
 	profile = d
-	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts"]:          # sauvegardes plus anciennes
+	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next"]:          # sauvegardes plus anciennes
 		if not profile.has(k):
 			profile[k] = [] if k in ["visited", "titles"] else {}
 	if not profile.has("title"):

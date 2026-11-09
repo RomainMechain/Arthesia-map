@@ -556,7 +556,180 @@ def anguille():
     return strip(make, 0, custom_poses=True)
 
 
+# --------------------------------------------------------------------------- Forêt des Anciens
+def sanglier():
+    """Sanglier des fougères : massif, pelage roussi, hure basse, défenses claires, crinière hérissée.
+    Élan : il baisse la tête et gratte le sol ; frappe : la charge, tête en avant."""
+    fur = (P["sun3"], P["red1"], P["earth3"], P["earth4"])
+    mane = (P["earth3"], P["earth4"], P["earth4"], O)
+    far = (P["earth3"], P["earth4"], P["earth4"], O)
+    W, H = 36, 24
+
+    def make(i):
+        b = Beast(W, H, oy=1)
+        walk = i >= 2
+        ph = (i - 2) % 4 if walk else 0
+        y = (0, -1, 0, -1)[ph] if walk else 0
+        sw = (2, 0, -2, 0)[ph] if walk else 0
+        b.leg((9, 14), (9 - sw, 21), far, dy=y)
+        b.leg((23, 14), (24 + sw, 21), far, dy=y)
+        b.poly([(4, 10), (2, 8), (1, 10), (3, 12)], fur, dy=y)                       # queue
+        # corps massif, dos bombé, ventre bas
+        b.poly([(4, 11), (7, 6), (14, 3), (22, 3), (27, 6), (28, 12), (26, 16), (8, 16), (4, 14)], fur, dy=y)
+        b.poly([(9, 4), (13, 1), (19, 1), (24, 3), (18, 4), (12, 5)], mane, dy=y)   # crinière hérissée
+        b.leg((10, 14), (10 + sw, 21), fur, dy=y)
+        b.leg((24, 14), (24 - sw, 21), fur, dy=y)
+        # hure : tête basse et longue, groin
+        b.poly([(25, 6), (30, 7), (34, 11), (35, 14), (32, 15), (28, 14), (25, 11)], fur, dy=y)
+        b.poly([(26, 4), (27, 1), (29, 5)], fur, dy=y)                               # oreille
+        b.dot(34, 13 + y, P["earth4"])                                               # groin
+        b.dot(35, 13 + y, P["earth4"])
+        b.dot(29, 9 + y, O)                                                          # oeil
+        for x, yy in ((31, 14), (32, 13), (33, 12)):
+            b.dot(x, yy + y, P["stone0"])                                            # défense
+        for x in range(10, 24, 3):
+            b.dot(x, 6 + y, P["sun2"])                                               # reflet roussi
+        return b.render()
+    return strip(make, 12)
+
+
+def lynx():
+    """Lynx à robe claire : longues pattes, pelage presque blanc tacheté, pinceaux noirs aux oreilles,
+    queue courte. Il se fond dans les rais de lumière ; élan : ramassé ; frappe : bond, pattes en avant."""
+    fur = (P["stone0"], P["stone0"], P["stone1"], P["stone2"])
+    far = (P["stone1"], P["stone2"], P["stone2"], P["stone3"])
+    W, H = 32, 22
+
+    def make(i):
+        b = Beast(W, H, oy=1)
+        walk = i >= 2
+        ph = (i - 2) % 4 if walk else 0
+        y = (0, -1, 0, -1)[ph] if walk else 0
+        sw = (3, 0, -3, 0)[ph] if walk else 0
+        b.leg((9, 12), (8 - sw, 20), far, dy=y)
+        b.leg((20, 12), (21 + sw, 20), far, dy=y)
+        b.poly([(6, 8), (3, 6), (2, 8), (5, 10)], fur, dy=y)                          # queue courte
+        b.poly([(5, 9), (9, 6), (18, 6), (22, 7), (23, 11), (20, 13), (9, 13), (5, 12)], fur, dy=y)
+        b.leg((10, 12), (10 + sw, 20), fur, dy=y)
+        b.leg((21, 12), (21 - sw, 20), fur, dy=y)
+        b.poly([(21, 4), (24, 2), (28, 3), (30, 6), (28, 9), (23, 9), (21, 7)], fur, dy=y)   # tête
+        b.poly([(22, 3), (22, -1), (24, 2)], fur, dy=y)                              # oreilles
+        b.poly([(25, 2), (27, -1), (27, 3)], fur, dy=y)
+        for x, yy in ((22, -1), (27, -1)):
+            b.dot(x, yy + y, O)                                                       # pinceaux noirs
+        b.dot(26, 5 + y, P["sun1"])                                                  # oeil pâle
+        b.dot(30, 6 + y, O)
+        for x, yy in ((10, 8), (14, 10), (17, 8), (12, 11), (19, 10)):
+            b.dot(x, yy + y, P["stone2"])                                            # taches
+        b.dot(2, 7 + y, O)
+        return b.render()
+    return strip(make, 10)
+
+
+def ours():
+    """Ours moussu : énorme, lent, la mousse a poussé sur son dos ; vieux. Élan : il se dresse ;
+    frappe : il retombe, pattes en avant (l'étreinte)."""
+    fur = (P["earth2"], P["earth3"], P["earth3"], P["earth4"])
+    moss = (P["leaf1"], P["leaf2"], P["leaf3"], P["leaf4"])
+    far = (P["earth3"], P["earth4"], P["earth4"], O)
+    W, H = 44, 32
+
+    def make(i):
+        b = Beast(W, H)
+        walk = 2 <= i <= 5
+        ph = (i - 2) % 4 if walk else 0
+        y = (0, -1, 0, -1)[ph] if walk else (0 if i < 6 else (-5 if i == 6 else 1))
+        sw = (2, 0, -2, 0)[ph] if walk else 0
+        rear = i == 6
+        b.leg((10, 22), (9 - sw, 30), far, w=4, dy=y if not rear else 0)
+        b.leg((28, 22), (29 + sw, 30), far, w=4, dy=y if not rear else 0)
+        if rear:                                           # dressé sur les pattes arrière
+            b.poly([(10, 26), (12, 12), (18, 4), (26, 3), (30, 8), (30, 22), (26, 28), (12, 28)], fur)
+            b.poly([(13, 12), (18, 6), (25, 5), (24, 10), (16, 14)], moss)
+            b.poly([(26, 3), (29, 0), (34, 1), (36, 5), (33, 8), (28, 8)], fur)
+            b.leg((28, 10), (36, 6), fur, w=3)
+            hx, hy = 32, 3
+        else:
+            b.poly([(6, 18), (9, 10), (18, 6), (30, 6), (36, 11), (37, 20), (33, 25), (10, 25), (6, 22)], fur, dy=y)
+            b.poly([(10, 10), (17, 7), (29, 7), (31, 10), (22, 11), (12, 12)], moss, dy=y)   # dos moussu
+            b.leg((11, 22), (11 + sw, 30), fur, w=4, dy=y)
+            b.leg((29, 22), (29 - sw + (3 if i == 7 else 0), 30), fur, w=4, dy=y)
+            b.poly([(33, 10), (37, 8), (41, 10), (43, 14), (41, 17), (36, 17), (33, 14)], fur, dy=y)   # tête
+            b.poly([(34, 9), (35, 6), (37, 8)], fur, dy=y)
+            hx, hy = 39, 11 + y
+        b.dot(hx, hy, O)
+        b.dot(hx + 3, hy + 2, O)
+        for x in range(12, 30, 4):
+            b.dot(x, (9 if not rear else 9) + (y if not rear else 0), P["leaf0"])    # brins de mousse dorés
+        return b.render()
+    return strip(make, 16, custom_poses=True)
+
+
+def veilleur():
+    """Veilleur d'écorce : un chêne mort qui se déplie. Endormi (0-1), on dirait un arbre mort ; réveillé,
+    il marche sur ses racines, l'écorce fendue laisse voir des lignes droites et des cercles cyan.
+    Élan (6) : branches levées, runes allumées ; frappe (7) : il abat ses branches, les racines jaillissent."""
+    bark = (P["stone2"], P["stone2"], P["stone3"], P["stone4"])
+    dark = (P["stone3"], P["stone3"], P["stone4"], O)
+    W, H = 44, 58
+
+    def make(i):
+        b = Beast(W, H)
+        asleep = i <= 1
+        walk = 2 <= i <= 5
+        ph = (i - 2) % 4 if walk else 0
+        y = (0, -1, 0, -1)[ph] if walk else 0
+        cx = W / 2
+        # racines-jambes
+        if asleep:
+            for dx in (-7, -3, 3, 7):
+                b.line((cx + dx * 0.4, H - 8), (cx + dx, H - 1), dark, w=2)
+        else:
+            st = (2, 0, -2, 0)[ph] if walk else 0
+            for k, dx in enumerate((-8, -4, 4, 8)):
+                s = st if k % 2 else -st
+                b.line((cx + dx * 0.4, H - 10 + y), (cx + dx + s, H - 1), dark, w=2)
+        # tronc
+        b.poly([(cx - 4, 16 + y), (cx + 4, 16 + y), (cx + 7, H - 8 + y), (cx - 7, H - 8 + y)], bark)
+        # branches : droites, anguleuses ; levées en élan, abattues à la frappe
+        if i == 6:
+            arms = [((cx - 3, 20), (cx - 14, 6), (cx - 18, 0)), ((cx + 3, 20), (cx + 14, 6), (cx + 18, 0))]
+        elif i == 7:
+            arms = [((cx - 3, 22), (cx - 16, 30), (cx - 20, 42)), ((cx + 3, 22), (cx + 16, 30), (cx + 20, 42))]
+        elif asleep:
+            arms = [((cx - 2, 24), (cx - 11, 13), (cx - 11, 7)), ((cx + 2, 20), (cx + 10, 10), (cx + 10, 3))]
+        else:
+            arms = [((cx - 3, 22 + y), (cx - 13, 16 + y), (cx - 15, 8 + y)), ((cx + 3, 22 + y), (cx + 13, 16 + y), (cx + 15, 8 + y))]
+        for a, m, e in arms:
+            b.line(a, m, bark, w=2.4)
+            b.line(m, e, bark, w=1.6)
+        b.line((cx, 16 + y), (cx, 3 + y), bark, w=2.2)
+        # fente : lignes droites et cercles cyan (éteints endormi, allumés en élan)
+        glow = P["rune1"] if i in (6, 7) else (P["rune2"] if not asleep else P["stone4"])
+        for yy in range(26, 42):
+            b.dot(cx, yy + y, glow if yy % 4 else P["stone4"])
+        for a in range(10):
+            b.dot(round(cx + math.cos(a * 0.63) * 3), round(32 + y + math.sin(a * 0.63) * 3), glow)
+        if not asleep:
+            b.dot(cx - 2, 20 + y, P["rune0"] if i in (6, 7) else P["rune1"])      # « yeux » dans l'écorce
+            b.dot(cx + 2, 20 + y, P["rune0"] if i in (6, 7) else P["rune1"])
+        img = b.render()
+        if i == 7:                                          # racines qui jaillissent du sol
+            px = img.load()
+            for k in range(6):
+                x0 = int(cx - 18 + k * 7)
+                for d in range(5):
+                    if 0 <= x0 < W:
+                        px[x0, H - 1 - d] = P["stone3"] if d < 4 else P["rune1"]
+        return img
+    return strip(make, 14, custom_poses=True)
+
+
 ALL = {
+    "monsters/sanglier_des_fougeres_idle": sanglier,
+    "monsters/lynx_a_robe_claire_idle": lynx,
+    "monsters/ours_moussu_idle": ours,
+    "monsters/veilleur_d_ecorce_idle": veilleur,
     "monsters/crabe_des_galets_idle": crabe,
     "monsters/heron_cendre_idle": heron,
     "monsters/anguille_des_hauts_fonds_idle": anguille,

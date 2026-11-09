@@ -74,6 +74,13 @@ def polyline_samples(pts, step):
 
 # Notes de lore des découvertes (texte original, cohérent avec le lore de l'étage 1)
 LORE = {
+    "lignes_sous_la_mousse": {
+        "title": "Les lignes sous la mousse",
+        "text": "Sous la mousse des sept pierres, les motifs ne sont pas sculptés : ils sont tracés, d'un seul "
+                "trait, sans reprise, comme par une main qui n'hésitait jamais. Les lignes ne décrivent rien. "
+                "Elles relient. Et quand on suit la plus longue du regard, elle ne s'arrête pas à la pierre : "
+                "elle continue dans l'écorce des chênes morts, juste à côté.",
+    },
     "cercle_immerge": {
         "title": "Le cercle sous l'îlot",
         "text": "Sous l'eau claire de l'anse, sept pierres taillées dessinent un cercle parfait. Leurs runes, "
@@ -84,7 +91,8 @@ LORE = {
 }
 
 # Rayon où une bête prédatrice repère le joueur (px)
-AGGRO = {"crabe_des_galets": 44, "heron_cendre": 44, "anguille_des_hauts_fonds": 60}
+AGGRO = {"crabe_des_galets": 44, "heron_cendre": 44, "anguille_des_hauts_fonds": 60,
+         "sanglier_des_fougeres": 70, "lynx_a_robe_claire": 44, "ours_moussu": 52, "veilleur_d_ecorce": 40}
 
 # Tempérament des bêtes, déduit de leur description (docs/combat_v1.md)
 TEMPER = {
@@ -95,6 +103,10 @@ TEMPER = {
     "oiseau_chanteur": "calm",
     "renardeau_curieux": "skittish",  # « il mord avant de fuir »
     "loup_dore": "predator",          # « rôdent plus près du village chaque matin »
+    "sanglier_des_fougeres": "charger",   # « il charge tout ce qui bouge »
+    "lynx_a_robe_claire": "ambusher",     # « se fond dans les rais de lumière… on ne le voit qu'au moment où il bondit »
+    "ours_moussu": "guardian",            # « garde les sentiers… ne laisse passer personne »
+    "veilleur_d_ecorce": "dormant",       # « ce qu'on prenait pour un chêne mort se déplie »
 }
 
 
@@ -112,6 +124,7 @@ class Zone:
         self.interactables = []
         self.doors = [b["door"] for b in self.lay["buildings"] if "door" in b]
         self.forest = self.lay.get("forest_fill")
+        self.ancient = self.lay.get("biome") == "foret_ancienne"
         # biome rive : lac, îlots, eau profonde, marais praticable, galets, pontons
         lay = self.lay
         self.lakes = [l["poly"] for l in lay.get("lake", [])]
@@ -155,7 +168,7 @@ class Zone:
             ring = poly + poly[:1]
             best = min(best, -poly_dist(p, ring) if in_poly(p, poly) else poly_dist(p, ring))
         for r in self.lay["regions"]:
-            if r["kind"] not in ("clearing", "square_dirt"):
+            if r["kind"] not in ("clearing", "square_dirt", "open_wood"):
                 continue
             if "poly" in r:
                 ring = r["poly"] + r["poly"][:1]
@@ -224,6 +237,8 @@ class Zone:
                            for f in forests)
                 if self.forest:                     # sous le couvert : herbe sombre
                     dark = self.open_d[ty][tx] > self.forest["margin"] + 0.9
+                    if self.ancient:                # forêt ancienne : sombre sauf sous la lumière des clairières
+                        dark = not any(shape_contains(r, c) for r in self.lay["regions"] if r["kind"] == "clearing")
                 cells.append([tx, ty, self.rng.randrange(4), 1 if dark else 0])
         self.add_layer("sol", "ground_base", cells)
 
@@ -351,7 +366,8 @@ class Zone:
             x, y, w, h = b["rect"]
             fx, fy = x + w / 2, y + h
             if b["kind"] == "bridge":
-                self.prop(sprite["bridge"], fx, fy, floor=True, kind="bridge")
+                rel = "props/anciens/pont_rondins.png" if self.ancient else sprite["bridge"]
+                self.prop(rel, fx, fy, floor=True, kind="bridge")
                 continue
             if b["kind"] == "hut":
                 rel = {"cabane_bertold": "props/rive/cabane_a.png", "fumoir": "props/rive/fumoir.png"}.get(
@@ -476,7 +492,7 @@ class Zone:
             p = tpl_dir / folder / f"{tid}.json"
             return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
-        prof_names = {"herboristerie": "herboristerie", "bucheronnage": "bûcheronnage", "peche": "pêche",
+        prof_names = {"herboristerie": "herboristerie", "bucheronnage": "bûcheronnage", "peche": "pêche", "minage": "minage",
                       "archeologie": "archéologie", "chasse": "chasse"}
         hosted = {}
         for eid, e in lay["entries"].items():
@@ -778,7 +794,12 @@ class Zone:
         dark_x = self.forest.get("dark_from_x", self.W)
         light = ["arbre_aube_a", "arbre_aube_b", "arbre_aube_c"]
         dark = ["arbre_sombre_a", "arbre_sombre_b", "arbre_sombre_c"]
+        folder = "vegetation"
         step, row, y = 1.6, 0, -0.4
+        if self.ancient:
+            light = dark = ["arbre_ancien_a", "arbre_ancien_b", "arbre_ancien_c"]
+            folder = "anciens"
+            step = 2.2
         while y <= self.H + 2.4:
             x = -0.8 + (step / 2 if row % 2 else 0)
             while x <= self.W + 0.8:
@@ -791,8 +812,10 @@ class Zone:
                         p_dark *= 0.4                     # la lisière reste claire
                     pool = dark if self.rng.random() < p_dark else light
                     edge = d < m + 0.3
-                    self.prop(f"props/vegetation/{self.rng.choice(pool)}.png", p[0], p[1],
-                              cols=[(-5, -4, 10, 4)] if edge else None, kind="forest")
+                    rel = f"props/{folder}/{self.rng.choice(pool)}.png"
+                    if self.ancient and d > m + 2.5 and self.rng.random() < 0.04:
+                        rel = "props/anciens/arbre_geant.png"     # quelques géants dépassent de la voûte
+                    self.prop(rel, p[0], p[1], cols=[(-6, -4, 12, 4)] if edge else None, kind="forest")
                 x += step
             y += step * 0.85
             row += 1
@@ -897,6 +920,105 @@ class Zone:
                         self.prop("props/rive/bois_flotte.png", p[0], p[1], floor=True)
                         break
 
+    def build_anciens(self):
+        """Forêt des Anciens : sous-bois clairs, champ de fougères, camp d'Isarn, cercle de pierres,
+        chênes morts, fosse des ours."""
+        if not self.ancient:
+            return
+        lay = self.lay
+        lm = {l["id"]: l for l in lay["landmarks"]}
+        if "panneau_anciens" in lm:
+            x, y = lm["panneau_anciens"]["pos"]
+            self.prop("props/foret/panneau.png", x + 0.5, y + 1, cols=[(-2, -3, 5, 3)], kind="landmark")
+            self.block_rect(x, y, 1, 1)
+        if "camp_isarn" in lm:
+            x, y = lm["camp_isarn"]["pos"]
+            self.prop("props/anciens/tente.png", x - 1.5, y + 0.5, cols=[(-20, -10, 40, 10)], kind="landmark")
+            self.prop("props/anciens/billot_hache.png", x + 3.2, y + 1.6, cols=[(-6, -5, 12, 5)])
+            self.prop("props/anciens/bois_empile.png", x - 5.0, y + 2.6, cols=[(-15, -6, 30, 6)])
+            self.prop("props/foret/feu_camp.png", x + 1.0, y + 3.4, cols=[(-7, -5, 14, 5)])
+            self.fx.append({"kind": "smoke_light", "x": round((x + 1.0) * T), "y": round((y + 3.0) * T)})
+            self.block_rect(x - 5, y - 2, 10, 5)
+        if "chene_millenaire" in lm:
+            x, y = lm["chene_millenaire"]["pos"]
+            self.prop("props/anciens/arbre_geant.png", x + 0.5, y + 1, cols=[(-14, -6, 28, 6)], kind="landmark")
+            self.block_rect(x - 1, y - 1, 3, 2)
+        if "affut_vesna" in lm:
+            x, y = lm["affut_vesna"]["pos"]
+            self.prop("props/ressources/affut_des_berges.png", x + 0.5, y + 1, cols=[(-13, -5, 26, 5)], kind="landmark")
+            self.block_rect(x - 1, y, 3, 1)
+        if "cercle_pierres" in lm:
+            x, y = lm["cercle_pierres"]["pos"]
+            for k in range(7):                                  # sept pierres en cercle parfait
+                a = k * math.tau / 7 - math.pi / 2
+                px_, py_ = x + 0.5 + math.cos(a) * 4.2, y + 0.8 + math.sin(a) * 3.2
+                self.prop("props/anciens/pierre_cercle.png", px_, py_, cols=[(-5, -4, 10, 4)], kind="landmark")
+                self.block_rect(px_ - 0.5, py_ - 1, 1, 1)
+            self.fx.append({"kind": "fireflies_rune", "x": round((x + 0.5) * T), "y": round((y + 0.5) * T)})
+        if "chenes_morts" in lm:
+            x, y = lm["chenes_morts"]["pos"]
+            for i, (dx, dy) in enumerate(((-2.6, 0.4), (2.4, -0.6), (0.6, -2.4), (-1.0, 2.6))):
+                self.prop(f"props/anciens/chene_mort_{'ab'[i % 2]}.png", x + 0.5 + dx, y + 1 + dy,
+                          cols=[(-4, -3, 8, 3)], kind="landmark")
+                self.block_rect(x + dx, y + dy, 1, 1)
+        if "os_ours" in lm:
+            x, y = lm["os_ours"]["pos"]
+            for dx, dy, rel in ((-1.5, 0.3, "ossements"), (1.6, -0.6, "terre_retournee"), (0.4, 1.4, "ossements")):
+                self.prop(f"props/anciens/{rel}.png", x + dx, y + dy, floor=True)
+        # sous-bois clairs : arbres anciens espacés (troncs à collision), fougères, racines, pierres
+        woods = [r["poly"] for r in lay["regions"] if r["kind"] == "open_wood"]
+        clears = [r for r in lay["regions"] if r["kind"] == "clearing"]
+        for poly in woods:
+            xs, ys = [p[0] for p in poly], [p[1] for p in poly]
+            y = min(ys) + 1.5
+            row = 0
+            while y < max(ys):
+                x = min(xs) + (2.1 if row % 2 else 0)
+                while x < max(xs):
+                    p = (x + self.rng.uniform(-1.0, 1.0), y + self.rng.uniform(-0.8, 0.8))
+                    ok = in_poly(p, poly) and not any(shape_contains(c, p, grow=0.8) for c in clears) \
+                        and not self.on_road(p, 1.6) and self.free(p[0], p[1] - 0.5, r=1)
+                    if ok and self.rng.random() < 0.8:
+                        self.prop(f"props/anciens/arbre_ancien_{self.rng.choice('abc')}.png", p[0], p[1],
+                                  cols=[(-5, -5, 10, 5)], kind="forest")
+                        self.block_rect(p[0] - 0.5, p[1] - 1, 1, 1)
+                    x += 4.2
+                y += 3.4
+                row += 1
+            for _ in range(int(len(poly) * 14)):                # sol du sous-bois
+                p = (self.rng.uniform(min(xs), max(xs)), self.rng.uniform(min(ys), max(ys)))
+                if not in_poly(p, poly) or self.on_road(p, 0.8) or not self.free(p[0], p[1] - 0.5):
+                    continue
+                r = self.rng.random()
+                if r < 0.55:
+                    self.prop(f"props/foret/fougere_{self.rng.choice('abc')}.png", *p, kind="undergrowth")
+                elif r < 0.7:
+                    self.prop("props/anciens/racines.png", *p, floor=True)
+                elif r < 0.78:
+                    self.prop(f"props/anciens/pierre_moussue_{self.rng.choice('ab')}.png", *p, cols=[(-6, -4, 12, 4)])
+                    self.block_rect(p[0] - 0.5, p[1] - 1, 1, 1)
+                elif r < 0.86:
+                    self.prop("props/foret/champignons_deco.png", *p, floor=True)
+        # mer de fougères : hautes, denses, praticables ; terre labourée par les sangliers
+        for r in lay["regions"]:
+            if r["kind"] != "fern_field":
+                continue
+            poly = r["poly"]
+            xs, ys = [p[0] for p in poly], [p[1] for p in poly]
+            y = min(ys)
+            while y <= max(ys):
+                x = min(xs)
+                while x <= max(xs):
+                    p = (x + self.rng.uniform(-0.4, 0.4), y + self.rng.uniform(-0.3, 0.3))
+                    if in_poly(p, poly) and not self.on_road(p, 0.6) and self.free(p[0], p[1] - 0.5):
+                        if self.rng.random() < 0.12:
+                            self.prop("props/anciens/terre_retournee.png", *p, floor=True)
+                        else:
+                            self.prop(f"props/anciens/fougere_haute_{self.rng.choice('abc')}.png", p[0], p[1] + 0.3,
+                                      kind="undergrowth")
+                    x += 1.25
+                y += 1.0
+
     def build_mist(self):
         if not self.lay.get("ambient", {}).get("mist"):
             return
@@ -925,6 +1047,7 @@ class Zone:
         self.build_entries()
         if self.forest:
             self.build_forest_fill()
+            self.build_anciens()
             self.build_rive()
             self.build_undergrowth()
             self.build_mist()
@@ -940,7 +1063,7 @@ class Zone:
         W, H = self.W * T, self.H * T
         bounds = [[-32, -32, W + 64, 32], [-32, H, W + 64, 32], [-32, 0, 32, H], [W, 0, 32, H]]
         self.colliders += [{"rect": b, "bounds": True} for b in bounds]
-        exits = [{"id": e["id"], "to": e["to"], "label": e["label"],
+        exits = [{"id": e["id"], "to": e["to"], "label": e["label"], "hidden": e.get("hidden", False),
                   "rect": [v * T for v in e["rect"]],
                   "arrival": [(e["arrival"][0] + 0.5) * T, (e["arrival"][1] + 1) * T]} for e in lay["exits"]]
         sx, sy = lay["spawn"]["pos"]
@@ -965,6 +1088,7 @@ class Zone:
             "colliders": self.colliders, "interactables": self.interactables, "fx": self.fx,
             "exits": exits, "spawn": [(sx + 0.5) * T, (sy + 1) * T],
             "ambient": {"modulate": lay.get("ambient", {}).get("modulate", "#fff4e0")},
+            "music_mood": lay.get("ambient", {}).get("music_mood", ""),
         }
 
 

@@ -278,6 +278,22 @@ def water(sec, lap_rate=0.35):
     return out
 
 
+def creaks(sec, count):
+    """Craquements de bois : branches qui travaillent, très bas, espacés."""
+    out = np.zeros(int(SR * sec))
+    for _ in range(count):
+        s0 = RNG.uniform(0, sec - 1.0)
+        d = RNG.uniform(0.35, 0.7)
+        n = int(SR * d)
+        f = np.linspace(RNG.uniform(90, 140), RNG.uniform(60, 90), n)
+        grain = (RNG.uniform(0, 1, n) < 0.08).astype(float) * RNG.uniform(-1, 1, n)
+        tone = np.sin(2 * math.pi * np.cumsum(f) / SR) * 0.4 + lowpass(grain, 900) * 2.0
+        e = np.sin(np.pi * np.arange(n) / n)
+        i = int(s0 * SR)
+        out[i:i + n] += tone * e * RNG.uniform(0.25, 0.45)
+    return out
+
+
 def ambiences():
     sec = 24.0
     A = {
@@ -286,6 +302,9 @@ def ambiences():
                        (0, chimes(sec + 1.5, 3), 1.0)),
         # forêt (Lisière) : feuillage plus présent, plus d'oiseaux, plus aigus
         "foret": mix((0, wind(sec + 1.5, 300, 2400, 0.7), 0.45), (0, birds(sec + 1.5, 12, 3100), 0.25)),
+        # forêt des Anciens : vent grave sous la voûte, craquements de bois, rares oiseaux, ru lointain
+        "foret_profonde": mix((0, wind(sec + 1.5, 80, 450, 0.75), 0.6), (0, creaks(sec + 1.5, 5), 1.0),
+                              (0, birds(sec + 1.5, 3, 1900), 0.12), (0, water(sec + 1.5, 0.2), 0.12)),
         # rive : l'eau qui lèche les galets, roseaux, rares oiseaux d'eau
         "rive": mix((0, water(sec + 1.5), 0.8), (0, wind(sec + 1.5, 600, 3000, 0.6), 0.18),
                     (0, birds(sec + 1.5, 3, 1700), 0.15)),

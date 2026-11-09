@@ -35,6 +35,8 @@ func _run() -> void:
 		await _sentier(zone, player)
 	elif args[1] == "rive_paisible":
 		await _rive(zone, player)
+	elif args[1] == "foret_ancienne":
+		await _foret(zone, player)
 	else:
 		await _village(zone, player)
 	print("\n%d échec(s)" % _fail)
@@ -191,6 +193,77 @@ func _rive(zone: Node, player: CharacterBody2D) -> void:
 	# 11) les sorties
 	var exits := zone.find_child("Sorties", true, false).get_children().map(func(e): return e.target_zone)
 	_check("village_aube" in exits and "camp_pecheurs" in exits and "lac_miroir" in exits, "sorties : %s" % [exits])
+
+
+func _foret(zone: Node, player: CharacterBody2D) -> void:
+	var gs: Node = root.get_node("GameState")
+	var snd: Node = root.get_node_or_null("Sound")
+	var T := 16.0
+	var mobs := zone.find_children("*", "Node2D", true, false).filter(func(n): return n.get("leash") != null)
+	_check(mobs.size() == 11, "%d bêtes (6 sangliers, 2 lynx, 2 ours, le Veilleur)" % mobs.size())
+	if snd:
+		await _frames(5)
+		_check(snd.current_mood() == "tension" and snd._amb_key.ends_with("foret_profonde.wav"),
+			"musique « tension », ambiance forêt profonde")
+	# un sous-bois clair se traverse (on coupe entre les arbres)
+	player.global_position = Vector2(8, 22) * T
+	player.move_to(Vector2(28, 22) * T)
+	await _frames(300)
+	_check(player.global_position.x > 22 * T, "sous-bois clair praticable (x=%.1f tuiles)" % (player.global_position.x / T))
+	# le Veilleur n'est pas là tant que 40 sangliers ne sont pas tombés
+	var veil: Node2D = zone.find_child("veilleur_spawn", true, false)
+	_check(not veil.visible and not veil.is_in_group("mobs"), "Veilleur d'écorce absent (0/40 sangliers)")
+	gs.profile.kills["sanglier_des_fougeres"] = 40
+	await _wait(2.4)
+	_check(veil.visible and veil.is_in_group("mobs") and veil.dormant, "40 sangliers : il apparaît, endormi parmi les chênes morts")
+	player.global_position = veil.global_position + Vector2(-90, 10)
+	await _frames(20)
+	_check(veil.dormant and not veil.provoked, "de loin : un chêne mort comme les autres")
+	player.global_position = veil.global_position + Vector2(-30, 6)
+	await _frames(10)
+	_check(not veil.dormant and veil.provoked, "de près : il se réveille")
+	# lynx : presque invisible dans la lumière, se révèle de près
+	for m in mobs:
+		m.set_process(m.temper == "ambusher")
+	var lynx: Node2D = zone.find_child("lynx_spawn_1", true, false)
+	player.global_position = lynx.global_position + Vector2(-140, 0)
+	await _wait(1.6)
+	_check(lynx.sprite.modulate.a < 0.4, "lynx caché dans les rais (opacité %.2f)" % lynx.sprite.modulate.a)
+	gs.fighter.hp = 9999.0
+	player.global_position = lynx.global_position + Vector2(-28, 0)
+	await _wait(0.6)
+	_check(lynx.sprite.modulate.a > 0.8 and lynx.provoked, "il se révèle et bondit")
+	# sanglier : la charge le projette le long de la ligne annoncée
+	for m in mobs:
+		m.set_process(false)
+	var boar: Node2D = zone.find_child("sanglier_spawn_1", true, false)
+	boar.set_process(true)
+	player.global_position = boar.global_position + Vector2(60, 0)
+	var charge: Dictionary = (boar.tpl.moveset as Array).filter(func(mv): return mv.get("charge", false))[0]
+	var p0 := boar.global_position
+	boar._start_move(charge, Vector2.RIGHT)
+	await _wait(1.3)
+	_check(boar.global_position.x - p0.x > 30.0, "charge du sanglier : %d px en avant" % (boar.global_position.x - p0.x))
+	# ours : lent
+	var bear: Node2D = zone.find_child("ours_spawn_1", true, false)
+	_check(bear.temper == "guardian" and bear._speed_k() < 1.0, "ours gardien, lent (×%.1f)" % bear._speed_k())
+	# PNJ et quêtes
+	var isarn: Node = zone.find_child("isarn_presence", true, false)
+	var vesna: Node = zone.find_child("vesna_presence", true, false)
+	_check(isarn.get_node("Marqueur").text == "!" and vesna.get_node("Marqueur").text == "!", "Isarn et Vesna proposent leurs quêtes")
+	# ressources et découverte
+	for id in ["chene_noeud", "fougere_noeud", "traces_noeud", "affleurement_rocheux_noeud", "pierres_moussues_gravees_noeud",
+			"ecorce_noeud", "chene_2", "fougere_2", "traces_2", "pierres_2"]:
+		var r: Node = zone.find_child(id, true, false)
+		_check(r != null and r.has_method("harvest"), "%s : %s" % [id, r.interact().extra if r else "absent"])
+	var dsc: Node = zone.find_child("lignes_sous_la_mousse", true, false)
+	_check(dsc != null and dsc.interact().action.get("kind") == "discovery", "découverte : Les lignes sous la mousse")
+	# sorties (dont la sortie cachée vers la Clairière des Veilleurs Oubliés)
+	var exits := zone.find_child("Sorties", true, false).get_children()
+	var targets := exits.map(func(e): return e.target_zone)
+	var secret: Array = exits.filter(func(e): return e.secret).map(func(e): return e.target_zone)
+	_check("sentier_lisiere" in targets and "lac_miroir" in targets and "sous_bois_perdu" in targets and secret == ["veilleurs_oublies"],
+		"sorties : %s (cachée : %s)" % [targets, secret])
 
 
 func _village(zone: Node, player: CharacterBody2D) -> void:

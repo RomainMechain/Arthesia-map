@@ -1,0 +1,1008 @@
+{
+  "zone_id": "foret_ancienne",
+  "status": "v2 - construite",
+  "biome": "foret_ancienne",
+  "size_tiles": [
+    92,
+    60
+  ],
+  "tile_size": 16,
+  "player_metrics": {
+    "speed_tiles_s": 5,
+    "view_tiles": [
+      30,
+      17
+    ],
+    "notes": "Carte ~3 x 3,5 écrans. Entrée -> camp d'Isarn ~4 s, -> Fougères ~8 s, -> les Rais ~12 s, -> Cercle de pierres ~14 s, -> bout du Chemin des Ours ~22 s."
+  },
+  "intent": {
+    "role": "zone de combat dense (niv. 4-6), bûcheronnage, herboristerie, archéologie ; premiers vrais indices des Architectes ; première zone « tension »",
+    "golden_path": [
+      "spawn",
+      "isarn_presence",
+      "sanglier_spawn",
+      "vesna_presence",
+      "rais",
+      "cercle_pierres"
+    ],
+    "reading": "On entre par l'ouest, depuis le Sentier. La forêt n'est pas un couloir : de grands sous-bois clairs (arbres anciens espacés, fougères, rais de lumière) relient les clairières, et l'on peut couper à travers. Le grand sentier serpente d'ouest en est vers le Lac-Miroir ; deux boucles le doublent : au nord, du camp d'Isarn au Cercle de pierres par la crête des chênes ; au sud, des fougères à la clairière des Rais. Seuls les massifs les plus vieux, entre ces zones, restent infranchissables.",
+    "pacing": "Pause sociale à l'entrée (Isarn). Les sangliers sont dans les fougères, à l'écart du sentier : on choisit d'y aller. Les lynx sont une surprise (on ne les voit qu'au dernier moment). Les ours gardent un chemin : il faut passer par eux pour le Sous-Bois. Le Cercle de pierres est calme et inquiétant (lore, Veilleur d'écorce très rare après 40 sangliers)."
+  },
+  "spawn": {
+    "pos": [
+      3,
+      30
+    ],
+    "label": "Arrivée depuis le Sentier de la Lisière"
+  },
+  "forest_fill": {
+    "margin": 1.8,
+    "dark_from_x": 0
+  },
+  "regions": [
+    {
+      "id": "sous_bois_ouest",
+      "kind": "open_wood",
+      "poly": [
+        [
+          0,
+          18
+        ],
+        [
+          8,
+          12
+        ],
+        [
+          20,
+          8
+        ],
+        [
+          30,
+          10
+        ],
+        [
+          36,
+          18
+        ],
+        [
+          34,
+          27
+        ],
+        [
+          28,
+          37
+        ],
+        [
+          16,
+          40
+        ],
+        [
+          5,
+          39
+        ],
+        [
+          0,
+          36
+        ]
+      ]
+    },
+    {
+      "id": "sous_bois_centre",
+      "kind": "open_wood",
+      "poly": [
+        [
+          36,
+          20
+        ],
+        [
+          44,
+          15
+        ],
+        [
+          55,
+          18
+        ],
+        [
+          62,
+          27
+        ],
+        [
+          63,
+          38
+        ],
+        [
+          58,
+          47
+        ],
+        [
+          50,
+          50
+        ],
+        [
+          44,
+          42
+        ],
+        [
+          38,
+          33
+        ]
+      ]
+    },
+    {
+      "id": "sous_bois_est",
+      "kind": "open_wood",
+      "poly": [
+        [
+          71,
+          27
+        ],
+        [
+          80,
+          21
+        ],
+        [
+          90,
+          24
+        ],
+        [
+          91,
+          34
+        ],
+        [
+          86,
+          44
+        ],
+        [
+          78,
+          46
+        ],
+        [
+          72,
+          38
+        ]
+      ]
+    },
+    {
+      "id": "arrivee",
+      "kind": "clearing",
+      "rect": [
+        0,
+        25,
+        10,
+        11
+      ]
+    },
+    {
+      "id": "camp_isarn",
+      "kind": "clearing",
+      "circle": [
+        19,
+        18,
+        6.0
+      ]
+    },
+    {
+      "id": "fougeres",
+      "kind": "clearing",
+      "poly": [
+        [
+          20,
+          39
+        ],
+        [
+          32,
+          36
+        ],
+        [
+          46,
+          37
+        ],
+        [
+          52,
+          44
+        ],
+        [
+          48,
+          53
+        ],
+        [
+          34,
+          57
+        ],
+        [
+          22,
+          54
+        ],
+        [
+          16,
+          46
+        ]
+      ]
+    },
+    {
+      "id": "champ_fougeres",
+      "kind": "fern_field",
+      "poly": [
+        [
+          23,
+          42
+        ],
+        [
+          33,
+          39
+        ],
+        [
+          44,
+          41
+        ],
+        [
+          48,
+          47
+        ],
+        [
+          42,
+          53
+        ],
+        [
+          30,
+          53
+        ],
+        [
+          22,
+          48
+        ]
+      ]
+    },
+    {
+      "id": "rais",
+      "kind": "clearing",
+      "circle": [
+        55,
+        37,
+        6.5
+      ]
+    },
+    {
+      "id": "crete_chenes",
+      "kind": "clearing",
+      "poly": [
+        [
+          24,
+          6
+        ],
+        [
+          34,
+          4
+        ],
+        [
+          42,
+          6
+        ],
+        [
+          40,
+          11
+        ],
+        [
+          30,
+          12
+        ],
+        [
+          24,
+          11
+        ]
+      ]
+    },
+    {
+      "id": "cercle_pierres",
+      "kind": "clearing",
+      "circle": [
+        55,
+        11,
+        7.0
+      ]
+    },
+    {
+      "id": "chenes_morts",
+      "kind": "clearing",
+      "circle": [
+        45,
+        8,
+        3.6
+      ]
+    },
+    {
+      "id": "carrefour",
+      "kind": "clearing",
+      "circle": [
+        46,
+        27,
+        3.6
+      ]
+    },
+    {
+      "id": "fosse_ours",
+      "kind": "clearing",
+      "circle": [
+        74,
+        45,
+        5.0
+      ]
+    },
+    {
+      "id": "affleurement",
+      "kind": "clearing",
+      "circle": [
+        81,
+        32,
+        3.6
+      ]
+    },
+    {
+      "id": "sortie_lac",
+      "kind": "clearing",
+      "rect": [
+        85,
+        14,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "sortie_sous_bois",
+      "kind": "clearing",
+      "rect": [
+        84,
+        49,
+        8,
+        8
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "grand_sentier",
+      "kind": "trail",
+      "width": 2,
+      "points": [
+        [
+          0,
+          30
+        ],
+        [
+          6,
+          31
+        ],
+        [
+          11,
+          28
+        ],
+        [
+          17,
+          26
+        ],
+        [
+          23,
+          28
+        ],
+        [
+          29,
+          32
+        ],
+        [
+          35,
+          31
+        ],
+        [
+          41,
+          27
+        ],
+        [
+          46,
+          26
+        ],
+        [
+          52,
+          27
+        ],
+        [
+          57,
+          29
+        ],
+        [
+          62,
+          26
+        ],
+        [
+          67,
+          23
+        ],
+        [
+          73,
+          24
+        ],
+        [
+          79,
+          22
+        ],
+        [
+          85,
+          19
+        ],
+        [
+          92,
+          18
+        ]
+      ]
+    },
+    {
+      "id": "allee_camp",
+      "kind": "lane",
+      "width": 2,
+      "points": [
+        [
+          15,
+          27
+        ],
+        [
+          17,
+          23
+        ]
+      ]
+    },
+    {
+      "id": "boucle_nord",
+      "kind": "trail",
+      "width": 2,
+      "points": [
+        [
+          19,
+          13
+        ],
+        [
+          23,
+          9
+        ],
+        [
+          30,
+          7
+        ],
+        [
+          37,
+          7
+        ],
+        [
+          42,
+          9
+        ],
+        [
+          48,
+          10
+        ],
+        [
+          50,
+          12
+        ]
+      ]
+    },
+    {
+      "id": "descente_pierres",
+      "kind": "lane",
+      "width": 2,
+      "points": [
+        [
+          46,
+          24
+        ],
+        [
+          48,
+          19
+        ],
+        [
+          51,
+          16
+        ]
+      ]
+    },
+    {
+      "id": "allee_fougeres",
+      "kind": "lane",
+      "width": 2,
+      "points": [
+        [
+          28,
+          32
+        ],
+        [
+          30,
+          37
+        ]
+      ]
+    },
+    {
+      "id": "boucle_sud",
+      "kind": "trail",
+      "width": 2,
+      "points": [
+        [
+          46,
+          46
+        ],
+        [
+          50,
+          45
+        ],
+        [
+          53,
+          42
+        ]
+      ]
+    },
+    {
+      "id": "allee_rais",
+      "kind": "lane",
+      "width": 2,
+      "points": [
+        [
+          55,
+          29
+        ],
+        [
+          55,
+          31
+        ]
+      ]
+    },
+    {
+      "id": "chemin_ours",
+      "kind": "trail",
+      "width": 2,
+      "points": [
+        [
+          60,
+          37
+        ],
+        [
+          64,
+          39
+        ],
+        [
+          69,
+          40
+        ],
+        [
+          73,
+          43
+        ],
+        [
+          77,
+          47
+        ],
+        [
+          82,
+          50
+        ],
+        [
+          87,
+          52
+        ],
+        [
+          92,
+          54
+        ]
+      ]
+    },
+    {
+      "id": "allee_affleurement",
+      "kind": "lane",
+      "width": 2,
+      "points": [
+        [
+          75,
+          23
+        ],
+        [
+          79,
+          28
+        ]
+      ]
+    }
+  ],
+  "water": [
+    {
+      "id": "ru",
+      "kind": "stream",
+      "width": 2,
+      "points": [
+        [
+          62,
+          0
+        ],
+        [
+          63,
+          6
+        ],
+        [
+          65,
+          12
+        ],
+        [
+          66,
+          18
+        ],
+        [
+          67,
+          24
+        ],
+        [
+          66,
+          30
+        ],
+        [
+          67,
+          35
+        ],
+        [
+          69,
+          40
+        ],
+        [
+          71,
+          48
+        ],
+        [
+          73,
+          60
+        ]
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "pont_ru",
+      "kind": "bridge",
+      "rect": [
+        66,
+        21,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "pont_ru_ours",
+      "kind": "bridge",
+      "rect": [
+        67,
+        38,
+        3,
+        4
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "panneau_anciens",
+      "pos": [
+        7,
+        28
+      ],
+      "rank": 2,
+      "label": "Vieux poteau rongé de mousse"
+    },
+    {
+      "id": "camp_isarn",
+      "pos": [
+        19,
+        17
+      ],
+      "rank": 1,
+      "label": "Camp d'Isarn : tente, billots, bois empilé, hache plantée"
+    },
+    {
+      "id": "chene_millenaire",
+      "pos": [
+        26,
+        14
+      ],
+      "rank": 1,
+      "label": "Chêne millénaire (racines énormes) : chêne qu'Isarn refuse d'abattre"
+    },
+    {
+      "id": "affut_vesna",
+      "pos": [
+        48,
+        41
+      ],
+      "rank": 1,
+      "label": "Affût de Vesna au bord des fougères"
+    },
+    {
+      "id": "rais",
+      "pos": [
+        55,
+        36
+      ],
+      "rank": 1,
+      "label": "Rais de lumière dans la clairière des lynx"
+    },
+    {
+      "id": "cercle_pierres",
+      "pos": [
+        55,
+        11
+      ],
+      "rank": 1,
+      "label": "Cercle de pierres moussues, motifs géométriques"
+    },
+    {
+      "id": "chenes_morts",
+      "pos": [
+        45,
+        8
+      ],
+      "rank": 2,
+      "label": "Chênes morts aux branches trop droites (le Veilleur dort parmi eux)"
+    },
+    {
+      "id": "os_ours",
+      "pos": [
+        74,
+        46
+      ],
+      "rank": 3,
+      "label": "Ossements et mousse retournée : la fosse des ours"
+    },
+    {
+      "id": "crete_chenes",
+      "pos": [
+        32,
+        8
+      ],
+      "rank": 2,
+      "label": "Crête des chênes : vue sur la voûte"
+    }
+  ],
+  "entries": {
+    "isarn_presence": {
+      "pos": [
+        21,
+        20
+      ],
+      "label": "Isarn"
+    },
+    "quete_bois": {
+      "at": "isarn_presence"
+    },
+    "quete_motifs": {
+      "at": "isarn_presence"
+    },
+    "chene_noeud": {
+      "pos": [
+        24,
+        15
+      ],
+      "label": "Chêne ancien"
+    },
+    "vesna_presence": {
+      "pos": [
+        47,
+        42
+      ],
+      "label": "Vesna"
+    },
+    "quete_cerf": {
+      "at": "vesna_presence"
+    },
+    "quete_sangliers": {
+      "at": "vesna_presence"
+    },
+    "sanglier_spawn": {
+      "pos": [
+        29,
+        46
+      ],
+      "pack": 3,
+      "radius": 4.0,
+      "label": "Sangliers (fougères ouest)"
+    },
+    "sanglier_spawn_2": {
+      "pos": [
+        40,
+        48
+      ],
+      "pack": 3,
+      "radius": 4.0,
+      "label": "Sangliers (fougères est)"
+    },
+    "fougere_noeud": {
+      "pos": [
+        35,
+        43
+      ],
+      "label": "Fougères dorées"
+    },
+    "lynx_spawn": {
+      "pos": [
+        55,
+        37
+      ],
+      "pack": 2,
+      "radius": 4.0,
+      "label": "Lynx (embuscade dans les rais)"
+    },
+    "ours_spawn": {
+      "pos": [
+        74,
+        45
+      ],
+      "pack": 2,
+      "radius": 3.0,
+      "label": "Ours moussus (gardent le chemin)"
+    },
+    "traces_noeud": {
+      "pos": [
+        63,
+        36
+      ],
+      "label": "Traces du cerf pâle"
+    },
+    "affleurement_rocheux_noeud": {
+      "pos": [
+        81,
+        31
+      ],
+      "label": "Affleurement rocheux"
+    },
+    "pierres_moussues_gravees_noeud": {
+      "pos": [
+        51,
+        9
+      ],
+      "label": "Pierres moussues gravées"
+    },
+    "ecorce_noeud": {
+      "pos": [
+        60,
+        7
+      ],
+      "label": "Tronc gravé"
+    },
+    "veilleur_spawn": {
+      "pos": [
+        45,
+        8
+      ],
+      "pack": 1,
+      "radius": 2.0,
+      "label": "Veilleur d'écorce (après 40 sangliers, endormi)"
+    }
+  },
+  "extra_entries": {
+    "_note": "Postes supplémentaires (mêmes templates) et découverte de lore.",
+    "chene_2": {
+      "template_type": "resource",
+      "template_id": "chene_ancien",
+      "pos": [
+        33,
+        8
+      ],
+      "label": "Chêne ancien (crête)",
+      "stock": 3
+    },
+    "fougere_2": {
+      "template_type": "resource",
+      "template_id": "fougeres_dorees",
+      "pos": [
+        26,
+        51
+      ],
+      "label": "Fougères dorées (sud)",
+      "stock": 3
+    },
+    "traces_2": {
+      "template_type": "resource",
+      "template_id": "traces_du_cerf_pale",
+      "pos": [
+        83,
+        50
+      ],
+      "label": "Traces du cerf pâle (au bout du chemin)",
+      "stock": 3
+    },
+    "pierres_2": {
+      "template_type": "resource",
+      "template_id": "pierres_moussues_gravees",
+      "pos": [
+        59,
+        14
+      ],
+      "label": "Pierres moussues gravées (cercle)",
+      "stock": 3
+    },
+    "lignes_sous_la_mousse": {
+      "template_type": "discovery",
+      "pos": [
+        55,
+        12
+      ],
+      "label": "Les lignes sous la mousse (lore)"
+    }
+  },
+  "exits": [
+    {
+      "id": "exit_sentier_lisiere",
+      "to": "sentier_lisiere",
+      "label": "Sentier de la Lisière",
+      "rect": [
+        0,
+        28,
+        1,
+        4
+      ],
+      "arrival": [
+        3,
+        30
+      ]
+    },
+    {
+      "id": "exit_lac_miroir",
+      "to": "lac_miroir",
+      "label": "Lac-Miroir",
+      "rect": [
+        91,
+        16,
+        1,
+        4
+      ],
+      "arrival": [
+        88,
+        18
+      ]
+    },
+    {
+      "id": "exit_sous_bois_perdu",
+      "to": "sous_bois_perdu",
+      "label": "Sous-Bois Oublié",
+      "rect": [
+        91,
+        52,
+        1,
+        4
+      ],
+      "arrival": [
+        88,
+        53
+      ]
+    },
+    {
+      "id": "exit_veilleurs_oublies",
+      "to": "veilleurs_oublies",
+      "label": "???",
+      "rect": [
+        54,
+        0,
+        3,
+        1
+      ],
+      "arrival": [
+        55,
+        4
+      ],
+      "hidden": true
+    }
+  ],
+  "ambient": {
+    "modulate": "#e6dcc2",
+    "mist": true,
+    "music_mood": "tension"
+  },
+  "dressing_rules": [
+    "Sous-bois clairs (open_wood) : praticables, arbres anciens espacés de 3-5 tuiles (troncs à collision, feuillage au-dessus), fougères et rais de lumière ; on peut couper à travers entre les clairières.",
+    "Voûte : arbres anciens partout hors chemins et clairières, plus grands et plus sombres que la Lisière (troncs noueux, racines énormes), quelques arbres géants qui dépassent de la voûte.",
+    "La lumière ne tombe que dans les clairières, en rais obliques (lumière d'aube plus forte qu'ailleurs) ; brume basse dorée.",
+    "Fougères dorées hautes comme un homme dans le champ des sangliers, labourées par endroits (terre retournée).",
+    "Camp d'Isarn : tente de toile, billot avec hache plantée, bois empilé, feu éteint ; le chêne millénaire à côté, que personne ne coupe.",
+    "Cercle de pierres : sept pierres moussues en cercle parfait, motifs géométriques (cyan à peine visible) ; chênes morts aux branches trop droites juste à l'ouest.",
+    "Chemin des Ours : mousse retournée, ossements, souches griffées ; le ru traverse sous deux ponts de rondins.",
+    "Pierres moussues isolées dans le sous-bois, ici et là, comme si un ouvrage plus grand avait été enseveli."
+  ]
+}

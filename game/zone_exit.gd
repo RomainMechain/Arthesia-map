@@ -7,6 +7,8 @@ signal exit_reached(target_zone: String, label: String)
 @export var target_zone := ""
 @export var label := ""
 @export var arrival := Vector2.ZERO
+## Sortie cachée : ni nom ni repère tant que la zone n'est pas débloquée
+@export var secret := false
 
 
 func _ready() -> void:

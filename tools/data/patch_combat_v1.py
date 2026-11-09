@@ -39,6 +39,29 @@ MONSTER_MOVES = {
         "feinte_agile": {"area": {"shape": "arc", "range": 28, "angle": 100},
                          "telegraph_seconds": 0.5, "avoidable_by": "esquive"},
     },
+    # Forêt des Anciens
+    "sanglier_des_fougeres": {
+        "coup_de_boutoir": {"area": {"shape": "arc", "range": 22, "angle": 90}},
+        "charge_furieuse": {"area": {"shape": "line", "range": 72, "width": 14}, "charge": True,
+                            "telegraph_seconds": 0.8, "avoidable_by": "esquive"},
+    },
+    "lynx_a_robe_claire": {
+        "griffes_vives": {"area": {"shape": "arc", "range": 22, "angle": 100}},
+        "bond_silencieux": {"area": {"shape": "line", "range": 46, "width": 14}, "charge": True,
+                            "telegraph_seconds": 0.45, "avoidable_by": "esquive"},
+    },
+    "ours_moussu": {
+        "patte_lourde": {"area": {"shape": "arc", "range": 28, "angle": 120}},
+        "etreinte_d_ours": {"area": {"shape": "circle", "radius": 30},
+                            "telegraph_seconds": 1.0, "avoidable_by": "esquive"},
+    },
+    "veilleur_d_ecorce": {
+        "branche_fouet": {"area": {"shape": "arc", "range": 34, "angle": 120}},
+        "racines_etouffantes": {"area": {"shape": "circle", "radius": 40},
+                                "telegraph_seconds": 1.5, "avoidable_by": "esquive"},
+        "pulsation_runique": {"area": {"shape": "circle", "radius": 56},
+                              "telegraph_seconds": 0.9, "avoidable_by": "esquive"},
+    },
     # Rive Paisible
     "crabe_des_galets": {
         "pincement": {"area": {"shape": "arc", "range": 18, "angle": 90}},

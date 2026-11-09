@@ -1,0 +1,7 @@
+{
+  "id": "traqueur_d_aube",
+  "name": "Traqueur d'Aube",
+  "description": "Tu as vaincu des bêtes que la lumière avait marquées. Tu commences à sentir quand elles rôdent.",
+  "unlock_condition": {"type": "kill_count", "monster_id": "marque", "count": 3},
+  "effects": [{"type": "stat_bonus_percent", "stat": "atk", "amount_percent": 5}]
+}

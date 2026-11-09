@@ -1,0 +1,11 @@
+{
+  "id": "celui_que_l_aube_evite",
+  "name": "Celui que l'Aube Évite",
+  "description": "Dix bêtes marquées sont tombées sous tes coups. La lumière qui ne bouge jamais semble, parfois, se détourner de toi.",
+  "unlock_condition": {"type": "kill_count", "monster_id": "marque", "count": 10},
+  "effects": [
+    {"type": "stat_bonus_percent", "stat": "hp", "amount_percent": 4},
+    {"type": "stat_bonus_percent", "stat": "atk", "amount_percent": 4},
+    {"type": "stat_bonus_percent", "stat": "def", "amount_percent": 4}
+  ]
+}
