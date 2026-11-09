@@ -304,6 +304,8 @@ func do_dialog_action() -> void:
 				gs.turn_in_quest(act.quest_id)
 			"shop":
 				hud.open_shop(act.shop_id)
+			"workshop":
+				hud.open_workshop(act.workshop_id)
 			"ferry":
 				_dialog.visible = false
 				var to := Vector2(act.to[0], act.to[1])

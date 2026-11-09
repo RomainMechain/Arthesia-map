@@ -27,8 +27,18 @@ static func icon(name: String) -> Texture2D:
 
 
 static func item_icon(item_id: String) -> Texture2D:
-	var path := "res://assets/art/ui/items/%s.png" % item_id
-	return load(path) if ResourceLoader.exists(path) else null
+	var base := item_id.get_slice("~", 0)                  # variante de rareté : même icône
+	var path := "res://assets/art/ui/items/%s.png" % base
+	if ResourceLoader.exists(path):
+		return load(path)
+	# objet crafté : il reprend l'icône d'un objet du jeu choisie à sa création
+	var ml := Engine.get_main_loop() as SceneTree
+	var gs: Node = ml.root.get_node_or_null("GameState") if ml else null
+	if gs:
+		var icon: String = str(gs.tpl("items", base).get("icon", ""))
+		if icon != "" and ResourceLoader.exists("res://assets/art/ui/items/%s.png" % icon):
+			return load("res://assets/art/ui/items/%s.png" % icon)
+	return null
 
 
 ## Style 9-slice : `margin` = bords de la texture, `pad` = marge intérieure du contenu.

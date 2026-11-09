@@ -135,6 +135,8 @@ func interact() -> Dictionary:
 		extra = info
 	if action.is_empty() and template_type == "shop":
 		action = {"label": " Commerce ", "kind": "shop", "shop_id": template_id}
+	if action.is_empty() and template_type == "workshop":
+		action = {"label": " Fabriquer ", "kind": "workshop", "workshop_id": template_id}
 	if template_type == "ferry":
 		action = {"label": " Traverser ", "kind": "ferry", "to": data.get("to", [0, 0])}
 	if template_type == "discovery":

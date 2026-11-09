@@ -32,6 +32,7 @@ var _carnet_btn: Control
 var _potion: Control
 var carnet: Control
 var shop: Control
+var atelier: Control
 var menu: Control
 var _menu_btn: Control
 var _guide: Control
@@ -298,6 +299,9 @@ func _ready() -> void:
 	shop = (load("res://game/ui/shop.gd") as GDScript).new()
 	shop.visible = false
 	proot.add_child(shop)
+	atelier = (load("res://game/ui/atelier.gd") as GDScript).new()
+	atelier.visible = false
+	proot.add_child(atelier)
 	# guidage de l'accueil : chevron / flèche vers la cible de l'objectif
 	_guide = GuideArrow.new()
 	_guide.hud = self
@@ -368,7 +372,7 @@ func _exit_tree() -> void:
 
 ## Vrai si une position d'écran tombe sur un élément d'interface (le toucher ne doit pas déplacer).
 func blocks(screen_pos: Vector2) -> bool:
-	for c in [_attack, carnet, shop, menu, _carnet_btn, _menu_btn, _potion, _hint_box] + _slots:
+	for c in [_attack, carnet, shop, atelier, menu, _carnet_btn, _menu_btn, _potion, _hint_box] + _slots:
 		if c.visible and c.get_global_rect().has_point(screen_pos):
 			return true
 	return false
@@ -376,15 +380,27 @@ func blocks(screen_pos: Vector2) -> bool:
 
 func open_shop(id: String) -> void:
 	carnet.visible = false
+	atelier.visible = false
 	shop.open(id)
 
 
+func open_workshop(id: String) -> void:
+	carnet.visible = false
+	shop.visible = false
+	atelier.open(id)
+
+
 func toggle_menu() -> void:
+	if shop.visible or atelier.visible:            # Échap ferme d'abord la fenêtre ouverte
+		shop.visible = false
+		atelier.visible = false
+		return
 	if menu.visible:
 		menu.close()
 	else:
 		carnet.visible = false
 		shop.visible = false
+		atelier.visible = false
 		menu.open()
 
 
@@ -394,6 +410,7 @@ func _on_hint(_key: String, text: String) -> void:
 
 func toggle_carnet() -> void:
 	shop.visible = false
+	atelier.visible = false
 	carnet.visible = not carnet.visible
 	if carnet.visible:
 		carnet.refresh()
@@ -528,6 +545,8 @@ func _refresh_static() -> void:
 	_attack.icon_scale = 2
 	if shop and shop.visible:
 		shop.refresh()
+	if atelier and atelier.visible and _gs.crafting.is_empty():
+		atelier.refresh()
 	# barre de compétences
 	for i in 4:
 		var sid: String = p.bar[i]

@@ -110,10 +110,38 @@ func _page_box(spread: HBoxContainer) -> VBoxContainer:
 	for side in ["left", "right", "top", "bottom"]:
 		m.add_theme_constant_override("margin_" + side, 3)
 	spread.add_child(m)
+	# la page défile si son contenu est trop long (beaucoup d'objets, de métiers, un long texte)
+	var sc := ScrollContainer.new()
+	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	sc.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	m.add_child(sc)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 3)
-	m.add_child(v)
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	v.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	sc.add_child(v)
 	return v
+
+
+## Le cadre de page (MarginContainer) qui contient une page (VBox dans un ScrollContainer).
+func _page_root(page: Control) -> Control:
+	return page.get_parent().get_parent()
+
+
+## Après construction : aucun texte ne doit élargir la page. Un nom qui s'étire (SIZE_EXPAND) est
+## coupé avec « … » ; un texte fixe trop long passe à la ligne.
+func _fit(node: Node) -> void:
+	for ch in node.get_children():
+		if ch is Label:
+			var l := ch as Label
+			if l.autowrap_mode == TextServer.AUTOWRAP_OFF:
+				if l.size_flags_horizontal & Control.SIZE_EXPAND:
+					l.clip_text = true
+					l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+				elif l.get_minimum_size().x > PAGE_W * 0.6:
+					l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+					l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_fit(ch)
 
 
 # =========================================================================== petits composants
@@ -285,6 +313,9 @@ func refresh() -> void:
 	_build_sac(_pages["Sac"][0], _pages["Sac"][1])
 	_build_quetes(_pages["Quêtes"][0], _pages["Quêtes"][1])
 	_build_carte(_pages["Carte"][0], _pages["Carte"][1])
+	for t in _pages:
+		for page in _pages[t]:
+			_fit(page)
 
 
 # --------------------------------------------------------------------------- Personnage
@@ -555,8 +586,9 @@ func _build_equip(left: VBoxContainer, right: VBoxContainer) -> void:
 		nv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		r.add_child(nv)
 		_label(nv, _gs.item_name(iid), INK)
-		var dh := HBoxContainer.new()
-		dh.add_theme_constant_override("separation", 6)
+		var dh := HFlowContainer.new()            # les écarts passent à la ligne au lieu d'élargir la page
+		dh.add_theme_constant_override("h_separation", 6)
+		dh.add_theme_constant_override("v_separation", 0)
 		nv.add_child(dh)
 		for d in _diff(iid, _slot):
 			_label(dh, d[0], GOOD if d[1] else ACCENT)
@@ -653,7 +685,7 @@ func _build_comp(left: VBoxContainer, right: VBoxContainer) -> void:
 		if _selected_skill != "" else "Choisis une compétence à droite, puis son emplacement.",
 		GOOD if _selected_skill != "" else INK_FAINT, 10, true)
 	_spacer(left)
-	_section(left, "Métiers de récolte")
+	_section(left, "Métiers")
 	var profs: Array = ["herboristerie", "bucheronnage", "peche", "archeologie", "chasse"]
 	for p2 in p.get("professions", {}):
 		if not p2 in profs:
@@ -1032,8 +1064,9 @@ class MapView extends Control:
 
 func _build_carte(left: VBoxContainer, right: VBoxContainer) -> void:
 	# la carte prend toute la double page : reliure et page droite masquées
-	left.get_parent().get_parent().get_child(1).visible = false
-	right.get_parent().visible = false
+	var spread: Node = _page_root(left).get_parent()
+	spread.get_child(1).visible = false
+	_page_root(right).visible = false
 	var fd: Dictionary = _gs.floor_data()
 	_section(left, fd.get("name", "Étage"), "touche une zone", INK_FAINT)
 	var mv := MapView.new()
