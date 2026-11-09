@@ -257,8 +257,8 @@ func _dive(mv: Dictionary) -> void:
 	if area.get("shape") != "circle":
 		area = {"shape": "circle", "radius": 16}
 	submerged = true
-	if sprite:
-		create_tween().tween_property(sprite, "modulate:a", 0.0, 0.18)
+	if sprite:                                        # rides seules, à demi effacées
+		sprite.modulate.a = 0.75
 	_pending = {"move": mv, "dir": Vector2.RIGHT, "origin": emerge, "resolve_at": _t + tele, "area": area, "emerge": local}
 	var z := _zone()
 	if z:
@@ -293,6 +293,7 @@ func _resolve_pending() -> void:
 			z.report_hit(_player, r, self)
 	elif float(mv.get("telegraph_seconds", 0.0)) > 0.0 and z and _player_ok():
 		z.float_text(_player.global_position + Vector2(0, -26), "Évité !", Color("ece2cf"))
+	_pending.strike_until = _t + (0.45 if temper == "swimmer" else 0.22)
 	_pending.recover_at = _t + (1.4 if temper == "swimmer" else 0.45)   # l'anguille reste en surface : c'est le moment de frapper
 	state = "recover"
 
@@ -429,12 +430,19 @@ func _animate(delta: float, moving: bool) -> void:
 	if not sprite:
 		return
 	_anim_t += delta * (9.0 if moving else 2.5)
+	# planche : 0-1 repos (1 = clignement, oreille, note figée), 2-5 déplacement, 6 élan, 7 frappe
+	var has_attack := sprite.hframes >= 8
 	if state == "windup":
-		sprite.frame = 1                                # en arrêt, ramassé : il prépare son coup
+		sprite.frame = 6 if has_attack else 1          # ramassé : il prépare son coup
 		sprite.position.x = sin(_t * 40.0) * 0.6
 		return
+	if state == "dive":
+		sprite.frame = 6 if has_attack else 0          # sous l'eau : on ne voit que des rides
+		return
 	sprite.position.x = 0.0
-	# planche : 0-1 repos (1 = clignement, oreille, note figée), 2-5 cycle de déplacement
+	if state == "recover" and has_attack and _t < float(_pending.get("strike_until", 0.0)):
+		sprite.frame = 7                                # la frappe, tenue un instant
+		return
 	sprite.frame = 2 + int(_anim_t) % 4 if moving else (1 if int(_anim_t) % 5 == 4 else 0)
 
 

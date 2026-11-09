@@ -508,7 +508,7 @@ class Zone:
                     self.interactables.append({
                         **item, "entry_id": f"{eid}_{k + 1}" if pack > 1 else eid,
                         "x": round((x + 0.5 + math.cos(a) * rr) * T), "y": round((y + 1 + math.sin(a) * rr) * T),
-                        "sprite": res(f"monsters/{tid}_idle.png"), "frames": 6,
+                        "sprite": res(f"monsters/{tid}_idle.png"), "frames": 8,
                         "role": f"Niv. {t.get('level', 1)}" + (" · rare" if rare else ""),
                         "dialogues": [t.get("description", "")],
                         "mob": {"leash": round(radius * T), "level": t.get("level", 1),
