@@ -30,6 +30,11 @@ var _anim_t := 0.0
 var _act := ""                # "", "attack", "hurt", "ko"
 var _act_t := 0.0
 var _mat: ShaderMaterial
+## Équipement visible : un calque par emplacement, teinté selon la matière (game/equip_look.gd)
+const EQUIP_SLOTS := ["boots", "chest", "gloves", "head", "weapon"]
+var _layers := {}
+var _motes: CPUParticles2D
+var _step_t := 0.0
 
 
 func _ready() -> void:
@@ -46,11 +51,106 @@ func _ready() -> void:
 	_mat.shader = load("res://game/fx/flash.gdshader")
 	sprite.material = _mat
 	fighter.hp_changed.connect(_on_hp_changed)
+	_build_layers()
+	if gs:
+		gs.profile_changed.connect(refresh_equipment)
+	refresh_equipment()
 
 
 func _exit_tree() -> void:
 	if fighter and fighter.hp_changed.is_connected(_on_hp_changed):
 		fighter.hp_changed.disconnect(_on_hp_changed)
+	var gs := get_node_or_null("/root/GameState")
+	if gs and gs.profile_changed.is_connected(refresh_equipment):
+		gs.profile_changed.disconnect(refresh_equipment)
+
+
+# --------------------------------------------------------------------------- équipement visible
+func _build_layers() -> void:
+	var shader: Shader = load("res://game/fx/equip_tint.gdshader")
+	for slot in EQUIP_SLOTS:
+		var l := Sprite2D.new()
+		l.name = "Equip_" + slot
+		l.centered = false
+		l.hframes = 12
+		l.vframes = 5
+		l.offset = sprite.offset - (Vector2(8, 4) if slot == "weapon" else Vector2.ZERO)
+		l.position = sprite.position
+		var m := ShaderMaterial.new()
+		m.shader = shader
+		l.material = m
+		l.visible = false
+		add_child(l)
+		_layers[slot] = l
+	_motes = CPUParticles2D.new()                   # légendaire : quelques grains de lumière
+	_motes.name = "Lueur"
+	_motes.emitting = false
+	_motes.amount = 6
+	_motes.lifetime = 1.2
+	_motes.position = Vector2(0, -12)
+	_motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_motes.emission_rect_extents = Vector2(7, 9)
+	_motes.direction = Vector2(0, -1)
+	_motes.spread = 25.0
+	_motes.gravity = Vector2.ZERO
+	_motes.initial_velocity_min = 4.0
+	_motes.initial_velocity_max = 9.0
+	_motes.scale_amount_min = 1.0
+	_motes.scale_amount_max = 1.0
+	var g := Gradient.new()
+	g.set_color(0, Color(1.0, 0.92, 0.6, 0.9))
+	g.set_color(1, Color(1.0, 0.92, 0.6, 0.0))
+	_motes.color_ramp = g
+	add_child(_motes)
+	_sync_layers()
+
+
+## Relit l'équipement porté : forme, matière, lueur de rareté.
+func refresh_equipment() -> void:
+	var gs := get_node_or_null("/root/GameState")
+	if gs == null or _layers.is_empty():
+		return
+	var legendary := false
+	for slot in EQUIP_SLOTS:
+		var l: Sprite2D = _layers[slot]
+		var id: String = gs.equipped(slot)
+		var t: Dictionary = gs.tpl("items", id) if id != "" else {}
+		var tex: Texture2D = EquipLook.texture(EquipLook.shape(slot, t)) if not t.is_empty() else null
+		l.visible = tex != null
+		if tex == null:
+			continue
+		l.texture = tex
+		var r: Array = EquipLook.ramp(id, t, UISkin.item_icon(id))
+		var m := l.material as ShaderMaterial
+		m.set_shader_parameter("light", r[0])
+		m.set_shader_parameter("mid", r[1])
+		m.set_shader_parameter("dark", r[2])
+		var rank: String = gs.item_rank(id)
+		var ri := CraftRules.rank_index(rank)
+		var g := 0.0 if ri < 2 else (0.55 if ri == 2 else 0.8)
+		m.set_shader_parameter("glow", g if slot == "weapon" else 0.0)      # contour : l'arme seulement
+		m.set_shader_parameter("shine", 0.0 if slot == "weapon" else g)
+		m.set_shader_parameter("pulse", 1.0 if ri >= 3 else 0.0)
+		m.set_shader_parameter("glow_color", Color(CraftRules.RANK_COLORS[rank]))
+		legendary = legendary or ri >= 4
+	_motes.emitting = legendary
+	_sync_layers()
+
+
+func _sync_layers() -> void:
+	if _layers.is_empty():
+		return
+	for slot in _layers:
+		var l: Sprite2D = _layers[slot]
+		if l.texture == null:
+			continue
+		l.frame_coords = sprite.frame_coords
+		l.flip_h = sprite.flip_h
+	# dos tourné (haut, haut-côté) : l'arme passe derrière le corps
+	var w: Sprite2D = _layers.weapon
+	var behind := sprite.frame_coords.y >= 3 and sprite.frame_coords.x < 10
+	if behind != (w.get_index() < sprite.get_index()):
+		move_child(w, sprite.get_index())          # juste avant ou juste après le corps
 
 
 func is_down() -> bool:
@@ -81,6 +181,13 @@ func _physics_process(delta: float) -> void:
 	var spd := SPEED * (0.35 if _act == "attack" else 1.0) * speed_mult     # on s'engage dans son coup
 	velocity = dir * spd
 	move_and_slide()
+	if dir != Vector2.ZERO and get_real_velocity().length() > SPEED * 0.3:   # pas : discrets
+		_step_t -= delta
+		if _step_t <= 0.0:
+			_step_t = 0.31 / maxf(speed_mult, 0.5)
+			Sfx.play("step_water" if speed_mult < 1.0 else "step", -9.0, 0.12)
+	else:
+		_step_t = 0.0
 	if _target != null and get_real_velocity().length() < SPEED * 0.15 and get_slide_collision_count() > 0:
 		_target = null
 	if dir != Vector2.ZERO and _act != "attack":
@@ -188,6 +295,7 @@ func cast(slot: int, aim := Vector2.ZERO) -> String:
 
 ## Résout un coup sur toutes les bêtes dans la zone (une ligne ne touche que la première).
 func _strike(area: Dictionary, d: Vector2, raw_fn: Callable, opts: Dictionary) -> void:
+	Sfx.play("swing_heavy" if opts.has("skill") else "swing", -8.0)
 	var z := _zone()
 	if z:
 		z.show_strike(global_position + Vector2(0, -8), area, d,
@@ -240,6 +348,10 @@ func _on_hp_changed(_hp: float, _max: float) -> void:
 
 func _flash() -> void:
 	_mat.set_shader_parameter("flash", 1.0)
+	for l in _layers.values():
+		(l.material as ShaderMaterial).set_shader_parameter("flash", 1.0)
+		var lm := l.material as ShaderMaterial
+		create_tween().tween_method(func(v): lm.set_shader_parameter("flash", v), 1.0, 0.0, 0.14)
 	var tw := create_tween()
 	tw.tween_method(func(v): _mat.set_shader_parameter("flash", v), 1.0, 0.0, 0.14)
 
@@ -278,6 +390,7 @@ func _animate(delta: float, moving: bool) -> void:
 				col = F_KO + (1 if _anim_t > 0.35 else 0)
 				sprite.flip_h = false
 				sprite.frame_coords = Vector2i(col, 0)
+				_sync_layers()
 				return
 		if _act_t <= 0.0:
 			_act = ""
@@ -286,6 +399,7 @@ func _animate(delta: float, moving: bool) -> void:
 	else:
 		col = F_IDLE + (1 if fmod(_anim_t, 1.6) > 0.8 else 0)
 	sprite.frame_coords = Vector2i(col, rf[0])
+	_sync_layers()
 
 
 func _add_keys(action: StringName, keys: Array) -> void:

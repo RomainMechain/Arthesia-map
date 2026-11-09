@@ -11,6 +11,7 @@ var _box: VBoxContainer
 var _confirm_erase := false
 
 const AMBIENCE := [[1.0, "Pleine"], [0.5, "Douce"], [0.0, "Coupée"]]
+const VOLUMES := [1.0, 0.8, 0.6, 0.4, 0.2, 0.0]
 
 
 func _ready() -> void:
@@ -126,6 +127,7 @@ func _show(page: String) -> void:
 			_setting("Lumière d'aube", AMBIENCE[idx][1], func():
 				_gs.set_setting("ambience", AMBIENCE[(idx + 1) % AMBIENCE.size()][0])
 				_show("settings"))
+			_setting("Son", "Volumes", func(): _show("sound"))
 			_setting("Vibrations", "Oui" if _gs.settings.get("vibrate", true) else "Non", func():
 				_gs.set_setting("vibrate", not _gs.settings.get("vibrate", true))
 				_show("settings"))
@@ -172,6 +174,34 @@ func _show(page: String) -> void:
 					close()
 				else:
 					_show("main"))
+		"sound":
+			_title("Son")
+			for v in [["Général", "vol_master"], ["Musique et ambiance", "vol_music"], ["Effets", "vol_sfx"]]:
+				var key: String = v[1]
+				var cur: float = float(_gs.settings.get(key, 0.8))
+				var idx := 0
+				for i in VOLUMES.size():
+					if absf(VOLUMES[i] - cur) < absf(VOLUMES[idx] - cur):
+						idx = i
+				_setting(v[0], "Coupé" if VOLUMES[idx] <= 0.0 else "%d %%" % roundi(VOLUMES[idx] * 100), func():
+					_gs.set_setting(key, VOLUMES[(idx + 1) % VOLUMES.size()])
+					var snd := get_node_or_null("/root/Sound")
+					if snd and key == "vol_sfx":
+						snd.play("loot")                  # on entend tout de suite le nouveau volume
+					_show("sound"))
+			var music_ok := false
+			for k in ["calme", "tension", "boss", "titre"]:
+				var snd2 := get_node_or_null("/root/Sound")
+				music_ok = music_ok or (snd2 != null and snd2._music_file(k) != "")
+			if not music_ok:
+				var w2 := UISkin.shadowed(Label.new(), Color("c4b59c"))
+				w2.text = "Aucune musique installée (assets/audio/music)."
+				w2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				_box.add_child(w2)
+			var sp2 := Control.new()
+			sp2.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			_box.add_child(sp2)
+			_big_button("Retour", func(): _show("settings"))
 		"controls":
 			_title("Commandes")
 			for line in [

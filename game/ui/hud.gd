@@ -403,12 +403,14 @@ func blocks(screen_pos: Vector2) -> bool:
 
 
 func open_shop(id: String) -> void:
+	Sfx.play("ui_open")
 	carnet.visible = false
 	atelier.visible = false
 	shop.open(id)
 
 
 func open_workshop(id: String) -> void:
+	Sfx.play("ui_open")
 	carnet.visible = false
 	shop.visible = false
 	atelier.open(id)
@@ -439,6 +441,7 @@ func toggle_map() -> void:
 	if not minimap.available():
 		return
 	var open := not bigmap.visible
+	Sfx.play("ui_page")
 	carnet.visible = false
 	shop.visible = false
 	atelier.visible = false
@@ -453,6 +456,7 @@ func toggle_carnet() -> void:
 		bigmap.visible = false
 		minimap.visible = minimap.available()
 	carnet.visible = not carnet.visible
+	Sfx.play("ui_open" if carnet.visible else "ui_close")
 	if carnet.visible:
 		carnet.refresh()
 

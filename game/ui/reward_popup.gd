@@ -70,7 +70,7 @@ func _on_level(level: int) -> void:
 		["Points de vie et mana au maximum", INK_SOFT]]
 	push({"heading": "Niveau supérieur", "title": "Niveau %d" % level, "title_size": 20,
 		"badge": str(level), "lines": lines,
-		"hint": "Carnet › Personnage pour placer tes points.", "color": GOLD})
+		"hint": "Carnet › Personnage pour placer tes points.", "color": GOLD, "sound": "level_up"})
 
 
 func _on_title(tid: String) -> void:
@@ -83,7 +83,7 @@ func _on_title(tid: String) -> void:
 			lines.append(["+%d %s" % [int(e.amount), STAT_NAMES.get(e.stat, e.stat)], GOOD])
 	push({"heading": "Nouveau titre", "title": t.get("name", tid), "icon": UISkin.tex("marker_quest"),
 		"desc": t.get("description", ""), "lines": lines, "hint": "Porte-le depuis Carnet › Équipement.",
-		"color": GOLD})
+		"color": GOLD, "sound": "unlock"})
 
 
 func _on_skill(sid: String) -> void:
@@ -98,7 +98,7 @@ func _on_skill(sid: String) -> void:
 	else:
 		lines.append(["Compétence passive : toujours active", GOOD])
 	push({"heading": "Nouvelle compétence", "title": sk.get("name", sid), "icon": UISkin.icon(sid),
-		"desc": sk.get("description", ""), "lines": lines, "color": Color("8fd8d0")})
+		"desc": sk.get("description", ""), "lines": lines, "color": Color("8fd8d0"), "sound": "unlock"})
 
 
 func _on_craft(item_id: String, discovered: bool) -> void:
@@ -122,7 +122,7 @@ func _on_craft(item_id: String, discovered: bool) -> void:
 	push({"heading": "Nouvelle recette !" if discovered else "Objet fabriqué", "title": base_name,
 		"title_color": rc.darkened(0.45) if rank != "commun" else INK, "icon": UISkin.item_icon(item_id),
 		"desc": t.get("description", ""), "lines": lines,
-		"color": rc if rank != "commun" else (GOLD if discovered else Color("ece2cf"))})
+		"color": rc if rank != "commun" else (GOLD if discovered else Color("ece2cf")), "sound": "craft_done"})
 
 
 # --------------------------------------------------------------------------- file et affichage
@@ -144,6 +144,8 @@ func _next() -> void:
 
 
 func _show(e: Dictionary) -> void:
+	if e.has("sound"):
+		Sfx.play(e.sound)
 	for c in _body.get_children():
 		_body.remove_child(c)
 		c.queue_free()

@@ -13,6 +13,7 @@ const SKY := ["4a3450", "5a3e5e", "6a2a44", "7a5878", "a83a40", "d9822b", "f5b84
 
 func _ready() -> void:
 	_gs = (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	Sfx.title_screen()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UISkin.theme()
 	var bg := Control.new()

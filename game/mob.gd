@@ -31,6 +31,7 @@ var state := "wander"               # wander, flee, alert, chase, windup, recove
 var provoked := false
 ## Nageuse sous l'eau : invisible et intouchable pendant la plongée
 var submerged := false
+var _boss_music := false
 
 var _home := Vector2.ZERO
 var _goal := Vector2.ZERO
@@ -169,6 +170,10 @@ func _engage(pause := ALERT_PAUSE) -> void:
 		return
 	provoked = true
 	_alert_t = 0.9
+	Sfx.play("alert", -4.0)
+	if fighter.role == "boss" and not _boss_music:
+		_boss_music = true
+		Sfx.push_mood("boss")
 	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
 	if gs:
 		gs.show_hint("aggro")
@@ -182,7 +187,14 @@ func _engage(pause := ALERT_PAUSE) -> void:
 			fighter.start_cooldown(mv.id, pause + (randf_range(0.4, 0.9) if mv.get("weight", 1) > 1 else float(mv.cooldown_seconds) * 0.5))
 
 
+func _end_boss_music() -> void:
+	if _boss_music:
+		_boss_music = false
+		Sfx.pop_mood("boss")
+
+
 func _disengage() -> void:
+	_end_boss_music()
 	provoked = false
 	submerged = false
 	if sprite:
@@ -240,6 +252,7 @@ func _start_move(mv: Dictionary, d: Vector2) -> void:
 		var gs2 := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
 		if gs2:
 			gs2.show_hint("telegraph")
+		Sfx.play("telegraph", -5.0)
 		state = "windup"
 	else:
 		_resolve_pending()
@@ -257,6 +270,7 @@ func _dive(mv: Dictionary) -> void:
 	if area.get("shape") != "circle":
 		area = {"shape": "circle", "radius": 16}
 	submerged = true
+	Sfx.play("dive", -4.0)
 	if sprite:                                        # rides seules, à demi effacées
 		sprite.modulate.a = 0.75
 	_pending = {"move": mv, "dir": Vector2.RIGHT, "origin": emerge, "resolve_at": _t + tele, "area": area, "emerge": local}
@@ -270,6 +284,7 @@ func _dive(mv: Dictionary) -> void:
 func _resolve_pending() -> void:
 	var mv: Dictionary = _pending.move
 	if state == "dive":                             # elle ressurgit dans les rides
+		Sfx.play("splash")
 		position = _pending.emerge
 		submerged = false
 		if sprite:
@@ -293,6 +308,7 @@ func _resolve_pending() -> void:
 			z.report_hit(_player, r, self)
 	elif float(mv.get("telegraph_seconds", 0.0)) > 0.0 and z and _player_ok():
 		z.float_text(_player.global_position + Vector2(0, -26), "Évité !", Color("ece2cf"))
+		Sfx.play("dodge", -7.0)
 	_pending.strike_until = _t + (0.45 if temper == "swimmer" else 0.22)
 	_pending.recover_at = _t + (1.4 if temper == "swimmer" else 0.45)   # l'anguille reste en surface : c'est le moment de frapper
 	state = "recover"
@@ -328,6 +344,8 @@ func react(r: Dictionary, from: Vector2) -> void:
 
 
 func _die() -> void:
+	_end_boss_music()
+	Sfx.play("mob_death")
 	_cancel_pending()
 	_alert.visible = false
 	state = "dead"

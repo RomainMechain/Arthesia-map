@@ -18,6 +18,7 @@ var _odds: Label
 var _bar: UISkin.Bar
 var _go: Button
 var _info: Label
+var _work_t := 0.0
 
 
 func _ready() -> void:
@@ -355,5 +356,14 @@ func _process(_delta: float) -> void:
 		return
 	var pr: Dictionary = _gs.craft_progress()
 	_bar.set_value(pr.get("k", 0.0))
+	if not pr.is_empty():
+		_work_t -= _delta
+		if _work_t <= 0.0:
+			_work_t = 0.75
+			var snd: String = {"forge": "anvil", "sculpture": "anvil", "enchantement": "anvil", "alchimie": "potion",
+				"cuisine": "gather", "couture": "ui_page"}.get(workshop, "gather")
+			Sfx.play(snd, -7.0, 0.1)
+	else:
+		_work_t = 0.0
 	if not pr.is_empty():
 		_preview.text = "Claude imagine l'objet…" if pr.waiting_ai else "L'artisan façonne…"

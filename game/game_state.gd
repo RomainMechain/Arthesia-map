@@ -31,7 +31,8 @@ var arrival_from := ""          # zone d'où l'on arrive ("" = point d'apparitio
 var persist := true             # les tests coupent la sauvegarde
 
 var profile: Dictionary = {}
-var settings := {"ambience": 1.0, "vibrate": true, "hints": true, "craft_ai": true}
+var settings := {"ambience": 1.0, "vibrate": true, "hints": true, "craft_ai": true,
+	"vol_master": 0.8, "vol_music": 0.6, "vol_sfx": 0.8}
 var fighter := Fighter.new()
 
 var _fade: ColorRect
@@ -156,6 +157,8 @@ func gain_xp(amount: float) -> void:
 
 
 func add_gold(n: int) -> void:
+	if n > 0:
+		Sfx.play("gold", -4.0, 0.05, 0.12)
 	profile.gold = maxi(0, profile.gold + n)
 	profile_changed.emit()
 
@@ -677,7 +680,10 @@ func _new_recipe(workshop: String, type_id: String, inputs: Dictionary, ai: Dict
 			"stat_bonuses": CraftRules.stat_bonuses(lvl, coh, ai.get("stat_weights", {}), ty.get("stats", []))}
 		var style := str(ai.get("weapon_style", "aucun"))
 		if ty.slot == "weapon":
-			t.equipment.area = CraftRules.WEAPON_AREAS.get(style, CraftRules.WEAPON_AREAS.lame)
+			if not CraftRules.WEAPON_AREAS.has(style):
+				style = "lame"
+			t.equipment.area = CraftRules.WEAPON_AREAS[style]
+			t.equipment.weapon_style = style            # forme visible en main (game/equip_look.gd)
 	elif cat == "consumable":
 		var amount: int = CraftRules.heal_amount(lvl) if ty.get("effect_type") == "heal" else CraftRules.mana_amount(lvl)
 		t.consumable = {"effect_type": ty.get("effect_type", "heal"),
@@ -814,6 +820,7 @@ func use_item(item_id: String) -> String:
 		_:
 			return "effet inconnu"
 	_take(item_id)
+	Sfx.play("potion")
 	fighter.start_cooldown("item", 5.0)
 	profile_changed.emit()
 	save()
@@ -929,6 +936,7 @@ func add_note(note_id: String, title: String, text: String) -> bool:
 	if profile.notes.has(note_id):
 		return false
 	profile.notes[note_id] = {"title": title, "text": text}
+	Sfx.play("discovery")
 	gain_xp(maxf(1.0, CombatRules.xp_to_next(int(profile.level)) * 0.05))
 	notice.emit("Note ajoutée au Carnet : %s" % title)
 	save()

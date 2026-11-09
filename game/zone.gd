@@ -56,6 +56,7 @@ func _ready() -> void:
 		gs.arrival_from = ""
 		gs.floor_id = floor_id
 		gs.enter_zone(zone_id, zone_type)
+		Sfx.enter_zone(zone_id, zone_type)
 		gs.notice.connect(_on_notice)
 		gs.quest_changed.connect(_on_quest_changed)
 		gs.title_unlocked.connect(_on_title)
@@ -314,6 +315,7 @@ func do_dialog_action() -> void:
 			"workshop":
 				hud.open_workshop(act.workshop_id)
 			"ferry":
+				Sfx.play("oars")
 				_dialog.visible = false
 				var to := Vector2(act.to[0], act.to[1])
 				player.stop()
@@ -359,6 +361,7 @@ func _update_gather(delta: float) -> void:
 	_gather_t += delta
 	if fmod(_gather_t, 0.7) < delta:              # geste de cueillette
 		player._start_act("attack", 0.2)
+		Sfx.play("splash" if _gather.profession() == "peche" else "gather", -6.0, 0.1)
 	_gather_bar.progress = _gather_t / _gather.gather_time()
 	if _gather_t < _gather.gather_time():
 		return
@@ -370,6 +373,7 @@ func _update_gather(delta: float) -> void:
 			gs.add_item(p[0], p[1])
 		float_text(player.global_position + Vector2(0, -30 - y * 10), "+%d %s" % [p[1], gs.item_name(p[0]) if gs else p[0]], Color("a8c84e"))
 		y += 1
+	Sfx.play("fish" if it.profession() == "peche" else "gather_done")
 	if gs:
 		gs.on_gather(it.template_id, it.profession(), int(it.res.get("level", 1)))
 	_stop_gather("")
@@ -476,6 +480,12 @@ func _on_notice(text: String) -> void:
 func report_hit(target: Node2D, r: Dictionary, from: Node2D) -> void:
 	var by_player: bool = from == player
 	var pos := target.global_position + Vector2(0, -24)
+	if r.dodged:
+		Sfx.play("dodge", -7.0)
+	elif target == player:
+		Sfx.play("hurt")
+	else:
+		Sfx.play("crit" if r.critical else "hit", 2.0)
 	if r.dodged:
 		float_text(pos, "Esquivé", Color("c4b59c"))
 	else:

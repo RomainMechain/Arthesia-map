@@ -70,7 +70,9 @@ func _ready() -> void:
 	holder.add_child(_tabs)
 	for t in ["Personnage", "Équipement", "Compétences", "Sac", "Quêtes", "Carte", "Recettes"]:
 		_pages[t] = _spread(t)
-	_tabs.tab_changed.connect(func(_i): refresh())
+	_tabs.tab_changed.connect(func(_i):
+		Sfx.play("ui_page", -3.0)
+		refresh())
 	var close := Button.new()
 	close.text = "×"
 	close.focus_mode = Control.FOCUS_NONE
