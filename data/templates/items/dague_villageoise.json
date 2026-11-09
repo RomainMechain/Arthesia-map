@@ -11,6 +11,11 @@
     "level_required": 1,
     "stat_bonuses": {
       "atk": 1.4
+    },
+    "area": {
+      "shape": "arc",
+      "range": 26,
+      "angle": 100
     }
   }
 }

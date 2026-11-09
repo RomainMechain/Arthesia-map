@@ -19,5 +19,10 @@
       "power": 0.48,
       "base": 10
     }
-  ]
+  ],
+  "area": {
+    "shape": "line",
+    "range": 112,
+    "width": 10
+  }
 }

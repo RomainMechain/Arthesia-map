@@ -12,6 +12,11 @@
     "stat_bonuses": {
       "atk": 9,
       "agi": 1
+    },
+    "area": {
+      "shape": "arc",
+      "range": 32,
+      "angle": 110
     }
   }
 }

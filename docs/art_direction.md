@@ -74,3 +74,32 @@ Chaque zone d'un même biome se distingue par sa **teinte d'ambiance** (`CanvasM
 - Nommage : `assets/art/<famille>/<biome|categorie>/<id>.png`, ids = ids des JSON quand ils existent
   (`lapin_bondissant.png`).
 - Inventaire et suivi : `art/asset_manifest.json`.
+
+## Interface : « laiton d'aube » (2026-11-08)
+
+Source : `tools/art/ui_kit.py` (sorties dans `assets/art/ui/`), assemblage par `game/ui/skin.gd` (`UISkin`).
+
+- **Panneaux de jeu** (bandeau de zone, portraits, plaques) : pierre de crépuscule (prune `#2a1a2e`) sertie de
+  laiton biseauté (sun1 → sun3), rivets en disque solaire aux coins. La lumière de l'aube est figée dans le métal.
+- **Dialogues et suivi des quêtes** : parchemin du village, encre brune (`#4f3324`), nom du PNJ sur une plaque
+  de laiton, portrait du PNJ dans un cadre serti.
+- **Carnet** : carnet relié de cuir cousu d'or, pages de parchemin, onglets en rubans (actif = parchemin,
+  inactif = cuir).
+- **Barre de combat** : chatons octogonaux en pierre architecte cerclés d'or, icônes 16 px. La recharge est
+  une ombre qui tourne. Gros médaillon pour l'attaque, compétences en arc sous le pouce.
+- **Niveau** : médaillon solaire. **Barres** : PV rouge aube, mana bleu, XP or. Les PV perdus laissent une
+  traînée claire.
+- **Marqueurs** : « ! » d'or (quête à prendre), « ? » d'or (à rendre), trois pierres « … » (en cours),
+  « ! » de pierre pâle (verrouillée, indice).
+- Le **cyan reste réservé aux runes et aux Architectes** : aucune pièce d'interface n'en porte.
+- Disposition ancrée aux bords (étirement `expand`) : sur un téléphone allongé, les coins suivent l'écran.
+## Ambiance de l'aube éternelle (`game/fx/`)
+
+- **Rais de lumière** (`dawn_light.gdshader`, mode additif) : bandes obliques venues du haut-gauche,
+  ancrées au monde, en paliers (pas de dégradé lisse).
+- **Ombres de nuages** (`cloud_shadows.gdshader`, mode multiplicatif) : taches prune qui dérivent vers l'est.
+- **Pollen doré** : particules de 1 px autour de la caméra, qui restent dans le monde.
+- **Eau** (`water_shimmer.gdshader`) : éclats d'aube qui courent sur les pixels clairs.
+- **Végétation** (`sway.gdshader`) : le haut des plantes ondule au vent (décalage arrondi au pixel) et
+  s'écarte au passage du joueur. Les arbres ondulent à peine.
+- Le village est plus sobre que la forêt (`ambience.gd`, PRESETS).

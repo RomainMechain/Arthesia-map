@@ -24,6 +24,11 @@ COL = {
     "shop": (224, 90, 72), "market": (42, 168, 192), "spawn": (255, 255, 255),
     "exit": (224, 90, 72), "landmark": (245, 184, 74), "text": (42, 26, 46),
     "panel": (250, 244, 230),
+    "clearing": (196, 214, 140), "lake": (52, 122, 152), "deep": (36, 78, 112), "shore": (226, 218, 196),
+    "shallows": (120, 196, 196), "reeds": (176, 170, 90), "trail": (230, 206, 150), "boardwalk": (150, 104, 64),
+    "monster": (200, 60, 60), "resource": (74, 150, 64),
+    "marsh": (110, 168, 150), "islet": (186, 196, 132), "hut": (176, 120, 72), "square_dirt": (214, 190, 140),
+    "bridge_path": (150, 104, 64), "ferry": (255, 250, 240), "discovery": (90, 232, 224),
 }
 
 
@@ -47,7 +52,7 @@ def main(path):
     S = max(10, min(20, 1120 // W))
     img = Image.new("RGB", (W * S + LEGEND_W, max(H * S, 760)), COL["panel"])
     d = ImageDraw.Draw(img)
-    d.rectangle([0, 0, W * S, H * S], fill=COL["bg"])
+    d.rectangle([0, 0, W * S, H * S], fill=COL["forest_wall"] if lay.get("forest_fill") else COL["bg"])
     for x in range(0, W + 1):
         d.line([x * S, 0, x * S, H * S], fill=COL["grid"])
     for y in range(0, H + 1):
@@ -55,7 +60,15 @@ def main(path):
 
     f_small, f_mid, f_big = font(12), font(14, True), font(18, True)
 
-    for r in lay["regions"]:
+    def label(pos, text, dy=-1.1, bold=False):
+        x, y = (pos[0] + 0.5) * S, (pos[1] + dy) * S
+        x = min(max(x, 60), W * S - 60)
+        f = f_mid if bold else f_small
+        bb = d.textbbox((x, y), text, font=f, anchor="mm")
+        d.rectangle([bb[0] - 3, bb[1] - 2, bb[2] + 3, bb[3] + 2], fill=(255, 250, 240))
+        d.text((x, y), text, font=f, fill=COL["text"], anchor="mm")
+
+    for r in [r for r in lay["regions"] if r["kind"] not in ("shore", "shallows", "reeds", "marsh")]:
         c = COL[r["kind"]]
         if "poly" in r:
             d.polygon([tp(p) for p in r["poly"]], fill=c)
@@ -75,11 +88,36 @@ def main(path):
                 for yy in range(y * S + 5, (y + h) * S, 7):
                     d.line([x * S + 3, yy, (x + w) * S - 3, yy], fill=(196, 176, 90), width=2)
 
+    for lk in lay.get("lake", []):
+        d.polygon([tp(p) for p in lk["poly"]], fill=COL["lake"])
+    if "deep_line" in lay:                               # au-delà : eau sombre et immobile
+        pts = [tp(p) for p in lay["deep_line"]["points"]]
+        d.polygon(pts + [(W * S, H * S * 0 + pts[-1][1]), (W * S, 0)], fill=COL["deep"])
+        d.line(pts, fill=(200, 220, 230), width=2)
+    for isl in lay.get("islands", []):
+        d.polygon([tp(p) for p in isl["poly"]], fill=COL["islet"])
+    for r in [r for r in lay["regions"] if r["kind"] in ("shore", "shallows", "reeds", "marsh")]:
+        c = COL[r["kind"]]
+        if "poly" in r:
+            d.polygon([tp(p) for p in r["poly"]], fill=c)
+        elif "circle" in r:
+            cx, cy, rad = r["circle"]
+            d.ellipse([(cx - rad) * S, (cy - rad) * S, (cx + rad) * S, (cy + rad) * S], fill=c)
     for wtr in lay["water"]:
         d.line([tp(p) for p in wtr["points"]], fill=COL["stream"], width=wtr["width"] * S, joint="curve")
     for pth in lay["paths"]:
         pts = [tp(p) for p in pth["points"]]
         d.line(pts, fill=COL[pth["kind"]], width=pth["width"] * S, joint="curve")
+        if pth["kind"] == "ferry":                        # traversée en barque : pointillés
+            continue
+        if pth["kind"] == "boardwalk":                   # planches
+            for (a, b) in zip(pts, pts[1:]):
+                n = int(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5 // 8)
+                for k in range(n):
+                    t = k / max(1, n)
+                    cx, cy = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+                    d.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=(110, 76, 46))
+            continue
         for p in pts:
             rr = pth["width"] * S / 2
             d.ellipse([p[0] - rr, p[1] - rr, p[0] + rr, p[1] + rr], fill=COL[pth["kind"]])
@@ -113,7 +151,15 @@ def main(path):
             continue
         kind = "shop" if eid.startswith("shop") else "market" if eid.startswith("market") else "npc"
         cx, cy = (e["pos"][0] + 0.5) * S, (e["pos"][1] + 0.5) * S
-        d.ellipse([cx - 8, cy - 8, cx + 8, cy + 8], fill=COL[tags[kind][0]], outline=COL["outline"], width=2)
+        if "pack" in e:                                  # bêtes : triangle rouge + rayon d'errance
+            rr = e.get("radius", 2) * S
+            d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], outline=COL["monster"], width=2)
+            d.regular_polygon((cx, cy, 9), 3, fill=COL["monster"], outline=COL["outline"])
+            d.text((cx, cy + 1), str(e["pack"]), font=f_small, fill=(255, 255, 255), anchor="mm")
+        elif eid.endswith("_noeud") or eid.startswith("peche"):    # ressources : losange vert
+            d.regular_polygon((cx, cy, 8), 4, fill=COL["resource"], outline=COL["outline"])
+        else:
+            d.ellipse([cx - 8, cy - 8, cx + 8, cy + 8], fill=COL[tags[kind][0]], outline=COL["outline"], width=2)
         positions.setdefault(eid, [])
     for host, quests in positions.items():
         if quests:
@@ -132,6 +178,9 @@ def main(path):
             return lay["spawn"]["pos"]
         if name == "place_centrale":
             return lay["landmarks"][0]["pos"]
+        for lm in lay["landmarks"]:
+            if lm["id"] == name:
+                return lm["pos"]
         if name in lay["entries"]:
             return lay["entries"][name]["pos"]
         ex = next(e for e in lay["exits"] if e["id"] == name)
@@ -146,12 +195,30 @@ def main(path):
             d.line([ax + (bx - ax) * t0, ay + (by - ay) * t0, ax + (bx - ax) * t1, ay + (by - ay) * t1],
                    fill=(255, 250, 240), width=3)
 
-    # ateliers (entrées propres à la carte) : losanges
+    # entrées propres à la carte : ateliers, pêche, traversée, découverte
+    for pth in [p for p in lay["paths"] if p["kind"] == "ferry"]:
+        pts = [tp(p) for p in pth["points"]]
+        for a, b in zip(pts, pts[1:]):
+            n = int(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5 // 10)
+            for k in range(0, n, 2):
+                t0, t1 = k / n, (k + 1) / n
+                d.line([a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0, a[0] + (b[0] - a[0]) * t1,
+                        a[1] + (b[1] - a[1]) * t1], fill=COL["ferry"], width=3)
     for eid, e in lay.get("extra_entries", {}).items():
         if eid.startswith("_"):
             continue
         cx, cy = (e["pos"][0] + 0.5) * S, (e["pos"][1] + 0.5) * S
-        d.regular_polygon((cx, cy, 8), 4, fill=COL["workshop"], outline=COL["outline"])
+        k = e.get("template_type")
+        if k == "resource":
+            d.regular_polygon((cx, cy, 8), 4, fill=COL["resource"], outline=COL["outline"])
+        elif k == "discovery":
+            d.regular_polygon((cx, cy, 9), 6, fill=COL["discovery"], outline=COL["outline"])
+        elif k == "ferry":
+            d.ellipse([cx - 7, cy - 7, cx + 7, cy + 7], fill=(255, 250, 240), outline=COL["outline"], width=2)
+        else:
+            d.regular_polygon((cx, cy, 8), 4, fill=COL["workshop"], outline=COL["outline"])
+        if "label" in e:
+            label(e["pos"], e["label"], dy=1.7)
 
     # cadre de la vue joueur centré sur l'arrivée
     vw, vh = lay["player_metrics"]["view_tiles"]
@@ -166,13 +233,9 @@ def main(path):
         d.line([(vx0 + vw) * S, vy0 * S + k, (vx0 + vw) * S, vy0 * S + k + 6], fill=COL["view"], width=2)
 
     # étiquettes (toutes tirées des données)
-    def label(pos, text, dy=-1.1, bold=False):
-        x, y = (pos[0] + 0.5) * S, (pos[1] + dy) * S
-        x = min(max(x, 60), W * S - 60)
-        f = f_mid if bold else f_small
-        bb = d.textbbox((x, y), text, font=f, anchor="mm")
-        d.rectangle([bb[0] - 3, bb[1] - 2, bb[2] + 3, bb[3] + 2], fill=(255, 250, 240))
-        d.text((x, y), text, font=f, fill=COL["text"], anchor="mm")
+    def _unused():
+        pass
+
 
     for e in lay["entries"].values():
         if "label" in e:
@@ -197,7 +260,11 @@ def main(path):
     d.text((lx, y), f"{W}×{H} tuiles ({W*16}×{H*16} px)", font=f_small, fill=COL["text"]); y += 16
     d.text((lx, y), f"≈ {W/vw:.1f} × {H/vh:.1f} écrans · traversée ≈ {W/spd:.0f} s",
            font=f_small, fill=COL["text"]); y += 28
-    items = [
+    items = [("lake", "Lac (eau claire, bloquant)"), ("deep", "Au-delà des roseaux : eau sombre"),
+             ("shore", "Plage de galets"), ("shallows", "Eaux basses (anse)"), ("reeds", "Roseaux"),
+             ("marsh", "Hauts-fonds praticables (ralentit)"), ("islet", "Îlot"), ("hut", "Cabanes / fumoir"),
+             ("boardwalk", "Pontons (praticables)"), ("trail", "Sentier de berge")] if "lake" in lay else []
+    items += [
         ("forest_wall", "Lisière de forêt (bloquante)"), ("road", "Routes"),
         ("square", "Place pavée / terrasse"), ("field", "Champs"), ("stream", "Ruisseau (bloquant)"),
         ("inn", "Auberge"), ("house", "Maisons"), ("workshop", "Ateliers de craft"),
@@ -213,6 +280,15 @@ def main(path):
         d.text((lx + 28, y + 1), txt, font=f_small, fill=COL["text"]); y += 22
     d.regular_polygon((lx + 9, y + 8, 8), 4, fill=COL["workshop"], outline=COL["outline"])
     d.text((lx + 28, y + 1), "Poste d'artisanat", font=f_small, fill=COL["text"]); y += 22
+    d.regular_polygon((lx + 9, y + 8, 8), 4, fill=COL["resource"], outline=COL["outline"])
+    d.text((lx + 28, y + 1), "Ressource (récolte, pêche)", font=f_small, fill=COL["text"]); y += 22
+    d.regular_polygon((lx + 9, y + 9, 9), 3, fill=COL["monster"], outline=COL["outline"])
+    d.text((lx + 28, y + 1), "Bêtes (nombre, rayon d'errance)", font=f_small, fill=COL["text"]); y += 22
+    if "lake" in lay:
+        d.regular_polygon((lx + 9, y + 8, 9), 6, fill=COL["discovery"], outline=COL["outline"])
+        d.text((lx + 28, y + 1), "Découverte (lore)", font=f_small, fill=COL["text"]); y += 22
+        d.ellipse([lx + 2, y, lx + 16, y + 14], fill=(255, 250, 240), outline=COL["outline"], width=2)
+        d.text((lx + 28, y + 1), "Traversée en barque", font=f_small, fill=COL["text"]); y += 22
     d.rectangle([lx + 2, y, lx + 16, y + 14], fill=(255, 224, 138), outline=COL["outline"])
     d.text((lx + 28, y), "Quêtes (! = nombre)", font=f_small, fill=COL["text"]); y += 22
     d.rectangle([lx, y, lx + 18, y + 14], outline=COL["exit"], width=3)

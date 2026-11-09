@@ -1907,11 +1907,5303 @@
       }
     },
     {
+      "id": "bertold_ravaudeur_idle",
+      "path": "assets/art/characters/npcs/bertold_ravaudeur_idle.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x26",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "maelis_passeuse_idle",
+      "path": "assets/art/characters/npcs/maelis_passeuse_idle.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x26",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
       "id": "ground_fields",
       "path": "assets/art/tiles/floor_1/ground_fields.png",
       "status": "draft-styleboard",
       "technical": {
         "dimensions": "32x32",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "top-left"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "frame_dark",
+      "path": "assets/art/ui/frame_dark.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "32x32",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plate",
+      "path": "assets/art/ui/plate.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "parchment",
+      "path": "assets/art/ui/parchment.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "32x32",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "book",
+      "path": "assets/art/ui/book.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "40x40",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "button",
+      "path": "assets/art/ui/button.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "button_hover",
+      "path": "assets/art/ui/button_hover.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "button_pressed",
+      "path": "assets/art/ui/button_pressed.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "button_disabled",
+      "path": "assets/art/ui/button_disabled.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "tab_active",
+      "path": "assets/art/ui/tab_active.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "tab_inactive",
+      "path": "assets/art/ui/tab_inactive.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bar_frame",
+      "path": "assets/art/ui/bar_frame.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x9",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bar_hp",
+      "path": "assets/art/ui/bar_hp.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "4x7",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bar_mana",
+      "path": "assets/art/ui/bar_mana.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "4x7",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bar_xp",
+      "path": "assets/art/ui/bar_xp.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "4x4",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bar_foe",
+      "path": "assets/art/ui/bar_foe.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "4x5",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "slot",
+      "path": "assets/art/ui/slot.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "30x30",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "slot_big",
+      "path": "assets/art/ui/slot_big.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "42x42",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "medallion",
+      "path": "assets/art/ui/medallion.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "28x28",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "marker_quest",
+      "path": "assets/art/ui/marker_quest.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "4x11",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "marker_turnin",
+      "path": "assets/art/ui/marker_turnin.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "6x11",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "marker_active",
+      "path": "assets/art/ui/marker_active.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x5",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "marker_locked",
+      "path": "assets/art/ui/marker_locked.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "4x11",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "marker_alert",
+      "path": "assets/art/ui/marker_alert.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "5x11",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "frappe",
+      "path": "assets/art/ui/icons/frappe.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "attaque",
+      "path": "assets/art/ui/icons/attaque.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "trait_de_lumiere",
+      "path": "assets/art/ui/icons/trait_de_lumiere.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "premiers_soins",
+      "path": "assets/art/ui/icons/premiers_soins.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "coup_puissant",
+      "path": "assets/art/ui/icons/coup_puissant.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eclat_d_aube",
+      "path": "assets/art/ui/icons/eclat_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "croc_dore",
+      "path": "assets/art/ui/icons/croc_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "lame_d_aube",
+      "path": "assets/art/ui/icons/lame_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "carnet",
+      "path": "assets/art/ui/icons/carnet.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "or",
+      "path": "assets/art/ui/icons/or.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "menu",
+      "path": "assets/art/ui/icons/menu.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "quete",
+      "path": "assets/art/ui/icons/quete.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "stat_hp",
+      "path": "assets/art/ui/icons/stat_hp.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "stat_atk",
+      "path": "assets/art/ui/icons/stat_atk.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "stat_def",
+      "path": "assets/art/ui/icons/stat_def.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "stat_agi",
+      "path": "assets/art/ui/icons/stat_agi.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "stat_int",
+      "path": "assets/art/ui/icons/stat_int.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "stat_sag",
+      "path": "assets/art/ui/icons/stat_sag.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "12x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ablette_doree",
+      "path": "assets/art/ui/items/ablette_doree.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ambre_d_aube",
+      "path": "assets/art/ui/items/ambre_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "amulette_du_levant",
+      "path": "assets/art/ui/items/amulette_du_levant.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "amulette_pecheur",
+      "path": "assets/art/ui/items/amulette_pecheur.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "anneau_d_ecaille_vibrante",
+      "path": "assets/art/ui/items/anneau_d_ecaille_vibrante.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "anneau_de_verre_d_aube",
+      "path": "assets/art/ui/items/anneau_de_verre_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "anneau_du_mecanisme",
+      "path": "assets/art/ui/items/anneau_du_mecanisme.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "baie_figee",
+      "path": "assets/art/ui/items/baie_figee.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "barbillon_de_silure",
+      "path": "assets/art/ui/items/barbillon_de_silure.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bloc_de_pierre_taillee",
+      "path": "assets/art/ui/items/bloc_de_pierre_taillee.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bois_d_if_noirci",
+      "path": "assets/art/ui/items/bois_d_if_noirci.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bois_de_cerf_pale",
+      "path": "assets/art/ui/items/bois_de_cerf_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bois_de_chene_ancien",
+      "path": "assets/art/ui/items/bois_de_chene_ancien.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bottes_de_passeuse",
+      "path": "assets/art/ui/items/bottes_de_passeuse.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bottes_de_ronce",
+      "path": "assets/art/ui/items/bottes_de_ronce.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "branche_morte",
+      "path": "assets/art/ui/items/branche_morte.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "brochette_d_ablette",
+      "path": "assets/art/ui/items/brochette_d_ablette.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "capuche_de_traqueuse",
+      "path": "assets/art/ui/items/capuche_de_traqueuse.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "carte_des_cercles",
+      "path": "assets/art/ui/items/carte_des_cercles.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "chair_de_carpe",
+      "path": "assets/art/ui/items/chair_de_carpe.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "champignon_dore",
+      "path": "assets/art/ui/items/champignon_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "civet_de_sanglier",
+      "path": "assets/art/ui/items/civet_de_sanglier.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "coeur_d_ecorce",
+      "path": "assets/art/ui/items/coeur_d_ecorce.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "coeur_de_seve_doree",
+      "path": "assets/art/ui/items/coeur_de_seve_doree.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "coeur_du_gardien",
+      "path": "assets/art/ui/items/coeur_du_gardien.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "couronne_du_gardien",
+      "path": "assets/art/ui/items/couronne_du_gardien.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "croc_d_ambre",
+      "path": "assets/art/ui/items/croc_d_ambre.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "croc_d_or_pur",
+      "path": "assets/art/ui/items/croc_d_or_pur.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "cuirasse_d_or_pale",
+      "path": "assets/art/ui/items/cuirasse_d_or_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "dague_villageoise",
+      "path": "assets/art/ui/items/dague_villageoise.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "defense_de_sanglier_roux",
+      "path": "assets/art/ui/items/defense_de_sanglier_roux.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "defense_de_verre",
+      "path": "assets/art/ui/items/defense_de_verre.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "dent_de_brochet",
+      "path": "assets/art/ui/items/dent_de_brochet.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "dent_de_rat_des_pontons",
+      "path": "assets/art/ui/items/dent_de_rat_des_pontons.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "duvet_de_canard",
+      "path": "assets/art/ui/items/duvet_de_canard.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "duvet_de_goeland",
+      "path": "assets/art/ui/items/duvet_de_goeland.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eau_benite_d_aube",
+      "path": "assets/art/ui/items/eau_benite_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eau_de_la_clairiere",
+      "path": "assets/art/ui/items/eau_de_la_clairiere.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ecaille_vibrante",
+      "path": "assets/art/ui/items/ecaille_vibrante.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eclat_de_colonne",
+      "path": "assets/art/ui/items/eclat_de_colonne.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eclat_de_pierre_taillee",
+      "path": "assets/art/ui/items/eclat_de_pierre_taillee.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eclat_de_rune_eteinte",
+      "path": "assets/art/ui/items/eclat_de_rune_eteinte.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ecorce_aux_motifs",
+      "path": "assets/art/ui/items/ecorce_aux_motifs.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "elixir_de_racine",
+      "path": "assets/art/ui/items/elixir_de_racine.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "engrenage_de_bronze",
+      "path": "assets/art/ui/items/engrenage_de_bronze.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "estampage_d_inscription",
+      "path": "assets/art/ui/items/estampage_d_inscription.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "feuille_de_lierre_dore",
+      "path": "assets/art/ui/items/feuille_de_lierre_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fibre_de_roseau_dore",
+      "path": "assets/art/ui/items/fibre_de_roseau_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fleur_de_lotus_immobile",
+      "path": "assets/art/ui/items/fleur_de_lotus_immobile.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fourrure_de_lapin",
+      "path": "assets/art/ui/items/fourrure_de_lapin.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fourrure_de_lynx_clair",
+      "path": "assets/art/ui/items/fourrure_de_lynx_clair.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fragment_de_cercle",
+      "path": "assets/art/ui/items/fragment_de_cercle.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fragment_moussu",
+      "path": "assets/art/ui/items/fragment_moussu.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fragment_rune_aube",
+      "path": "assets/art/ui/items/fragment_rune_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fronde_de_fougere_doree",
+      "path": "assets/art/ui/items/fronde_de_fougere_doree.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "galet_veine",
+      "path": "assets/art/ui/items/galet_veine.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "galette_de_baies_figees",
+      "path": "assets/art/ui/items/galette_de_baies_figees.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "gantelets_de_pierre",
+      "path": "assets/art/ui/items/gantelets_de_pierre.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "gants_de_pecheur",
+      "path": "assets/art/ui/items/gants_de_pecheur.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "gants_de_ravaudeur",
+      "path": "assets/art/ui/items/gants_de_ravaudeur.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "gilet_de_cire",
+      "path": "assets/art/ui/items/gilet_de_cire.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "griffe_d_ours_moussu",
+      "path": "assets/art/ui/items/griffe_d_ours_moussu.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "griffes_du_lynx_clair",
+      "path": "assets/art/ui/items/griffes_du_lynx_clair.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "hachette_d_isarn",
+      "path": "assets/art/ui/items/hachette_d_isarn.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "heaume_runique",
+      "path": "assets/art/ui/items/heaume_runique.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "infusion_de_varech",
+      "path": "assets/art/ui/items/infusion_de_varech.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "jonc_tressable",
+      "path": "assets/art/ui/items/jonc_tressable.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "lame_d_ambre",
+      "path": "assets/art/ui/items/lame_d_ambre.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "lance_du_seuil",
+      "path": "assets/art/ui/items/lance_du_seuil.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "larme_d_aube",
+      "path": "assets/art/ui/items/larme_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "minerai_de_fer_dore",
+      "path": "assets/art/ui/items/minerai_de_fer_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "mousse_lumineuse_aube",
+      "path": "assets/art/ui/items/mousse_lumineuse_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "noyau_d_aube_intact",
+      "path": "assets/art/ui/items/noyau_d_aube_intact.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "noyau_d_automate",
+      "path": "assets/art/ui/items/noyau_d_automate.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "or_pale",
+      "path": "assets/art/ui/items/or_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pain_de_miel",
+      "path": "assets/art/ui/items/pain_de_miel.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pain_du_pelerin",
+      "path": "assets/art/ui/items/pain_du_pelerin.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "patte_de_lapin",
+      "path": "assets/art/ui/items/patte_de_lapin.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "peau_d_anguille",
+      "path": "assets/art/ui/items/peau_d_anguille.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pendentif_du_veilleur",
+      "path": "assets/art/ui/items/pendentif_du_veilleur.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "perche_des_pontons",
+      "path": "assets/art/ui/items/perche_des_pontons.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "perle_du_lac_miroir",
+      "path": "assets/art/ui/items/perle_du_lac_miroir.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "petale_de_nenuphar_pale",
+      "path": "assets/art/ui/items/petale_de_nenuphar_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "petale_sans_saison",
+      "path": "assets/art/ui/items/petale_sans_saison.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pierre_aux_cercles",
+      "path": "assets/art/ui/items/pierre_aux_cercles.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pierre_de_lest",
+      "path": "assets/art/ui/items/pierre_de_lest.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pierre_moussue",
+      "path": "assets/art/ui/items/pierre_moussue.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pierre_runique_brute",
+      "path": "assets/art/ui/items/pierre_runique_brute.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "pince_de_crabe",
+      "path": "assets/art/ui/items/pince_de_crabe.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plaque_de_bronze_ancien",
+      "path": "assets/art/ui/items/plaque_de_bronze_ancien.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plaque_de_carapace_gravee",
+      "path": "assets/art/ui/items/plaque_de_carapace_gravee.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plastron_d_ecailles",
+      "path": "assets/art/ui/items/plastron_d_ecailles.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plume_d_avant_l_aube",
+      "path": "assets/art/ui/items/plume_d_avant_l_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plume_de_goeland",
+      "path": "assets/art/ui/items/plume_de_goeland.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plume_de_heron",
+      "path": "assets/art/ui/items/plume_de_heron.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plume_doree",
+      "path": "assets/art/ui/items/plume_doree.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "plume_sans_ombre",
+      "path": "assets/art/ui/items/plume_sans_ombre.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "poil_de_cerf_pale",
+      "path": "assets/art/ui/items/poil_de_cerf_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "poil_de_loup_dore",
+      "path": "assets/art/ui/items/poil_de_loup_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "poussiere_de_lumiere",
+      "path": "assets/art/ui/items/poussiere_de_lumiere.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "prisme_d_aube",
+      "path": "assets/art/ui/items/prisme_d_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "queue_de_renardeau",
+      "path": "assets/art/ui/items/queue_de_renardeau.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "racine_doree_recoltee",
+      "path": "assets/art/ui/items/racine_doree_recoltee.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ragout_chaud",
+      "path": "assets/art/ui/items/ragout_chaud.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ramure_du_cerf_pale",
+      "path": "assets/art/ui/items/ramure_du_cerf_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "sandre_dore",
+      "path": "assets/art/ui/items/sandre_dore.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "sandre_grille",
+      "path": "assets/art/ui/items/sandre_grille.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "sceau_de_dormant",
+      "path": "assets/art/ui/items/sceau_de_dormant.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "sceau_du_heraut",
+      "path": "assets/art/ui/items/sceau_du_heraut.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "sceau_du_seuil",
+      "path": "assets/art/ui/items/sceau_du_seuil.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "soie_doree",
+      "path": "assets/art/ui/items/soie_doree.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "soupe_de_crabe",
+      "path": "assets/art/ui/items/soupe_de_crabe.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "tesson_grave",
+      "path": "assets/art/ui/items/tesson_grave.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "tisane_apaisante",
+      "path": "assets/art/ui/items/tisane_apaisante.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "truite_argentee_aube",
+      "path": "assets/art/ui/items/truite_argentee_aube.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "varech_seche",
+      "path": "assets/art/ui/items/varech_seche.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "voile_du_heraut",
+      "path": "assets/art/ui/items/voile_du_heraut.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "16x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "player_8dir",
+      "path": "assets/art/characters/player/player_8dir.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "288x130",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "cabane_a",
+      "path": "assets/art/props/rive/cabane_a.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x65",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "cabane_b",
+      "path": "assets/art/props/rive/cabane_b.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "48x65",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "fumoir",
+      "path": "assets/art/props/rive/fumoir.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "62x62",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "filets",
+      "path": "assets/art/props/rive/filets.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "54x35",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "nasse",
+      "path": "assets/art/props/rive/nasse.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "20x13",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "barque_retournee",
+      "path": "assets/art/props/rive/barque_retournee.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "40x15",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "barque",
+      "path": "assets/art/props/rive/barque.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "44x20",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "barque_vide",
+      "path": "assets/art/props/rive/barque_vide.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "44x20",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "poteau",
+      "path": "assets/art/props/rive/poteau.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "6x16",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "roseaux_a",
+      "path": "assets/art/props/rive/roseaux_a.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "26x28",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "roseaux_b",
+      "path": "assets/art/props/rive/roseaux_b.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "26x28",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "nenuphars_a",
+      "path": "assets/art/props/rive/nenuphars_a.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "18x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "nenuphars_b",
+      "path": "assets/art/props/rive/nenuphars_b.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "18x12",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "canard",
+      "path": "assets/art/props/rive/canard.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "14x11",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "saule_a",
+      "path": "assets/art/props/rive/saule_a.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "46x59",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "saule_b",
+      "path": "assets/art/props/rive/saule_b.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "46x59",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "bois_flotte",
+      "path": "assets/art/props/rive/bois_flotte.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "28x9",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "cercle_immerge",
+      "path": "assets/art/props/rive/cercle_immerge.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x36",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "eaux_basses_de_la_rive",
+      "path": "assets/art/props/ressources/eaux_basses_de_la_rive.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "26x22",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "roseaux_dores",
+      "path": "assets/art/props/ressources/roseaux_dores.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "26x28",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "nenuphar_pale",
+      "path": "assets/art/props/ressources/nenuphar_pale.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "22x14",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "galets_veines",
+      "path": "assets/art/props/ressources/galets_veines.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "24x13",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "affut_des_berges",
+      "path": "assets/art/props/ressources/affut_des_berges.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "32x27",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "ground_rive",
+      "path": "assets/art/tiles/floor_1/ground_rive.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x96",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "top-left"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "overlay_galets",
+      "path": "assets/art/tiles/floor_1/overlay_galets.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x64",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "top-left"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "overlay_basses",
+      "path": "assets/art/tiles/floor_1/overlay_basses.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x64",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "top-left"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "overlay_profonde",
+      "path": "assets/art/tiles/floor_1/overlay_profonde.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x64",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "top-left"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "overlay_marais",
+      "path": "assets/art/tiles/floor_1/overlay_marais.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "64x64",
         "alpha": true,
         "filtering": "nearest",
         "anchor": "top-left"
@@ -2416,6 +7708,90 @@
       "status": "draft-styleboard",
       "technical": {
         "dimensions": "48x20",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "crabe_des_galets_idle",
+      "path": "assets/art/monsters/crabe_des_galets_idle.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "144x15",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "heron_cendre_idle",
+      "path": "assets/art/monsters/heron_cendre_idle.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "144x31",
+        "alpha": true,
+        "filtering": "nearest",
+        "anchor": "bottom-center"
+      },
+      "visual_locks": [
+        "palette",
+        "light-direction-top-left",
+        "outline-selective"
+      ],
+      "source": {
+        "kind": "generated-by-code",
+        "url_or_tool": "tools/art/styleboard.py",
+        "license": "propriété du projet Arthesia",
+        "creator": "Claude (code)"
+      },
+      "verification": {
+        "native_scale_reviewed": true,
+        "in_engine_reviewed": false,
+        "technical_checks_passed": true,
+        "approved_by": ""
+      }
+    },
+    {
+      "id": "anguille_des_hauts_fonds_idle",
+      "path": "assets/art/monsters/anguille_des_hauts_fonds_idle.png",
+      "status": "draft-styleboard",
+      "technical": {
+        "dimensions": "168x13",
         "alpha": true,
         "filtering": "nearest",
         "anchor": "bottom-center"

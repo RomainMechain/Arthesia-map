@@ -13,6 +13,11 @@
       "atk": 10,
       "agi": 1,
       "hp": 12
+    },
+    "area": {
+      "shape": "line",
+      "range": 44,
+      "width": 12
     }
   }
 }

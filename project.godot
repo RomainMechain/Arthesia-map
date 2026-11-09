@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Arthesia-map"
-run/main_scene="res://scenes/zones/floor_1/village_aube.tscn"
+run/main_scene="res://scenes/ui/titre.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 

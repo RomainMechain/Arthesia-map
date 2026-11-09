@@ -10,6 +10,10 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	var gs0 := root.get_node_or_null("GameState")
+	if gs0:                                       # captures reproductibles : profil neuf, sans sauvegarde
+		gs0.persist = false
+		gs0.reset_profile()
 	var args := OS.get_cmdline_user_args()
 	var floor_id: String = args[0]
 	var zone_id: String = args[1]

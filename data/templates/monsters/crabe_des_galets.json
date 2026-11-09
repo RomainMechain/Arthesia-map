@@ -20,7 +20,12 @@
       "power": 0.15,
       "weight": 3,
       "telegraph_seconds": 0,
-      "avoidable_by": null
+      "avoidable_by": null,
+      "area": {
+        "shape": "arc",
+        "range": 18,
+        "angle": 90
+      }
     },
     {
       "id": "etau_de_pierre",
@@ -28,8 +33,13 @@
       "cooldown_seconds": 7,
       "power": 0.29,
       "weight": 1,
-      "telegraph_seconds": 0,
-      "avoidable_by": null
+      "telegraph_seconds": 0.6,
+      "avoidable_by": "esquive",
+      "area": {
+        "shape": "arc",
+        "range": 22,
+        "angle": 140
+      }
     }
   ],
   "phases": null,

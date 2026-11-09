@@ -569,6 +569,12 @@ NPC_KEYS = {
                       "T": P["water3"], "t": P["water4"], "B": P["earth2"], "G": P["water1"]},
     "thessaly": {"H": P["red0"], "L": P["sun3"], "h": P["red1"],
                  "T": P["leaf2"], "t": P["leaf3"], "B": P["earth3"], "G": P["sun1"]},
+    # Rive Paisible : Bertold (vieux ravaudeur, tricot bleu de pêcheur), Maëlis (passeuse, ciré sarcelle)
+    "bertold_ravaudeur": {"H": P["stone1"], "L": P["stone0"], "h": P["stone2"],
+                          "T": P["blue1"], "t": P["shade1"], "B": P["earth3"], "G": P["stone1"],
+                          "P": P["earth3"], "p": P["earth4"]},
+    "maelis_passeuse": {"H": P["earth4"], "L": P["earth3"], "h": P["outline"],
+                        "T": P["water3"], "t": P["water4"], "B": P["red1"], "G": P["red0"]},
 }
 
 
@@ -637,6 +643,14 @@ def main():
     for tid in NPC_KEYS:
         sv(npc(tid), f"characters/npcs/{tid}_idle.png")
     sv(field_tiles(), "tiles/floor_1/ground_fields.png")
+    import ui_kit                                                # interface « laiton d'aube »
+    ui_kit.main()
+    import item_icons                                            # icônes des objets (Sac, butin)
+    item_icons.main()
+    import player_sheet                                          # joueur 8 directions
+    player_sheet.main()
+    import rive_assets                                           # Rive Paisible
+    rive_assets.main()
     import lisiere_assets                                        # Sentier de la Lisière
     lisiere_assets.main(standalone=False)
     sb.write_manifest()

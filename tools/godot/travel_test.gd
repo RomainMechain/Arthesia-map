@@ -6,7 +6,18 @@ var _fail := 0
 
 
 func _initialize() -> void:
+	create_timer(120.0, true, false, true).timeout.connect(func(): print("ECHEC délai dépassé"); quit(2))
 	_run.call_deferred()
+
+
+## Attend que la scène courante soit la zone `id` (le chargement peut prendre plusieurs images).
+func _wait_zone(id: String, max_frames := 600) -> void:
+	for i in max_frames:
+		if current_scene and current_scene.get("zone_id") == id and current_scene.is_node_ready():
+			break
+		await process_frame
+	for i in 5:
+		await physics_frame
 
 
 func _check(ok: bool, msg: String) -> void:
@@ -35,6 +46,10 @@ func _walk_into_exit(exit_name: String) -> void:
 
 
 func _run() -> void:
+	var _gs0 := root.get_node_or_null("GameState")
+	if _gs0:
+		_gs0.persist = false
+		_gs0.reset_profile()
 	var gs := root.get_node_or_null("GameState")
 	_check(gs != null, "autoload GameState chargé")
 	if gs == null:
@@ -42,11 +57,12 @@ func _run() -> void:
 		gs.name = "GameState"
 		root.add_child(gs)
 	change_scene_to_file(gs.zone_path("village_aube"))
-	await _frames(5)
+	await _wait_zone("village_aube")
 	_check(_zone().zone_id == "village_aube", "départ au village")
 
 	_walk_into_exit("exit_sentier_lisiere")
-	await _frames(150)
+	await _wait_zone("sentier_lisiere")
+	await _frames(40)
 	var z := _zone()
 	_check(z.zone_id == "sentier_lisiere", "arrivé dans : %s" % z.zone_id)
 	var p: Node2D = z.find_child("Joueur", true, false)
@@ -55,7 +71,8 @@ func _run() -> void:
 
 	await _frames(30)
 	_walk_into_exit("exit_village_aube")
-	await _frames(150)
+	await _wait_zone("village_aube")
+	await _frames(40)
 	z = _zone()
 	_check(z.zone_id == "village_aube", "retour dans : %s" % z.zone_id)
 	p = z.find_child("Joueur", true, false)
@@ -64,7 +81,21 @@ func _run() -> void:
 
 	_walk_into_exit("exit_rive_paisible")
 	await _frames(60)
-	_check(_zone().zone_id == "village_aube" and not gs.is_travelling(), "Rive Paisible pas encore construite : on reste au village")
+	_check(_zone().zone_id == "village_aube" and not gs.is_travelling(), "Rive Paisible verrouillée : on reste au village")
+
+	gs.accept_quest("intro_peche")                     # la quête de Garin ouvre la rive
+	_walk_into_exit("exit_rive_paisible")
+	await _wait_zone("rive_paisible")
+	await _frames(40)
+	z = _zone()
+	_check(z.zone_id == "rive_paisible", "arrivée à : %s" % z.zone_id)
+	p = z.find_child("Joueur", true, false)
+	arr = z.find_child("exit_village_aube", true, false).arrival
+	_check(p.global_position.distance_to(arr) < 4.0, "apparaît à l'entrée ouest de la rive %s (attendu %s)" % [p.global_position, arr])
+	_walk_into_exit("exit_village_aube")
+	await _wait_zone("village_aube")
+	await _frames(40)
+	_check(_zone().zone_id == "village_aube", "retour au village depuis la rive")
 
 	print("\n%d échec(s)" % _fail)
 	quit(_fail)

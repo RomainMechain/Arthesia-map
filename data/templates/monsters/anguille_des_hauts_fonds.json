@@ -19,8 +19,12 @@
       "cooldown_seconds": 2.5,
       "power": 0.15,
       "weight": 3,
-      "telegraph_seconds": 0,
-      "avoidable_by": null
+      "telegraph_seconds": 0.8,
+      "avoidable_by": "esquive",
+      "area": {
+        "shape": "circle",
+        "radius": 16
+      }
     },
     {
       "id": "decharge_doree",
@@ -28,8 +32,12 @@
       "cooldown_seconds": 5,
       "power": 0.21,
       "weight": 1,
-      "telegraph_seconds": 0,
-      "avoidable_by": null
+      "telegraph_seconds": 1.0,
+      "avoidable_by": "esquive",
+      "area": {
+        "shape": "circle",
+        "radius": 28
+      }
     }
   ],
   "phases": null,

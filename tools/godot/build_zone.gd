@@ -38,6 +38,8 @@ func _build(b: Dictionary, floor_id: String) -> Node2D:
 	root.set("zone_id", b.zone_id)
 	root.set("zone_name", b.name)
 	root.set("floor_id", floor_id)
+	root.set("zone_type", b.get("zone_type", "wilderness"))
+	root.set("slow_polys", b.get("slow_polys", []))
 
 	var mod := CanvasModulate.new()
 	mod.name = "Ambiance"
@@ -196,19 +198,25 @@ func _interactable(it: Dictionary) -> Node2D:
 		n.set_script(load("res://game/mob.gd"))
 		n.set("leash", float(it.mob.leash))
 		n.set("temper", it.mob.temper)
-		n.set("info", "Combat : bientôt disponible.")
+		n.set("respawn_seconds", float(it.mob.respawn))
+		n.set("aggro", float(it.mob.get("aggro", 64)))
 	else:
 		n.set_script(load("res://game/interactable.gd"))
 	if it.has("resource"):
 		var r: Dictionary = it.resource
-		n.set("info", "Récolte (%d s) : %s — bientôt disponible." % [r.gather_time, ", ".join(PackedStringArray(r.yields))])
+		n.set_script(load("res://game/resource_node.gd"))
+		n.set("max_stock", int(r.stock))
+		n.set("respawn_seconds", float(r.respawn))
+		n.set("info", "Récolte (%d s) : %s" % [r.gather_time, ", ".join(PackedStringArray(r.yields))])
 	n.set("entry_id", it.entry_id)
 	n.set("template_type", it.template_type)
 	n.set("template_id", it.template_id)
 	n.set("display_name", it.name)
 	n.set("role", it.role)
-	n.set("dialogues", PackedStringArray(it.get("dialogues", [])))
-	n.set("quests", it.quests)
+	if not it.has("mob"):
+		n.set("dialogues", PackedStringArray(it.get("dialogues", [])))
+		n.set("quests", it.quests)
+		n.set("data", it.get("extra", {}))
 	var top := -16.0
 	if it.has("sprite"):
 		var tex: Texture2D = load(it.sprite)
@@ -243,13 +251,15 @@ func _player(b: Dictionary) -> CharacterBody2D:
 	p.position = Vector2(b.spawn[0], b.spawn[1])
 	p.motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	p.set_script(load("res://game/player.gd"))
-	var tex: Texture2D = load("res://assets/art/characters/player/player_idle_down.png")
+	# planche 8 directions : 12 colonnes x 5 lignes d'images 24x26 (tools/art/player_sheet.py)
+	var tex: Texture2D = load("res://assets/art/characters/player/player_8dir.png")
 	var s := Sprite2D.new()
 	s.name = "Sprite"
 	s.texture = tex
-	s.hframes = 4
+	s.hframes = 12
+	s.vframes = 5
 	s.centered = false
-	s.offset = Vector2(-8, -tex.get_height())
+	s.offset = Vector2(-12, -26)
 	p.add_child(s)
 	p.add_child(_rect_shape(Rect2(-4, -5, 8, 5)))
 	var cam := Camera2D.new()

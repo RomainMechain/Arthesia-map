@@ -20,5 +20,10 @@
       "power": 0.48,
       "base": 10
     }
-  ]
+  ],
+  "area": {
+    "shape": "arc",
+    "range": 26,
+    "angle": 90
+  }
 }

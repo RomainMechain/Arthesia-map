@@ -1,14 +1,19 @@
 [gd_resource type="TileSet" format=3]
 
-[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_base.png" id="1_c88s3"]
-[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_fields.png" id="2_qtqoy"]
-[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_ruins.png" id="3_moex6"]
-[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_dirt.png" id="4_cfhp7"]
-[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_cobble.png" id="5_hx0k3"]
-[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_water.png" id="6_kds1f"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_base.png" id="1_kds1f"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_fields.png" id="2_6hhh2"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_marais.png" id="3_hphdg"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_ruins.png" id="4_xfdq1"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_dirt.png" id="5_jkct3"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_cobble.png" id="6_sc7ei"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_water.png" id="7_l3wv4"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/ground_rive.png" id="8_npyy4"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_galets.png" id="9_3hlx0"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_basses.png" id="10_rx5mx"]
+[ext_resource type="Texture2D" path="res://assets/art/tiles/floor_1/overlay_profonde.png" id="11_dqhb5"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6hhh2"]
-texture = ExtResource("1_c88s3")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vj1m3"]
+texture = ExtResource("1_kds1f")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -30,20 +35,15 @@ texture = ExtResource("1_c88s3")
 2:4/0 = 0
 3:4/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hphdg"]
-texture = ExtResource("2_qtqoy")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ycr88"]
+texture = ExtResource("2_6hhh2")
 0:0/0 = 0
 1:0/0 = 0
 0:1/0 = 0
 1:1/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xfdq1"]
-texture = ExtResource("3_moex6")
-0:0/0 = 0
-1:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jkct3"]
-texture = ExtResource("4_cfhp7")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y66f1"]
+texture = ExtResource("3_hphdg")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -61,8 +61,13 @@ texture = ExtResource("4_cfhp7")
 2:3/0 = 0
 3:3/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sc7ei"]
-texture = ExtResource("5_hx0k3")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_q1361"]
+texture = ExtResource("4_xfdq1")
+0:0/0 = 0
+1:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cirok"]
+texture = ExtResource("5_jkct3")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -80,8 +85,111 @@ texture = ExtResource("5_hx0k3")
 2:3/0 = 0
 3:3/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l3wv4"]
-texture = ExtResource("6_kds1f")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b5ykx"]
+texture = ExtResource("6_sc7ei")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_36nj0"]
+texture = ExtResource("7_l3wv4")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nowci"]
+texture = ExtResource("8_npyy4")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gutx4"]
+texture = ExtResource("9_3hlx0")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y004e"]
+texture = ExtResource("10_rx5mx")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_meuwb"]
+texture = ExtResource("11_dqhb5")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -100,17 +208,27 @@ texture = ExtResource("6_kds1f")
 3:3/0 = 0
 
 [resource]
-sources/0 = SubResource("TileSetAtlasSource_6hhh2")
-sources/1 = SubResource("TileSetAtlasSource_hphdg")
-sources/2 = SubResource("TileSetAtlasSource_xfdq1")
-sources/3 = SubResource("TileSetAtlasSource_jkct3")
-sources/4 = SubResource("TileSetAtlasSource_sc7ei")
-sources/5 = SubResource("TileSetAtlasSource_l3wv4")
+sources/0 = SubResource("TileSetAtlasSource_vj1m3")
+sources/1 = SubResource("TileSetAtlasSource_ycr88")
+sources/2 = SubResource("TileSetAtlasSource_q1361")
+sources/3 = SubResource("TileSetAtlasSource_cirok")
+sources/4 = SubResource("TileSetAtlasSource_b5ykx")
+sources/5 = SubResource("TileSetAtlasSource_36nj0")
+sources/6 = SubResource("TileSetAtlasSource_nowci")
+sources/7 = SubResource("TileSetAtlasSource_gutx4")
+sources/8 = SubResource("TileSetAtlasSource_y004e")
+sources/9 = SubResource("TileSetAtlasSource_meuwb")
+sources/10 = SubResource("TileSetAtlasSource_y66f1")
 metadata/sources = {
 "ground_base": 0,
 "ground_fields": 1,
+"ground_rive": 6,
 "ground_ruins": 2,
+"overlay_basses": 8,
 "overlay_cobble": 4,
 "overlay_dirt": 3,
+"overlay_galets": 7,
+"overlay_marais": 10,
+"overlay_profonde": 9,
 "overlay_water": 5
 }

@@ -19,5 +19,8 @@
       "power": 0.47,
       "base": 7
     }
-  ]
+  ],
+  "area": {
+    "shape": "self"
+  }
 }

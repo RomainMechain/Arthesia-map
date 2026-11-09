@@ -10,6 +10,7 @@ Le cyan reste réservé aux runes et aux Architectes : aucune bête de la Lisiè
 Chaque planche : 6 images de profil (vers la droite, retournées en jeu)
   0-1 repos (1 = variante : clignement, oreille, note figée)   2-5 déplacement.
 """
+import math
 import sys
 from pathlib import Path
 
@@ -288,7 +289,114 @@ def oiseau():
     return strip(make, 5)
 
 
+# --------------------------------------------------------------------------- Rive Paisible
+def crabe():
+    """Crabe des galets : carapace de pierre mouillée, grosses pinces crantées, marche de côté."""
+    shell = (P["stone0"], P["stone1"], P["stone2"], P["stone3"])
+    claw = (P["stone1"], P["stone2"], P["stone3"], P["stone4"])
+    W, H = 24, 14
+
+    def make(i):
+        img = Image.new("RGBA", (W, H), CLEAR)
+        walk = i >= 2
+        ph = (i - 2) % 4 if walk else 0
+        y = (0, -1, 0, -1)[ph] if walk else 0
+        lift = 1 if i == 1 else 0
+        # pattes fines, trois de chaque côté
+        for k, (x0, dx) in enumerate(((8, -3), (10, -4), (12, -4), (13, 4), (14, 4), (16, 3))):
+            step = (1 if (k + ph) % 2 else -1) if walk else 0
+            sbx = x0 + dx + step
+            for t in range(4):
+                xx = round(x0 + (sbx - x0) * t / 3)
+                yy = 10 + y + t if t < 3 else 13
+                img.putpixel((max(0, min(W - 1, xx)), min(H - 1, yy)), P["stone3"])
+        b = Beast(W, H)
+        b.poly([(6, 9), (9, 6), (15, 6), (18, 9), (16, 11), (8, 11)], shell, dy=y)            # carapace
+        b.poly([(7, 8), (4, 5), (5, 4), (8, 7)], claw, dy=y - lift)                            # bras
+        b.poly([(17, 8), (20, 5), (19, 4), (16, 7)], claw, dy=y - lift)
+        b.poly([(1, 3), (3, 0), (6, 1), (6, 3), (4, 3), (6, 5), (3, 6), (1, 5)], claw, dy=y - lift)     # pince
+        b.poly([(23, 3), (21, 0), (18, 1), (18, 3), (20, 3), (18, 5), (21, 6), (23, 5)], claw, dy=y - lift)
+        b.dot(10, 5 + y, O)
+        b.dot(14, 5 + y, O)                                  # yeux sur pédoncules
+        b.dot(11, 7 + y, P["water0"])
+        b.dot(13, 7 + y, P["water1"])                        # reflet mouillé
+        body = b.render()
+        img.alpha_composite(body)
+        return img
+    return strip(make, 7)
+
+
+def heron():
+    """Héron cendré : élancé, gris pâle, cou fin en S, huppe noire ; immobile, il surveille le lac."""
+    body = (P["stone0"], P["stone1"], P["stone1"], P["stone2"])
+    wing = (P["stone2"], P["stone2"], P["stone3"], P["stone4"])
+    W, H = 24, 30
+
+    def make(i):
+        img = Image.new("RGBA", (W, H), CLEAR)
+        walk = i >= 2
+        ph = (i - 2) % 4 if walk else 0
+        y = (0, -1, 0, -1)[ph] if walk else 0
+        sw = (2, 0, -2, 0)[ph] if walk else 0
+        for x0, s in ((10, sw), (12, -sw)):                  # pattes fines, articulées
+            for yy in range(20 + y, 29):
+                t = (yy - 20 - y) / 9
+                img.putpixel((round(x0 + s * t), yy), P["sun3"] if yy > 26 else P["stone3"])
+        b = Beast(W, H)
+        b.poly([(6, 15), (9, 12), (14, 12), (16, 16), (13, 20), (9, 20), (6, 18)], body, dy=y)   # corps
+        b.poly([(4, 16), (8, 15), (9, 19), (5, 20)], wing, dy=y)                                  # queue
+        b.poly([(8, 13), (13, 13), (14, 17), (10, 19), (8, 17)], wing, dy=y)                     # aile repliée
+        turn = i == 1
+        b.poly([(13, 13), (15, 9), (13, 6), (14, 3), (16, 3), (15, 6), (17, 9), (15, 14)], body, dy=y)  # cou en S
+        b.poly([(13, 2), (16, 1), (18, 2), (17, 4), (14, 4)], body, dy=y)                       # tête
+        img.alpha_composite(b.render())
+        put = lambda xx, yy, c: img.putpixel((xx, yy + y), c) if 0 <= yy + y < H and 0 <= xx < W else None   # noqa: E731
+        for k in range(4):                                   # bec en dague
+            put(19 + k if not turn else 12 - k, 3, P["sun2"])
+        put(16, 2, O)                                         # oeil
+        for k in range(4):                                    # huppe noire
+            put(15 - k, 1 if k < 2 else 2, P["outline"])
+        for yy in (7, 9, 11):                                 # stries du cou
+            put(15, yy, P["stone3"])
+        return img
+    return strip(make, 6)
+
+def anguille():
+    """Anguille des hauts-fonds : on ne voit que son dos qui ondule dans l'eau, et des rides.
+    Sa peau crépite d'or quand elle s'agite (images de déplacement)."""
+    W, H = 28, 12
+
+    def make(i):
+        img = Image.new("RGBA", (W, H), CLEAR)
+        walk = i >= 2
+        ph = (i if walk else i * 0.5) * 1.1
+        # rides autour du corps (eau claire)
+        for x in range(1, W - 1):
+            if (x + i) % 5 < 3:
+                img.putpixel((x, 10), P["water0"] if x % 2 else P["water1"])
+        for x in (2, 3, 24, 25):
+            img.putpixel((x, 8), P["water1"])
+        # dos sombre en ondulation : bosses qui affleurent
+        for x in range(3, W - 5):
+            yy = 7 - round(1.8 * max(0.0, math.sin(x * 0.55 + ph)))
+            for k in range(2):
+                if 0 <= yy + k < H:
+                    img.putpixel((x, yy + k), P["shade1"] if k == 0 else P["outline"])
+            if walk and (x + i) % 6 == 0:
+                img.putpixel((x, yy), P["sun1"])            # crépitement doré
+        # tête qui affleure à droite
+        for (x, yy) in ((W - 5, 6), (W - 4, 6), (W - 3, 7), (W - 5, 7), (W - 4, 7)):
+            img.putpixel((x, yy), P["shade1"])
+        img.putpixel((W - 4, 6), P["sun0"])                  # oeil pâle
+        sb.outline(img)
+        return img
+    return strip(make, 6)
+
+
 ALL = {
+    "monsters/crabe_des_galets_idle": crabe,
+    "monsters/heron_cendre_idle": heron,
+    "monsters/anguille_des_hauts_fonds_idle": anguille,
     "monsters/loup_dore_idle": loup_dore,
     "monsters/renardeau_curieux_idle": renardeau,
     "monsters/lapin_bondissant_idle": lapin,

@@ -72,6 +72,32 @@ def polyline_samples(pts, step):
     return out
 
 
+# Notes de lore des découvertes (texte original, cohérent avec le lore de l'étage 1)
+LORE = {
+    "cercle_immerge": {
+        "title": "Le cercle sous l'îlot",
+        "text": "Sous l'eau claire de l'anse, sept pierres taillées dessinent un cercle parfait. Leurs runes, "
+                "d'un cyan presque éteint, battent au même rythme que la lumière de l'aube : une fois, puis rien, "
+                "puis une fois. Ce n'est pas un ouvrage de pêcheurs. Quelqu'un, avant le village, a voulu que "
+                "le lac garde quelque chose.",
+    },
+}
+
+# Rayon où une bête prédatrice repère le joueur (px)
+AGGRO = {"crabe_des_galets": 44, "heron_cendre": 44, "anguille_des_hauts_fonds": 60}
+
+# Tempérament des bêtes, déduit de leur description (docs/combat_v1.md)
+TEMPER = {
+    "crabe_des_galets": "predator",   # « attaquent les barques amarrées »
+    "heron_cendre": "sentinel",       # « immobile… il surveille le lac »
+    "anguille_des_hauts_fonds": "swimmer",   # vit dans l'eau des hauts-fonds, plonge et ressurgit
+    "lapin_bondissant": "calm",       # « détale au moindre bruit »
+    "oiseau_chanteur": "calm",
+    "renardeau_curieux": "skittish",  # « il mord avant de fuir »
+    "loup_dore": "predator",          # « rôdent plus près du village chaque matin »
+}
+
+
 # --------------------------------------------------------------------------- compilateur
 class Zone:
     def __init__(self, floor, zone_id):
@@ -86,17 +112,55 @@ class Zone:
         self.interactables = []
         self.doors = [b["door"] for b in self.lay["buildings"] if "door" in b]
         self.forest = self.lay.get("forest_fill")
+        # biome rive : lac, îlots, eau profonde, marais praticable, galets, pontons
+        lay = self.lay
+        self.lakes = [l["poly"] for l in lay.get("lake", [])]
+        self.islands = [i["poly"] for i in lay.get("islands", [])]
+        self.marsh = [r["poly"] for r in lay["regions"] if r["kind"] == "marsh"]
+        self.shore = [r["poly"] for r in lay["regions"] if r["kind"] == "shore"]
+        self.reeds = [r["poly"] for r in lay["regions"] if r["kind"] == "reeds"]
+        dl = lay.get("deep_line")
+        self.deep = (dl["points"] + [[self.W + 2, -2]]) if dl else None
+        self.boardwalks = [p for p in lay["paths"] if p["kind"] == "boardwalk"]
         self.open_d = self._open_distance() if self.forest else None
+
+    # -- rive
+    def in_island(self, p):
+        return any(in_poly(p, i) for i in self.islands)
+
+    def in_lake(self, p):
+        return any(in_poly(p, l) for l in self.lakes) and not self.in_island(p)
+
+    def in_marsh(self, p):
+        return any(in_poly(p, m) for m in self.marsh)
+
+    def on_boardwalk(self, p, grow=0.0):
+        return any(poly_dist(p, b["points"]) <= b["width"] / 2 + grow for b in self.boardwalks)
+
+    def wet(self, p):
+        """Eau infranchissable (lac hors marais et hors pontons)."""
+        return self.in_lake(p) and not self.in_marsh(p) and not self.on_boardwalk(p)
+
+    def no_veg(self, p):
+        """Ni arbre ni fougère : eau, marais, galets, pontons."""
+        return (self.in_lake(p) or self.in_marsh(p) or any(in_poly(p, s) for s in self.shore)
+                or self.on_boardwalk(p, 0.6))
 
     # -- forêt « par défaut » : distance au terrain ouvert (sentier, clairières), en tuiles
     def open_dist(self, p):
         best = 1e9
         for pth in self.lay["paths"]:
             best = min(best, poly_dist(p, pth["points"]) - pth["width"] / 2)
+        for poly in self.lakes + self.islands + self.marsh + self.shore:
+            ring = poly + poly[:1]
+            best = min(best, -poly_dist(p, ring) if in_poly(p, poly) else poly_dist(p, ring))
         for r in self.lay["regions"]:
-            if r["kind"] != "clearing":
+            if r["kind"] not in ("clearing", "square_dirt"):
                 continue
-            if "circle" in r:
+            if "poly" in r:
+                ring = r["poly"] + r["poly"][:1]
+                best = min(best, -poly_dist(p, ring) if in_poly(p, r["poly"]) else poly_dist(p, ring))
+            elif "circle" in r:
                 cx, cy, rad = r["circle"]
                 best = min(best, math.hypot(p[0] - cx, p[1] - cy) - rad)
             else:
@@ -170,7 +234,7 @@ class Zone:
                     return True
             return False
 
-        rock = [r for r in lay["regions"] if r["kind"] == "rock"]
+        rock = [r for r in lay["regions"] if r["kind"] in ("rock", "square_dirt")]
         dirt_kinds = ("trail",) if self.forest else ("road_main", "road", "lane")   # en forêt, les allées restent herbeuses
         dirt = self.corners(lambda p: int(on_path(p, dirt_kinds)
                                           or any(in_poly(p, r["poly"]) for r in rock)))
@@ -199,16 +263,44 @@ class Zone:
                     rcells.append([tx, ty, 1 if self.rng.random() < 0.25 else 0, 0])
         self.add_layer("dalles", "ground_ruins", rcells)
 
+        if self.lakes:                                   # plage de galets, sous l'eau du lac
+            gal = self.corners(lambda p: int(any(in_poly(p, s) for s in self.shore)))
+            self.overlay_layer("galets", "overlay_galets", 0, gal, full_atlas="ground_rive")
         water = self.corners(lambda p: int(any(poly_dist(p, w["points"]) <= w["width"] / 2
-                                               for w in lay["water"])))
+                                               for w in lay["water"]) or self.in_lake(p)))
         self.overlay_layer("eau", "overlay_water", 4, water)
+        if self.lakes:
+            # au-delà de la ligne des roseaux : eau sombre et immobile (pas de miroitement)
+            if self.deep:
+                deep = self.corners(lambda p: int(self.in_lake(p) and in_poly(p, self.deep)))
+                self.overlay_layer("profonde", "overlay_profonde", 2, deep, full_atlas="ground_rive")
+            anses = [r for r in lay["regions"] if r["kind"] == "shallows"]
+            bas = self.corners(lambda p: int(self.in_lake(p) and any(shape_contains(a, p) for a in anses)))
+            self.overlay_layer("eau_basses", "overlay_basses", 1, bas, full_atlas="ground_rive")
+            mar = self.corners(lambda p: int(self.in_marsh(p)))
+            self.overlay_layer("eau_marais", "overlay_marais", 1, mar, full_atlas="ground_rive")
+            # pontons : planches dans le sens de marche (segments horizontaux ou verticaux)
+            pcells = []
+            for b in self.boardwalks:
+                for a, c in zip(b["points"], b["points"][1:]):
+                    vertical = abs(c[1] - a[1]) > abs(c[0] - a[0])
+                    x0, x1 = sorted((a[0], c[0]))
+                    y0, y1 = sorted((a[1], c[1]))
+                    half = b["width"] / 2
+                    for ty in range(int(math.floor(y0 - (0 if vertical else half))), int(math.ceil(y1 + (0 if vertical else half)))):
+                        for tx in range(int(math.floor(x0 - (half if vertical else 0))), int(math.ceil(x1 + (half if vertical else 0)))):
+                            if 0 <= tx < self.W and 0 <= ty < self.H:
+                                pcells.append([tx, ty, self.rng.randrange(4), 5 if vertical else 4])
+            seen = set()
+            self.add_layer("ponton", "ground_rive", [c for c in pcells if (c[0], c[1]) not in seen and not seen.add((c[0], c[1]))])
 
         # occupation : routes, places, eau, champs
         for ty in range(self.H):
             for tx in range(self.W):
                 c = (tx + 0.5, ty + 0.5)
-                if on_path(c, ("road_main", "road", "lane", "trail")) or any(shape_contains(s, c) for s in squares) \
-                        or any(poly_dist(c, w["points"]) <= w["width"] / 2 + 0.6 for w in lay["water"]):
+                if on_path(c, ("road_main", "road", "lane", "trail", "boardwalk")) or any(shape_contains(s, c) for s in squares) \
+                        or any(poly_dist(c, w["points"]) <= w["width"] / 2 + 0.6 for w in lay["water"]) \
+                        or (self.lakes and self.no_veg(c)):
                     self.blocked[ty][tx] = True
         for f in fields:
             self.block_rect(*f["rect"])
@@ -217,8 +309,9 @@ class Zone:
         for ty in range(self.H):
             run = None
             for tx in range(self.W + 1):
-                wet = tx < self.W and any(poly_dist((tx + 0.5, ty + 0.5), w["points"]) <= w["width"] / 2 - 0.2
-                                          for w in lay["water"]) \
+                c = (tx + 0.5, ty + 0.5)
+                wet = tx < self.W and (any(poly_dist(c, w["points"]) <= w["width"] / 2 - 0.2 for w in lay["water"])
+                                       or (self.lakes and self.wet(c))) \
                     and not any(bx <= tx < bx + bw and by <= ty < by + bh for bx, by, bw, bh in bridges)
                 if wet and run is None:
                     run = tx
@@ -259,6 +352,14 @@ class Zone:
             fx, fy = x + w / 2, y + h
             if b["kind"] == "bridge":
                 self.prop(sprite["bridge"], fx, fy, floor=True, kind="bridge")
+                continue
+            if b["kind"] == "hut":
+                rel = {"cabane_bertold": "props/rive/cabane_a.png", "fumoir": "props/rive/fumoir.png"}.get(
+                    b["id"], "props/rive/cabane_b.png")
+                self.prop(rel, fx, fy, cols=self.foot_col(w * T - 8, int(h * T * 0.5)), kind="building")
+                self.block_rect(x - 0.5, y - 0.5, w + 1, h + 1)
+                if b["id"] == "fumoir":
+                    self.fx.append({"kind": "smoke", "x": round((x + w * 0.45) * T), "y": round(y * T - 6)})
                 continue
             if b["kind"] == "house":
                 rel = f"props/village/{houses[hi % len(houses)]}.png"
@@ -327,6 +428,26 @@ class Zone:
             self.fx.append({"kind": "embers", "x": round((x + 0.5) * T), "y": round((y + 0.6) * T)})
             self.fx.append({"kind": "smoke_light", "x": round((x + 0.5) * T), "y": round((y + 0.4) * T)})
             self.block_rect(x - 0.5, y, 2, 1)
+        if "panneau_rive" in lm:
+            x, y = lm["panneau_rive"]["pos"]
+            self.prop("props/foret/panneau.png", x + 0.5, y + 1, cols=[(-2, -3, 5, 3)], kind="landmark")
+            self.block_rect(x, y, 1, 1)
+        if "filets_bertold" in lm:                       # vie de pêcheur autour de Bertold
+            x, y = lm["filets_bertold"]["pos"]
+            self.prop("props/rive/filets.png", x - 1.5, y + 1, cols=[(-26, -3, 6, 3), (20, -3, 6, 3)], kind="landmark")
+            self.prop("props/rive/barque_retournee.png", x + 1.8, y + 2.6, cols=[(-18, -6, 36, 6)])
+            self.prop("props/rive/nasse.png", x - 3.6, y + 2.4, cols=[(-7, -4, 14, 4)])
+            self.prop("props/rive/nasse.png", x + 4.6, y + 0.8, cols=[(-7, -4, 14, 4)])
+            self.prop("props/objets/tonneau.png", x - 4.8, y + 0.9, cols=[(-4, -5, 8, 5)])
+            self.block_rect(x - 5, y - 1, 10, 4)
+        for b in self.boardwalks:                        # poteaux d'amarrage au bout des pontons
+            ex, ey = b["points"][-1]
+            for dx in (-1.0, 1.0):
+                self.prop("props/rive/poteau.png", ex + 0.5 + dx * 1.1, ey + 0.4)
+        if "barques" in lm:
+            x, y = lm["barques"]["pos"]
+            self.prop("props/rive/barque_vide.png", x, y + 1)
+            self.prop("props/rive/barque.png", x + 4, y + 3.5)
         if "porte_lisiere" in lm:
             x, y = lm["porte_lisiere"]["pos"]
             self.prop("props/village/arche_lisiere.png", x + 0.5, y + 1,
@@ -355,7 +476,7 @@ class Zone:
             p = tpl_dir / folder / f"{tid}.json"
             return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
-        prof_names = {"herboristerie": "herboristerie", "bucheronnage": "bûcheronnage",
+        prof_names = {"herboristerie": "herboristerie", "bucheronnage": "bûcheronnage", "peche": "pêche",
                       "archeologie": "archéologie", "chasse": "chasse"}
         hosted = {}
         for eid, e in lay["entries"].items():
@@ -391,8 +512,9 @@ class Zone:
                         "role": f"Niv. {t.get('level', 1)}" + (" · rare" if rare else ""),
                         "dialogues": [t.get("description", "")],
                         "mob": {"leash": round(radius * T), "level": t.get("level", 1),
-                                "temper": {"lapin_bondissant": "shy", "renardeau_curieux": "shy",
-                                           "oiseau_chanteur": "shy"}.get(tid, "watch"),
+                                "temper": TEMPER.get(tid, "predator" if t.get("role") != "normal" else "calm"),
+                                "aggro": AGGRO.get(tid, 64),
+                                "respawn": entry["spawn"].get("cooldown_seconds") or 60,
                                 "spawn": entry["spawn"]}})
                 continue
             if kind == "resource":
@@ -409,7 +531,8 @@ class Zone:
                             f" niv. {prof.get('min_level', 1)}",
                     "dialogues": [t.get("description", "")],
                     "resource": {"gather_time": t.get("gather_time_seconds", 3), "yields": yields,
-                                 "stock": entry["spawn"].get("stock")}})
+                                 "stock": entry["spawn"].get("stock") or 1,
+                                 "respawn": entry["spawn"].get("cooldown_seconds") or 90}})
                 self.interactables.append(item)
                 self.block_rect(x - 0.5, y - 0.5, 2, 2)
                 continue
@@ -442,8 +565,47 @@ class Zone:
         for eid, e in lay.get("extra_entries", {}).items():
             if eid.startswith("_"):
                 continue
-            t = tpl(e["template_type"], e["template_id"])
             x, y = e["pos"]
+            if e["template_type"] == "resource":         # poste de récolte supplémentaire (même template)
+                t = tpl("resource", e["template_id"])
+                prof = t.get("profession_required") or {}
+                yields = []
+                for yd in t.get("yields", []):
+                    q = f"{yd['quantity_min']}" if yd["quantity_min"] == yd["quantity_max"]                         else f"{yd['quantity_min']}-{yd['quantity_max']}"
+                    yields.append(f"{q} × {tpl('item', yd['item_id']).get('name', yd['item_id'])}")
+                self.interactables.append({
+                    "entry_id": eid, "template_type": "resource", "template_id": e["template_id"],
+                    "name": t.get("name", e.get("label", eid)), "quests": [],
+                    "role": f"{prof_names.get(prof.get('profession_id'), prof.get('profession_id', ''))} niv. {prof.get('min_level', 1)}",
+                    "x": round((x + 0.5) * T), "y": round((y + 1) * T),
+                    "sprite": res(f"props/ressources/{e['template_id']}.png"), "frames": 1,
+                    "dialogues": [t.get("description", "")],
+                    "resource": {"gather_time": t.get("gather_time_seconds", 3), "yields": yields,
+                                 "stock": e.get("stock", 3), "respawn": 90}})
+                self.block_rect(x - 0.5, y - 0.5, 2, 2)
+                continue
+            if e["template_type"] == "ferry":            # la barque de Maëlis : traversée vers l'îlot
+                tx_, ty_ = e["to"]
+                self.interactables.append({
+                    "entry_id": eid, "template_type": "ferry", "template_id": eid, "quests": [],
+                    "name": e["label"], "role": "Traversée",
+                    "x": round((x + 0.5) * T), "y": round((y + 1) * T),
+                    "sprite": res("props/rive/barque.png"), "frames": 1,
+                    "dialogues": ["Maëlis tient la barque : « Jusqu'aux roseaux, pas plus loin. »"
+                                  if "back" in e else "La barque attend, amarrée à l'îlot."],
+                    "extra": {"to": [round((tx_ + 0.5) * T), round((ty_ + 1) * T)]}})
+                continue
+            if e["template_type"] == "discovery":        # découverte de lore (note du Carnet)
+                # le cercle repose sous l'eau claire, juste au large de la rive où l'on se tient
+                self.prop("props/rive/cercle_immerge.png", x + 0.5, y - 0.6, floor=True, kind="landmark")
+                self.fx.append({"kind": "fireflies_rune", "x": round((x + 0.5) * T), "y": round((y - 1.6) * T)})
+                self.interactables.append({
+                    "entry_id": eid, "template_type": "discovery", "template_id": eid, "quests": [],
+                    "name": e["label"].split(" (")[0], "role": "Découverte",
+                    "x": round((x + 0.5) * T), "y": round((y + 1.4) * T),
+                    "dialogues": [LORE[eid]["text"]], "extra": {"note": eid, "title": LORE[eid]["title"]}})
+                continue
+            t = tpl(e["template_type"], e["template_id"])
             for name, dx, dy, col in stations[e["template_id"]]:
                 fx, fy = x + 0.5 + dx, y + 1 + dy
                 cols = [(-col[0] // 2, -col[1], *col)] if col else None
@@ -656,7 +818,7 @@ class Zone:
                 if self.blocked[ty][tx] or d > m + 0.3:
                     continue
                 p = (tx + self.rng.uniform(0.15, 0.85), ty + self.rng.uniform(0.5, 1.0))
-                if self.on_road(p, 0.5):
+                if self.on_road(p, 0.5) or (self.lakes and self.no_veg(p)):
                     continue
                 r = self.rng.random()
                 if d > 0:                                 # bande de lisière
@@ -680,13 +842,72 @@ class Zone:
                     elif r < 0.06:
                         self.prop(f"props/vegetation/fleurs_{self.rng.choice('abc')}.png", *p, floor=True)
 
+    def build_rive(self):
+        """Habillage de rive : roselières denses dans l'eau, nénuphars, canards, saules, bois flotté."""
+        if not self.lakes:
+            return
+        for poly in self.reeds:                          # roselières : touffes serrées, dans l'eau
+            xs, ys = [p[0] for p in poly], [p[1] for p in poly]
+            y = min(ys)
+            while y <= max(ys) + 1:
+                x = min(xs)
+                while x <= max(xs) + 1:
+                    p = (x + self.rng.uniform(-0.3, 0.3), y + self.rng.uniform(-0.2, 0.2))
+                    if in_poly(p, poly) and not self.on_boardwalk(p, 0.8):
+                        self.prop(f"props/rive/roseaux_{self.rng.choice('ab')}.png", p[0], p[1] + 0.6, kind="reeds")
+                    x += 1.1
+                y += 0.9
+        # nénuphars et canards : sur l'eau calme près de l'îlot, de l'anse et des hauts-fonds
+        spots = [(i, 3.5) for i in [(sum(p[0] for p in isl) / len(isl), sum(p[1] for p in isl) / len(isl)) for isl in self.islands]]
+        spots += [((r["circle"][0], r["circle"][1]), r["circle"][2] + 1.5) for r in self.lay["regions"] if r["kind"] == "shallows"]
+        spots += [((sum(p[0] for p in m) / len(m), sum(p[1] for p in m) / len(m)), 6.0) for m in self.marsh]
+        for (cx, cy), rad in spots:
+            for _ in range(14):
+                a, d = self.rng.uniform(0, math.tau), self.rng.uniform(rad * 0.6, rad + 3)
+                p = (cx + math.cos(a) * d, cy + math.sin(a) * d * 0.7)
+                if (self.in_lake(p) or self.in_marsh(p)) and not self.on_boardwalk(p, 1.0):
+                    self.prop(f"props/rive/nenuphars_{self.rng.choice('ab')}.png", p[0], p[1], floor=True)
+        for k in range(5):                               # canards immobiles près de l'îlot
+            for _ in range(20):
+                if not self.islands:
+                    break
+                isl = self.islands[0]
+                p = (self.rng.uniform(min(q[0] for q in isl) - 4, max(q[0] for q in isl) + 4),
+                     self.rng.uniform(min(q[1] for q in isl) - 3, max(q[1] for q in isl) + 3))
+                if self.in_lake(p) and not self.on_boardwalk(p, 1.5):
+                    self.prop("props/rive/canard.png", p[0], p[1] + 0.4)
+                    break
+        placed = 0                                        # saules au bord du pré
+        cands = [(x + self.rng.uniform(0, 3), y + self.rng.uniform(0, 3)) for y in range(4, self.H - 3, 4) for x in range(4, self.W - 4, 4)]
+        self.rng.shuffle(cands)
+        for c in cands:
+            if placed >= 10:
+                break
+            d = self.open_dist(c)
+            if -4.5 < d < -1.2 and not self.no_veg(c) and self.free(c[0], c[1] - 0.5, r=1) and not self.on_road(c, 2.0):
+                self.prop(f"props/rive/saule_{self.rng.choice('ab')}.png", c[0], c[1], cols=[(-5, -4, 10, 4)])
+                self.block_rect(c[0] - 1, c[1] - 1.5, 2, 2)
+                placed += 1
+        for poly in self.shore:                          # bois flotté sur les galets
+            for _ in range(6):
+                for _ in range(20):
+                    xs, ys = [p[0] for p in poly], [p[1] for p in poly]
+                    p = (self.rng.uniform(min(xs), max(xs)), self.rng.uniform(min(ys), max(ys)))
+                    if in_poly(p, poly) and not self.on_road(p, 1.0) and not self.in_lake(p):
+                        self.prop("props/rive/bois_flotte.png", p[0], p[1], floor=True)
+                        break
+
     def build_mist(self):
         if not self.lay.get("ambient", {}).get("mist"):
             return
         for r in self.lay["regions"]:
             if r["kind"] != "clearing":
                 continue
-            if "circle" in r:
+            if "poly" in r:
+                xs, ys = [p[0] for p in r["poly"]], [p[1] for p in r["poly"]]
+                cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+                w, h = (max(xs) - min(xs)) * 0.5, (max(ys) - min(ys)) * 0.5
+            elif "circle" in r:
                 cx, cy, rad = r["circle"]
                 w = h = rad * 1.4
             else:
@@ -704,6 +925,7 @@ class Zone:
         self.build_entries()
         if self.forest:
             self.build_forest_fill()
+            self.build_rive()
             self.build_undergrowth()
             self.build_mist()
         else:
@@ -723,7 +945,8 @@ class Zone:
                   "arrival": [(e["arrival"][0] + 0.5) * T, (e["arrival"][1] + 1) * T]} for e in lay["exits"]]
         sx, sy = lay["spawn"]["pos"]
         return {
-            "zone_id": lay["zone_id"], "name": self.zone["name"], "size_px": [W, H], "tile_size": T,
+            "zone_id": lay["zone_id"], "name": self.zone["name"], "zone_type": self.zone.get("type", "wilderness"),
+            "size_px": [W, H], "tile_size": T,
             "atlases": {
                 "ground_base": res("tiles/floor_1/ground_base.png"),
                 "ground_fields": res("tiles/floor_1/ground_fields.png"),
@@ -731,7 +954,13 @@ class Zone:
                 "overlay_dirt": res("tiles/floor_1/overlay_dirt.png"),
                 "overlay_cobble": res("tiles/floor_1/overlay_cobble.png"),
                 "overlay_water": res("tiles/floor_1/overlay_water.png"),
+                "ground_rive": res("tiles/floor_1/ground_rive.png"),
+                "overlay_galets": res("tiles/floor_1/overlay_galets.png"),
+                "overlay_basses": res("tiles/floor_1/overlay_basses.png"),
+                "overlay_profonde": res("tiles/floor_1/overlay_profonde.png"),
+                "overlay_marais": res("tiles/floor_1/overlay_marais.png"),
             },
+            "slow_polys": [[[round(x * T), round(y * T)] for x, y in m] for m in self.marsh],
             "layers": self.layers, "floor_props": self.floor_props, "props": self.props,
             "colliders": self.colliders, "interactables": self.interactables, "fx": self.fx,
             "exits": exits, "spawn": [(sx + 0.5) * T, (sy + 1) * T],

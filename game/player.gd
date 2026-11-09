@@ -1,14 +1,35 @@
 extends CharacterBody2D
-## Joueur : clavier (flèches / ZQSD / WASD) ou toucher/clic pour se déplacer vers un point.
+## Joueur : déplacement (clavier ZQSD/flèches ou toucher), 8 directions, attaque à mains nues,
+## compétences de la barre. Combat « action libre » (docs/combat_v1.md) : chaque coup part vers le
+## regard, avec une aide à la visée vers la bête la plus proche dans le cône.
+## Les règles (dégâts, recharges, mana) viennent de CombatRules / Fighter, l'état de GameState.
+
+signal defeated
 
 const SPEED := 80.0
 const ARRIVE_DIST := 3.0
+const BODY_RADIUS := 5.0
+## mains nues : petit arc devant soi (l'arme équipée le remplacera)
+const FIST_AREA := {"shape": "arc", "range": 22, "angle": 100}
+const DIRS := ["S", "SE", "E", "NE", "N"]
+# colonnes de la planche player_8dir.png
+const F_IDLE := 0
+const F_WALK := 2
+const F_ATTACK := 6
+const F_HURT := 9
+const F_KO := 10
 
 @onready var sprite: Sprite2D = $Sprite
 @onready var camera: Camera2D = $Camera2D
 
+var fighter: Fighter
+var facing := Vector2.DOWN
+var speed_mult := 1.0              # < 1 dans l'eau des hauts-fonds
 var _target: Variant = null   # Vector2 ou null
 var _anim_t := 0.0
+var _act := ""                # "", "attack", "hurt", "ko"
+var _act_t := 0.0
+var _mat: ShaderMaterial
 
 
 func _ready() -> void:
@@ -16,10 +37,29 @@ func _ready() -> void:
 	_add_keys("ui_down", [KEY_S])
 	_add_keys("ui_left", [KEY_A, KEY_Q])
 	_add_keys("ui_right", [KEY_D])
+	add_to_group("player")
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	fighter = gs.fighter if gs else Fighter.new()
+	if fighter.base.is_empty():
+		fighter.setup(CombatRules.BASE_STATS, 1)
+	_mat = ShaderMaterial.new()
+	_mat.shader = load("res://game/fx/flash.gdshader")
+	sprite.material = _mat
+	fighter.hp_changed.connect(_on_hp_changed)
+
+
+func _exit_tree() -> void:
+	if fighter and fighter.hp_changed.is_connected(_on_hp_changed):
+		fighter.hp_changed.disconnect(_on_hp_changed)
+
+
+func is_down() -> bool:
+	return _act == "ko"
 
 
 func move_to(world_pos: Vector2) -> void:
-	_target = world_pos
+	if not is_down():
+		_target = world_pos
 
 
 func stop() -> void:
@@ -27,32 +67,230 @@ func stop() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if dir != Vector2.ZERO:
-		_target = null
-	elif _target != null:
-		var to: Vector2 = _target - global_position
-		if to.length() > ARRIVE_DIST:
-			dir = to.normalized()
-		else:
+	var dir := Vector2.ZERO
+	if not is_down():
+		dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+		if dir != Vector2.ZERO:
 			_target = null
-	velocity = dir * SPEED
+		elif _target != null:
+			var to: Vector2 = _target - global_position
+			if to.length() > ARRIVE_DIST:
+				dir = to.normalized()
+			else:
+				_target = null
+	var spd := SPEED * (0.35 if _act == "attack" else 1.0) * speed_mult     # on s'engage dans son coup
+	velocity = dir * spd
 	move_and_slide()
-	# coincé contre un obstacle en allant vers une cible : on abandonne
 	if _target != null and get_real_velocity().length() < SPEED * 0.15 and get_slide_collision_count() > 0:
 		_target = null
-	if dir.x != 0.0:
-		sprite.flip_h = dir.x < 0.0
+	if dir != Vector2.ZERO and _act != "attack":
+		facing = dir.normalized()
 	_animate(delta, dir != Vector2.ZERO)
+	queue_redraw()
+
+
+## Portée de l'arme, dessinée discrètement au sol quand une bête hostile approche.
+func _draw() -> void:
+	if is_down():
+		return
+	var near := false
+	for m in get_tree().get_nodes_in_group("mobs"):
+		if m.provoked and m.is_alive() and m.global_position.distance_to(global_position) < 72.0:
+			near = true
+			break
+	if not near:
+		return
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	var area: Dictionary = gs.weapon_area() if gs else FIST_AREA
+	var o := Vector2(0, -4)
+	var col := Color("fff4d6", 0.28)
+	if area.get("shape") == "line":
+		var L := float(area.get("range", 40))
+		draw_line(o, o + facing * L, col, 1.0)
+		return
+	var r := float(area.get("range", 22))
+	var half := deg_to_rad(float(area.get("angle", 100)) / 2.0)
+	var a := facing.angle()
+	draw_arc(o, r, a - half, a + half, 14, col, 1.0)
+	draw_line(o + Vector2.from_angle(a - half) * (r - 4), o + Vector2.from_angle(a - half) * r, col, 1.0)
+	draw_line(o + Vector2.from_angle(a + half) * (r - 4), o + Vector2.from_angle(a + half) * r, col, 1.0)
+
+
+# --------------------------------------------------------------------------- combat
+func _zone() -> Node:
+	return get_tree().get_first_node_in_group("zone")
+
+
+func _mob_positions() -> Array:
+	return get_tree().get_nodes_in_group("mobs").filter(func(m): return m.is_alive() and not m.submerged).map(func(m): return m.global_position)
+
+
+func _aim(aim: Vector2, area: Dictionary) -> Vector2:
+	var d := aim.normalized() if aim != Vector2.ZERO else facing
+	return CombatRules.assisted_dir(global_position, d, _mob_positions(), CombatRules.area_reach(area))
+
+
+## Attaque de base (un tap = un coup). `aim` : direction voulue (souris) ou ZERO = regard.
+func attack(aim := Vector2.ZERO) -> bool:
+	if is_down() or not fighter.ready("basic"):
+		return false
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	var area: Dictionary = gs.weapon_area() if gs else FIST_AREA
+	var weapon: String = gs.equipped("weapon") if gs else ""
+	var d := _aim(aim, area)
+	facing = d
+	fighter.start_cooldown("basic", fighter.attack_cooldown())
+	_start_act("attack", 0.24)
+	_strike(area, d, func(): return fighter.basic_attack_raw(), {"weapon": weapon})
+	return true
+
+
+## Compétence de l'emplacement `slot` (0-3). Renvoie "" si lancée, sinon la raison du refus.
+func cast(slot: int, aim := Vector2.ZERO) -> String:
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	if gs == null or is_down():
+		return "indisponible"
+	var sid: String = gs.profile.bar[slot]
+	if sid == "":
+		return "emplacement vide"
+	var sk: Dictionary = gs.tpl("skills", sid)
+	if not fighter.ready(sid):
+		return "pas encore prête"
+	if fighter.mana < float(sk.get("mana_cost", 0)):
+		return "pas assez de mana"
+	fighter.mana -= float(sk.get("mana_cost", 0))
+	fighter.start_cooldown(sid, float(sk.get("cooldown_seconds", 6)))
+	var area: Dictionary = CombatRules.area_of(sk)
+	var d := _aim(aim, area)
+	facing = d
+	_start_act("attack", 0.28)
+	var z := _zone()
+	for e in sk.get("effects", []):
+		match e.type:
+			"damage":
+				_strike(area, d, func(): return float(e.get("base", 0)) + float(e.get("power", 0)) * fighter.skill_stat(sk.get("damage_type", "physical")),
+					{"skill": sk, "debuffs": sk.get("effects", []).filter(func(x): return x.type == "debuff")})
+			"heal":
+				var amount := fighter.heal(float(e.get("base", 0)) + float(e.get("power", 0)) * fighter.stat("sag"))
+				if z:
+					z.float_text(global_position + Vector2(0, -22), "+%d" % roundi(amount), Color("a8c84e"))
+					z.show_strike(global_position, {"shape": "self"}, d, Color("a8c84e"))
+			"shield":
+				var st := "atk" if sk.get("damage_type") == "physical" else "sag"
+				var amount := float(e.get("base", 0)) + float(e.get("amount_power", 0)) * fighter.stat(st)
+				fighter.shield = maxf(fighter.shield, amount)
+				fighter.shield_expires_at = Fighter.now() + float(e.get("duration_seconds", 10))
+			"buff":
+				if e.get("target", "self") == "self":
+					fighter.add_effect(sid, sk.get("name", sid), e.stat, float(e.get("duration_seconds", 10)), float(e.get("amount_percent", 0)))
+	return ""
+
+
+## Résout un coup sur toutes les bêtes dans la zone (une ligne ne touche que la première).
+func _strike(area: Dictionary, d: Vector2, raw_fn: Callable, opts: Dictionary) -> void:
+	var z := _zone()
+	if z:
+		z.show_strike(global_position + Vector2(0, -8), area, d,
+			Color("ffe08a") if opts.has("skill") else Color("fff4d6"), UISkin.item_icon(opts.get("weapon", "")) if opts.get("weapon", "") != "" else null)
+	var origin := global_position + Vector2(0, -4)
+	var hits := []
+	for m in get_tree().get_nodes_in_group("mobs"):
+		if m.is_alive() and not m.submerged and CombatRules.in_area(area, origin, d, m.global_position + Vector2(0, -4), m.body_radius):
+			hits.append(m)
+	if area.get("shape") == "line" and hits.size() > 1:
+		hits.sort_custom(func(a, b): return (a.global_position - origin).dot(d) < (b.global_position - origin).dot(d))
+		hits = [hits[0]]
+	for m in hits:
+		var r: Dictionary = m.fighter.take_hit(raw_fn.call(), fighter)
+		if opts.has("skill"):
+			m.interrupt_if(opts.skill)
+			for db in opts.get("debuffs", []):
+				m.fighter.add_effect(opts.skill.id, opts.skill.get("name", ""), db.stat, float(db.get("duration_seconds", 8)), -absf(float(db.get("amount_percent", 10))))
+		if z:
+			z.report_hit(m, r, self)
+
+
+## Appelé par la zone quand on encaisse un coup.
+func react(r: Dictionary, from: Vector2) -> void:
+	if r.dodged:
+		return
+	_flash()
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	if gs and gs.settings.get("vibrate", true) and OS.has_feature("mobile"):
+		Input.vibrate_handheld(35)
+	if not fighter.alive():
+		_start_act("ko", 999.0)
+		_target = null
+		defeated.emit()
+		return
+	if _act != "attack":
+		_start_act("hurt", 0.18)
+	var push := (global_position - from).normalized() * 3.0
+	move_and_collide(push)
+
+
+func revive() -> void:
+	_act = ""
+	_act_t = 0.0
+
+
+func _on_hp_changed(_hp: float, _max: float) -> void:
+	pass
+
+
+func _flash() -> void:
+	_mat.set_shader_parameter("flash", 1.0)
+	var tw := create_tween()
+	tw.tween_method(func(v): _mat.set_shader_parameter("flash", v), 1.0, 0.0, 0.14)
+
+
+# --------------------------------------------------------------------------- animation
+func _start_act(kind: String, seconds: float) -> void:
+	_act = kind
+	_act_t = seconds
+	_anim_t = 0.0
+
+
+func _dir_row() -> Array:
+	var a := wrapf(rad_to_deg(facing.angle()), -180.0, 180.0)   # 0 = droite, 90 = bas
+	var sector := wrapi(int(round(a / 45.0)), 0, 8)              # 0 E, 1 SE, 2 S, 3 SO, 4 O, 5 NO, 6 N, 7 NE
+	var table := [[2, false], [1, false], [0, false], [1, true], [2, true], [3, true], [4, false], [3, false]]
+	return table[sector]
 
 
 func _animate(delta: float, moving: bool) -> void:
-	_anim_t += delta * (8.0 if moving else 3.0)
-	sprite.frame = int(_anim_t) % sprite.hframes
+	if sprite.vframes < 5:                               # ancienne planche (4 images de face)
+		_anim_t += delta * (8.0 if moving else 3.0)
+		sprite.frame = int(_anim_t) % sprite.hframes
+		return
+	var rf: Array = _dir_row()
+	sprite.flip_h = rf[1]
+	var col := F_IDLE
+	_anim_t += delta
+	if _act != "":
+		_act_t -= delta
+		match _act:
+			"attack":
+				col = F_ATTACK + mini(int(_anim_t / 0.08), 2)
+			"hurt":
+				col = F_HURT
+			"ko":
+				col = F_KO + (1 if _anim_t > 0.35 else 0)
+				sprite.flip_h = false
+				sprite.frame_coords = Vector2i(col, 0)
+				return
+		if _act_t <= 0.0:
+			_act = ""
+	elif moving:
+		col = F_WALK + int(_anim_t * 8.0) % 4
+	else:
+		col = F_IDLE + (1 if fmod(_anim_t, 1.6) > 0.8 else 0)
+	sprite.frame_coords = Vector2i(col, rf[0])
 
 
 func _add_keys(action: StringName, keys: Array) -> void:
 	for k in keys:
 		var ev := InputEventKey.new()
 		ev.physical_keycode = k
-		InputMap.action_add_event(action, ev)
+		if not InputMap.action_has_event(action, ev):
+			InputMap.action_add_event(action, ev)
