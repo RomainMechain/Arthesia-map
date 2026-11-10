@@ -59,16 +59,17 @@ func _ready() -> void:
 		gs.floor_id = floor_id
 		gs.enter_zone(zone_id, zone_type)
 		Sfx.enter_zone(zone_id, zone_type, music_mood)
-	if zone_type in ["wilderness", "water", "danger", "ruins"]:   # apparitions rares : zones de combat
-		rare_spawner = (load("res://game/rare_spawner.gd") as GDScript).new()
-		rare_spawner.name = "ApparitionsRares"
-		rare_spawner.zone = self
-		add_child(rare_spawner)
 		gs.notice.connect(_on_notice)
 		gs.quest_changed.connect(_on_quest_changed)
 		gs.title_unlocked.connect(_on_title)
 		gs.leveled_up.connect(_on_level)
 		gs.profile_changed.connect(_refresh_markers)
+		gs.contracts_changed.connect(_refresh_markers)
+	if zone_type in ["wilderness", "water", "danger", "ruins"]:   # apparitions rares : zones de combat
+		rare_spawner = (load("res://game/rare_spawner.gd") as GDScript).new()
+		rare_spawner.name = "ApparitionsRares"
+		rare_spawner.zone = self
+		add_child(rare_spawner)
 	player.defeated.connect(_on_defeated)
 	player.get_node("Camera2D").reset_smoothing.call_deferred()
 	hud = (load("res://game/ui/hud.gd") as GDScript).new()
@@ -86,7 +87,7 @@ func _exit_tree() -> void:
 	var gs := _game_state()
 	if gs:
 		for pair in [[gs.notice, _on_notice], [gs.quest_changed, _on_quest_changed], [gs.profile_changed, _refresh_markers],
-				[gs.title_unlocked, _on_title], [gs.leveled_up, _on_level]]:
+				[gs.title_unlocked, _on_title], [gs.leveled_up, _on_level], [gs.contracts_changed, _refresh_markers]]:
 			if (pair[0] as Signal).is_connected(pair[1]):
 				(pair[0] as Signal).disconnect(pair[1])
 

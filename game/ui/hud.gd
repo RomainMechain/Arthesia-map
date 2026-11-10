@@ -587,7 +587,7 @@ func _refresh_track(tutorial: bool) -> void:
 	_track_box.visible = qid != "" and not tutorial
 	if not _track_box.visible:
 		return
-	var nm: String = _gs.tpl("quests", qid).get("name", qid)
+	var nm: String = _gs.track_label(qid)
 	_track_name.text = "◆ " + (nm if nm.length() <= 26 else nm.substr(0, 25) + "…")
 	var s: Dictionary = QuestGuide.step(_gs, qid, _gs.current_zone)
 	var txt: String = s.get("text", "")

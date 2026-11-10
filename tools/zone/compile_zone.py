@@ -613,6 +613,15 @@ class Zone:
                                   if "back" in e else "La barque attend, amarrée à l'îlot."],
                     "extra": {"to": [round((tx_ + 0.5) * T), round((ty_ + 1) * T)]}})
                 continue
+            if e["template_type"] == "board":            # tableau des contrats du jour (village)
+                self.interactables.append({
+                    "entry_id": eid, "template_type": "board", "template_id": eid, "quests": [],
+                    "name": e["label"], "role": "Contrats du jour",
+                    "x": round((x + 0.5) * T), "y": round((y + 1) * T),
+                    "sprite": res("props/village/tableau_contrats.png"), "frames": 1,
+                    "dialogues": ["Trois demandes punaisées, renouvelées chaque jour."]})
+                self.block_rect(x - 1, y, 3, 1)
+                continue
             if e["template_type"] == "discovery":        # découverte de lore (note du Carnet)
                 # le cercle repose sous l'eau claire, juste au large de la rive où l'on se tient
                 self.prop("props/rive/cercle_immerge.png", x + 0.5, y - 0.6, floor=True, kind="landmark")

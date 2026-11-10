@@ -111,6 +111,9 @@ func open(who: Node2D, intro: Array = []) -> void:
 	_role.text = d.role
 	_set_portrait(who)
 	visible = true
+	if who.get("template_type") == "board":
+		_board_menu(true)                         # tableau des contrats du jour
+		return
 	if not who.get("quests") is Array or (who.quests.is_empty() and who.get("template_type") != "npc"):
 		_simple(d)                                # échoppe, atelier, barque, découverte… : une page
 		return
@@ -316,7 +319,7 @@ func primary() -> void:
 		_page_done()
 		var pick = null
 		for c in _choices:
-			if not (c.act.kind in ["close", "talk", "menu", "progress_page"]):
+			if not (c.act.kind in ["close", "talk", "menu", "progress_page", "board"]):
 				pick = c
 				break
 		if pick == null:
@@ -324,7 +327,7 @@ func primary() -> void:
 			return
 		var k: String = pick.act.kind
 		_choose(pick.act)
-		if k in ["accept", "turn_in", "shop", "workshop", "ferry", "discovery"]:
+		if k in ["accept", "turn_in", "shop", "workshop", "ferry", "discovery", "contract_take", "contract_claim"]:
 			return
 
 
@@ -338,6 +341,19 @@ func _choose(a: Dictionary) -> void:
 		"talk":
 			_extra_hint = ""
 			_show_pages(_lines().map(func(l): return {"text": l}), _menu_choices())
+		"board":
+			_board_menu()
+		"contract_page":
+			_contract_page(int(a.i))
+		"contract_take":
+			_gs.contract_take(int(a.i))
+			_show_pages([{"text": "Tu détaches la feuille et la glisses dans ton Carnet.",
+				"extra": _gs.contract_progress_text(_gs.contract(int(a.i)))}],
+				[{"label": "Retour", "act": {"kind": "board"}}, {"label": "Fermer", "act": {"kind": "close"}}])
+		"contract_claim":
+			_gs.contract_claim(int(a.i))
+			_show_pages([{"text": "Quelqu'un a laissé ta paie sous la punaise, comme promis."}],
+				[{"label": "Retour", "act": {"kind": "board"}}, {"label": "Fermer", "act": {"kind": "close"}}])
 		"quest_page":
 			_quest_pages(a.quest_id)
 		"progress_page":
@@ -358,6 +374,42 @@ func _choose(a: Dictionary) -> void:
 			action.emit(a)                            # commerce, fabriquer, traverser, noter…
 			if visible and a.kind in ["shop", "workshop", "ferry", "discovery"]:
 				close()
+
+
+# --------------------------------------------------------------------------- tableau des contrats
+func _board_menu(first := false) -> void:
+	var list: Array = _gs.contracts()
+	var ch := []
+	var left := 0
+	for i in list.size():
+		var c: Dictionary = list[i]
+		var mark: String = {"open": "! ", "active": "… ", "complete": "? Rendre : ", "claimed": "✓ "}.get(c.state, "")
+		if c.state != "claimed":
+			left += 1
+		ch.append({"label": mark + _gs.contract_title(c), "act": {"kind": "contract_page", "i": i}})
+	ch.append({"label": "Fermer", "act": {"kind": "close"}})
+	var txt := "Trois feuilles punaisées sur le bois. On les renouvelle chaque jour." if first \
+		else "Le tableau des contrats."
+	if left == 0:
+		txt = "Tous les contrats du jour sont remplis. De nouvelles feuilles seront punaisées demain."
+	_show_pages([{"text": txt}], ch)
+
+
+func _contract_page(i: int) -> void:
+	var c: Dictionary = _gs.contract(i)
+	var extra: String = "Récompense : " + str(_gs.contract_reward_text(c))
+	var ch := []
+	match str(c.state):
+		"open":
+			ch.append({"label": "Prendre", "act": {"kind": "contract_take", "i": i}})
+		"active":
+			extra = _gs.contract_progress_text(c) + "   ·   " + extra
+		"complete":
+			ch.append({"label": "Rendre le contrat", "act": {"kind": "contract_claim", "i": i}})
+		"claimed":
+			extra = "Contrat rempli."
+	ch.append({"label": "Retour", "act": {"kind": "board"}})
+	_show_pages([{"text": _gs.contract_text(c), "extra": extra}], ch)
 
 
 func _menu_line() -> String:

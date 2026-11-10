@@ -57,12 +57,13 @@ func _ready() -> void:
 		_gs.skill_unlocked.connect(_on_skill)
 		_gs.craft_done.connect(_on_craft)
 		_gs.quest_turned_in.connect(_on_quest_done)
+		_gs.contract_done.connect(_on_contract_done)
 
 
 func _exit_tree() -> void:
 	if _gs:
 		for pair in [[_gs.leveled_up, _on_level], [_gs.title_unlocked, _on_title], [_gs.skill_unlocked, _on_skill],
-				[_gs.craft_done, _on_craft], [_gs.quest_turned_in, _on_quest_done]]:
+				[_gs.craft_done, _on_craft], [_gs.quest_turned_in, _on_quest_done], [_gs.contract_done, _on_contract_done]]:
 			if (pair[0] as Signal).is_connected(pair[1]):
 				(pair[0] as Signal).disconnect(pair[1])
 
@@ -117,6 +118,17 @@ func _on_quest_done(qid: String) -> void:
 		lines.append(["%s ×%d" % [_gs.item_name(i.item_id), int(i.get("quantity", 1))], INK_SOFT])
 		icon = UISkin.item_icon(i.item_id)
 	push({"heading": "Quête accomplie", "title": t.get("name", qid), "icon": icon, "lines": lines,
+		"color": GOLD, "sound": "quest_done"})
+
+
+func _on_contract_done(i: int) -> void:
+	var c: Dictionary = _gs.contract(i)
+	var lines := [["+%d XP" % int(c.xp), GOOD], ["+%d or" % int(c.gold), GOLD.darkened(0.35)]]
+	var icon: Texture2D = UISkin.icon("quete")
+	for it in c.get("items", []):
+		lines.append(["%s ×%d" % [_gs.item_name(it.item_id), int(it.get("quantity", 1))], INK_SOFT])
+		icon = UISkin.item_icon(it.item_id)
+	push({"heading": "Contrat rempli", "title": _gs.contract_title(c), "icon": icon, "lines": lines,
 		"color": GOLD, "sound": "quest_done"})
 
 

@@ -285,7 +285,7 @@ func _verb() -> String:
 			return "Traverser"
 		"discovery":
 			return "Examiner"
-		"player_market":
+		"player_market", "board":
 			return "Consulter"
 	return "Parler"
 
@@ -319,10 +319,18 @@ func refresh_marker() -> void:
 	if marker == null:
 		return
 	var states := quests.map(func(q): return _state(q))
+	if template_type == "board" and _gs():                    # tableau : contrats du jour
+		var cl: Array = _gs().contracts()
+		states = cl.map(func(c): return {"open": "", "active": "active", "complete": "complete"}.get(c.state, "done"))
+		if "" in states and not "complete" in states:
+			marker.text = "!"
+			marker.modulate = Color("ffe08a")
+			_set_icon()
+			return
 	marker.modulate = Color("ffe08a")
 	if "complete" in states:
 		marker.text = "?"
-	elif not available_quests().is_empty():
+	elif not available_quests().is_empty() and template_type != "board":
 		marker.text = "!"
 	elif "active" in states:
 		marker.text = "…"
@@ -332,6 +340,10 @@ func refresh_marker() -> void:
 		marker.modulate = Color(1, 1, 1, 0.4)
 	else:
 		marker.text = ""
+	_set_icon()
+
+
+func _set_icon() -> void:
 	if _icon:
 		var kind: String = {"?": "marker_turnin", "!": "marker_quest", "…": "marker_active"}.get(marker.text, "")
 		if marker.text == "!" and marker.modulate.a < 0.5:

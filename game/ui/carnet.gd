@@ -861,7 +861,13 @@ func _build_quetes(left: VBoxContainer, right: VBoxContainer) -> void:
 	if ids.is_empty():
 		_label(left, "Aucune quête pour l'instant. Cherche les « ! » dorés au-dessus des têtes.", INK_FAINT, 10, true)
 	var is_note := _quest_sel.begins_with("note:") and notes.has(_quest_sel.substr(5))
-	if not is_note and not p.quests.has(_quest_sel):
+	var clist: Array = _gs.contracts()
+	var taken := []
+	for ci in clist.size():
+		if clist[ci].state != "open":
+			taken.append(ci)
+	var is_contract := _quest_sel.begins_with("c:") and int(_quest_sel.substr(2)) in taken
+	if not is_note and not is_contract and not p.quests.has(_quest_sel):
 		if not ids.is_empty():
 			_quest_sel = ids[0]
 		elif not notes.is_empty():
@@ -881,6 +887,22 @@ func _build_quetes(left: VBoxContainer, right: VBoxContainer) -> void:
 		n.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_label(r, {"active": "en cours", "complete": "à rendre", "turned_in": "terminée"}.get(st, st),
 			ACCENT if st == "complete" else INK_FAINT)
+	# contrats du jour pris au tableau du village
+	if not taken.is_empty():
+		_section(left, "Contrats du jour", "%d pris" % taken.size(), INK_FAINT)
+		var kc := 0
+		for ci in taken:
+			var key2: String = "c:%d" % ci
+			var cc: Dictionary = clist[ci]
+			var rc := _row(left, kc, key2 == _quest_sel, func(): _quest_sel = key2; refresh())
+			kc += 1
+			rc.add_child(_icon(UISkin.icon("quete")))
+			var nc := _label(rc, ("◆ " if key2 == _gs.tracked_quest() else "") + _gs.contract_title(cc), INK if cc.state != "claimed" else INK_FAINT)
+			nc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			nc.clip_text = true
+			nc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			_label(rc, {"active": "en cours", "complete": "à rendre", "claimed": "rempli"}.get(cc.state, ""),
+				ACCENT if cc.state == "complete" else INK_FAINT)
 	# découvertes : notes de lore consignées en explorant
 	if not notes.is_empty():
 		_section(left, "Notes", "%d découverte%s" % [notes.size(), "s" if notes.size() > 1 else ""], INK_FAINT)
@@ -893,6 +915,30 @@ func _build_quetes(left: VBoxContainer, right: VBoxContainer) -> void:
 			n2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			n2.clip_text = true
 			n2.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	if is_contract:
+		var c3: Dictionary = clist[int(_quest_sel.substr(2))]
+		_section(right, "Contrat", {"active": "en cours", "complete": "à rendre", "claimed": "rempli"}.get(c3.state, ""),
+			ACCENT if c3.state == "complete" else INK_FAINT)
+		_label(right, _gs.contract_title(c3), INK, 10)
+		_label(right, _gs.contract_text(c3), INK_SOFT, 10, true)
+		_section(right, "Objectif")
+		var ro := _row(right, 0)
+		_check(ro, c3.state != "active")
+		var lo := _label(ro, _gs.contract_progress_text(c3), INK)
+		lo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_section(right, "Récompense")
+		_label(right, _gs.contract_reward_text(c3), INK, 10, true)
+		if c3.state in ["active", "complete"]:
+			_spacer(right)
+			if c3.state == "complete":
+				_label(right, "Rapporte-le au tableau des contrats, sur la place du village.", ACCENT, 10, true)
+			var q4: String = _quest_sel
+			var bt2 := _button(" Ne plus suivre " if _gs.tracked_quest() == q4 else " ◆ Suivre ", func():
+				_gs.track_quest(q4)
+				refresh())
+			bt2.size_flags_horizontal = Control.SIZE_SHRINK_END
+			right.add_child(bt2)
+		return
 	if is_note:
 		var note: Dictionary = notes[_quest_sel.substr(5)]
 		_section(right, "Note", "découverte", INK_FAINT)

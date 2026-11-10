@@ -640,6 +640,8 @@ def main():
     sv(fence_h(), "props/village/cloture_h.png")
     sv(fence_v(), "props/village/cloture_v.png")
     sv(arch(), "props/village/arche_lisiere.png")
+    import board_asset                                           # tableau des contrats
+    board_asset.main(sv)
     for name in SMALL:
         sv(small(name), f"props/objets/{name}.png")
     for name, img in tree_variants().items():

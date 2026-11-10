@@ -18,6 +18,8 @@ signal settings_changed
 signal craft_done(item_id: String, discovered: bool)
 signal skill_unlocked(skill_id: String)
 signal quest_turned_in(quest_id: String)
+signal contracts_changed
+signal contract_done(index: int)
 
 const SAVE_PATH := "user://arthesia_save.json"
 const SETTINGS_PATH := "user://arthesia_settings.json"
@@ -98,7 +100,7 @@ func reset_profile() -> void:
 		"alloc": {"hp": 0, "atk": 0, "def": 0, "agi": 0, "int": 0, "sag": 0},
 		"gold": 0, "inventory": {}, "kills": {}, "quests": {}, "visited": [],
 		"skills": [], "bar": ["", "", "", ""], "equipment": {},
-		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {}, "talked": {}, "tracked": "", "seen": {}, "loot_seen": {},
+		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {}, "talked": {}, "tracked": "", "seen": {}, "loot_seen": {}, "contracts": {},
 		"tutorial": {"step": 0, "seen": {}, "kills_at_step": 0},
 	}
 	recompute_stats(true)
@@ -300,6 +302,7 @@ func gain_prof_xp(p: String, resource_level: int) -> float:
 ## Une récolte réussie : compteur (conditions gather_count), XP de métier, déblocages.
 func on_gather(resource_id: String, profession: String, resource_level: int) -> void:
 	profile.gathers[resource_id] = int(profile.gathers.get(resource_id, 0)) + 1
+	_contract_progress("gather", resource_id)
 	for qid in profile.quests:                    # objectifs « récolter N fois »
 		var q: Dictionary = profile.quests[qid]
 		if q.state != "active":
@@ -568,6 +571,7 @@ func _craft_finish() -> void:
 		"discovered": c.discovered}
 	item_gained.emit(out_id, 1)
 	craft_done.emit(out_id, c.discovered)
+	_contract_progress("craft", str(c.workshop))
 	_refresh_quests()
 	profile_changed.emit()
 	save()
@@ -1183,6 +1187,7 @@ func eval_condition(c) -> bool:
 ## Une créature marquée par l'aube vaincue : compteur des titres de chasse (kill_count « marque »).
 func on_marked_kill() -> void:
 	profile.kills["marque"] = int(profile.kills.get("marque", 0)) + 1
+	_contract_progress("marked", "")
 	notice.emit("La lumière figée se libère : Éclat d'Aube Figée !")
 	check_unlocks()
 	save()
@@ -1190,6 +1195,7 @@ func on_marked_kill() -> void:
 
 func on_kill(monster_id: String, level: int, role: String) -> void:
 	profile.kills[monster_id] = int(profile.kills.get(monster_id, 0)) + 1
+	_contract_progress("hunt", monster_id)
 	see_monster(monster_id)
 	gain_xp(CombatRules.monster_xp(level, role, profile.level))
 	for qid in profile.quests:
@@ -1246,7 +1252,16 @@ func accept_quest(qid: String) -> void:
 ## Quête suivie (flèche de guidage, repère de la carte, rappel à l'écran) ; "" si aucune.
 func tracked_quest() -> String:
 	var q: String = str(profile.get("tracked", ""))
+	if q.begins_with("c:"):
+		return q if str(contract(int(q.substr(2))).get("state", "")) in ["active", "complete"] else ""
 	return q if quest_state(q) in ["active", "complete"] else ""
+
+
+## Nom affiché d'une quête ou d'un contrat suivi.
+func track_label(qid: String) -> String:
+	if qid.begins_with("c:"):
+		return contract_title(contract(int(qid.substr(2))))
+	return str(tpl("quests", qid).get("name", qid))
 
 
 func track_quest(qid: String) -> void:
@@ -1357,7 +1372,7 @@ func _load() -> bool:
 	if not (d is Dictionary) or int(d.get("version", 0)) != SAVE_VERSION:
 		return false                              # (migrations : à ajouter ici quand la version change)
 	profile = d
-	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next", "talked", "seen", "loot_seen"]:          # sauvegardes plus anciennes
+	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next", "talked", "seen", "loot_seen", "contracts"]:          # sauvegardes plus anciennes
 		if not profile.has(k):
 			profile[k] = [] if k in ["visited", "titles"] else {}
 	if not profile.has("title"):
@@ -1421,3 +1436,280 @@ func travel(from_zone: String, to_zone: String, arrival = null) -> void:
 	tw2.tween_property(_fade, "modulate:a", 0.0, 0.35)
 	await tw2.finished
 	_busy = false
+
+# --------------------------------------------------------------------------- contrats du jour
+## Tableau des contrats de Val-de-l'Aube : trois demandes par jour réel (chasse, récolte, fabrication,
+## parfois une créature marquée), tirées parmi ce que le joueur connaît déjà (zones visitées, métiers).
+## On les prend au tableau, on les rend au tableau. Récompense : or et XP, parfois un matériau rare.
+## État : open (au tableau) -> active -> complete -> claimed. Identifiant de suivi : "c:<n>".
+const CONTRACT_WS := {"forge": "la Forge", "couture": "la Couture", "sculpture": "la Sculpture",
+	"alchimie": "l'Alchimie", "cuisine": "la Cuisine"}
+const CONTRACT_KIND := {"hunt": "Chasse", "gather": "Récolte", "craft": "Fabrication", "marked": "Créature marquée"}
+const CONTRACT_SIGNERS := ["Aldric", "Thessaly", "Garin", "Mère Yvenne", "Hilde", "le forgeron", "un passant"]
+
+
+func contracts() -> Array:
+	var day := Time.get_date_string_from_system()
+	var c: Dictionary = profile.get("contracts", {})
+	if str(c.get("day", "")) != day:
+		c = {"day": day, "list": _roll_contracts()}
+		profile.contracts = c
+		save()
+	for k in c.list:                                   # anciennes primes trop généreuses : tirées à nouveau
+		if k.state == "open" and k.kind != "marked" 				and k.get("items", []).any(func(it): return item_rank(str(it.item_id)) in ["epique", "legendaire"]):
+			k.items = _contract_bonus(k)
+	return c.list
+
+
+func contract(i: int) -> Dictionary:
+	var l := contracts()
+	return l[i] if i >= 0 and i < l.size() else {}
+
+
+func _visited_zones() -> Array:
+	var out: Array = profile.get("visited", []).duplicate()
+	if not current_zone in out and current_zone != "":
+		out.append(current_zone)
+	return out
+
+
+func _roll_contracts() -> Array:
+	var kinds := ["hunt", "gather", "craft"]
+	kinds.shuffle()
+	if randf() < 0.25:
+		kinds[2] = "marked"                            # de temps en temps : une créature marquée
+	var out := []
+	for k in kinds:
+		var c := _make_contract(k)
+		if c.is_empty():
+			c = _make_contract("hunt")
+		if not c.is_empty():
+			out.append(c)
+	return out
+
+
+func _make_contract(kind: String) -> Dictionary:
+	var idx: Dictionary = QuestGuide.index()
+	var lvl := int(profile.level)
+	var c := {"kind": kind, "target": "", "count": 1, "progress": 0, "state": "open", "gold": 0, "xp": 0, "items": [],
+		"zone": "", "signer": CONTRACT_SIGNERS[randi() % CONTRACT_SIGNERS.size()]}
+	match kind:
+		"hunt":
+			var pool := []
+			for zid in _visited_zones():
+				for mid in idx.get(zid, {}).get("mobs", {}):
+					var t := tpl("monsters", mid)
+					if str(idx[zid].mobs[mid]) == "dormant" or idx[zid].get("cond", {}).has(mid) \
+							or t.get("role", "normal") != "normal" or int(t.get("level", 1)) > lvl + 2:
+						continue
+					pool.append([mid, zid])
+			if pool.is_empty():
+				return {}
+			var pick: Array = pool[randi() % pool.size()]
+			var ml := int(tpl("monsters", pick[0]).get("level", 1))
+			c.target = pick[0]
+			c.zone = pick[1]
+			c.count = randi_range(5, 9)
+			c.gold = c.count * (2 + ml)
+			c.xp = roundi(c.count * CombatRules.monster_xp(ml, "normal", lvl) * 0.6) + 2
+		"gather":
+			var pool2 := []
+			for zid in _visited_zones():
+				for rid in idx.get(zid, {}).get("res", {}):
+					var pr = tpl("resources", rid).get("profession_required")
+					if pr is Dictionary and prof_level(pr.get("profession_id", "")) < int(pr.get("min_level", 1)):
+						continue
+					pool2.append([rid, zid])
+			if pool2.is_empty():
+				return {}
+			var pick2: Array = pool2[randi() % pool2.size()]
+			var rl := int(tpl("resources", pick2[0]).get("level", 1))
+			c.target = pick2[0]
+			c.zone = pick2[1]
+			c.count = randi_range(4, 7)
+			c.gold = c.count * 2 + 3 * rl + lvl
+			c.xp = 2 + rl + lvl
+		"craft":
+			var ws: Array = CONTRACT_WS.keys()
+			c.target = ws[randi() % ws.size()]
+			c.zone = "village_aube"
+			c.count = randi_range(1, 2)
+			c.gold = 10 * c.count + 4 * lvl
+			c.xp = 3 * c.count + lvl
+		"marked":
+			c.count = 1
+			c.gold = 50 + 10 * lvl
+			c.xp = 12 + 3 * lvl
+	c.items = _contract_bonus(c)
+	return c
+
+
+## Prime en matériau, à la mesure du contrat (jamais d'épique pour une simple récolte) :
+## chasse -> le butin secondaire de la bête chassée ; récolte / fabrication -> un matériau secondaire
+## des zones visitées ; créature marquée -> parfois un matériau épique (c'est le seul contrat qui en donne).
+func _contract_bonus(c: Dictionary) -> Array:
+	match str(c.kind):
+		"marked":
+			if randf() < 0.3:
+				var epic := _rare_material()
+				if epic != "":
+					return [{"item_id": epic, "quantity": 1}]
+			var sec := _secondary_material("")
+			return [{"item_id": sec, "quantity": 2}] if sec != "" else []
+		"hunt":
+			if randf() < 0.35:
+				var sec2 := _secondary_material(str(c.target))
+				if sec2 != "":
+					return [{"item_id": sec2, "quantity": randi_range(1, 2)}]
+		"gather", "craft":
+			if randf() < 0.25:
+				var sec3 := _secondary_material("")
+				if sec3 != "":
+					return [{"item_id": sec3, "quantity": 1}]
+	return []
+
+
+## Butin secondaire (le moins fréquent des butins ordinaires) d'une bête, ou d'une bête des zones visitées.
+## Jamais un objet épique ou légendaire.
+func _secondary_material(monster_id: String) -> String:
+	var mids := []
+	if monster_id != "":
+		mids = [monster_id]
+	else:
+		for zid in _visited_zones():
+			for mid in QuestGuide.index().get(zid, {}).get("mobs", {}):
+				mids.append(mid)
+	var pool := []
+	for mid in mids:
+		var best := ""
+		var best_w := 1e9
+		for l in tpl("monsters", mid).get("loot_table", []):
+			var it := tpl("items", str(l.item_id))
+			if float(l.get("chance", 0.0)) > 0.0 or it.get("category", "") != "material" 					or str(it.get("rarity", "commun")) in ["epique", "legendaire"]:
+				continue
+			if float(l.get("weight", 1)) < best_w:
+				best_w = float(l.get("weight", 1))
+				best = str(l.item_id)
+		if best != "":
+			pool.append(best)
+	return pool[randi() % pool.size()] if not pool.is_empty() else ""
+
+
+## Un matériau épique connu : un butin à très faible chance des bêtes des zones visitées.
+func _rare_material() -> String:
+	var pool := []
+	for zid in _visited_zones():
+		for mid in QuestGuide.index().get(zid, {}).get("mobs", {}):
+			for l in tpl("monsters", mid).get("loot_table", []):
+				var ch := float(l.get("chance", 0.0))
+				if ch > 0.0 and ch < 0.05 and tpl("items", str(l.item_id)).get("category", "material") == "material":
+					pool.append(str(l.item_id))
+	return pool[randi() % pool.size()] if not pool.is_empty() else ""
+
+
+func contract_title(c: Dictionary) -> String:
+	match str(c.get("kind", "")):
+		"hunt":
+			return "Chasse : %s" % tpl("monsters", c.target).get("name", c.target)
+		"gather":
+			return "Récolte : %s" % tpl("resources", c.target).get("name", c.target)
+		"craft":
+			return "Fabrication à %s" % CONTRACT_WS.get(c.target, c.target)
+		"marked":
+			return "Une créature marquée"
+	return "Contrat"
+
+
+func contract_progress_text(c: Dictionary) -> String:
+	var n := int(c.count)
+	var have := mini(int(c.progress), n)
+	match str(c.kind):
+		"hunt":
+			return "%s : %d/%d" % [tpl("monsters", c.target).get("name", c.target), have, n]
+		"gather":
+			return "Récolter : %s : %d/%d" % [tpl("resources", c.target).get("name", c.target), have, n]
+		"craft":
+			return "Objets fabriqués à %s : %d/%d" % [CONTRACT_WS.get(c.target, c.target), have, n]
+		"marked":
+			return "Créature marquée abattue : %d/%d" % [have, n]
+	return ""
+
+
+## La demande, telle qu'elle est écrite sur la feuille.
+func contract_text(c: Dictionary) -> String:
+	var zn: String = str(QuestGuide.index().get(c.get("zone", ""), {}).get("name", "les environs"))
+	match str(c.kind):
+		"hunt":
+			return "« Les %s se font trop nombreux du côté de %s. %d de moins, et on dormira mieux. » — %s" % [
+				tpl("monsters", c.target).get("name", c.target), zn, int(c.count), c.signer]
+		"gather":
+			return "« Il nous manque de quoi travailler : %d récoltes de %s, du côté de %s. » — %s" % [
+				int(c.count), tpl("resources", c.target).get("name", c.target), zn, c.signer]
+		"craft":
+			return "« On cherche des bras pour %s : %d objet%s, n'importe lequel, du moment qu'il est fait ici. » — %s" % [
+				CONTRACT_WS.get(c.target, c.target), int(c.count), "s" if int(c.count) > 1 else "", c.signer]
+		"marked":
+			return "« Une bête marquée par la lumière rôde quelque part. Elle ne reste jamais longtemps. Qui l'abattra sera payé en conséquence. » — %s" % c.signer
+	return ""
+
+
+func contract_reward_text(c: Dictionary) -> String:
+	var parts := PackedStringArray(["%d or" % int(c.gold), "%d XP" % int(c.xp)])
+	for it in c.get("items", []):
+		parts.append("%s ×%d" % [item_name(it.item_id), int(it.get("quantity", 1))])
+	return ", ".join(parts)
+
+
+func contract_take(i: int) -> void:
+	var c := contract(i)
+	if c.is_empty() or c.state != "open":
+		return
+	c.state = "active"
+	profile.tracked = "c:%d" % i                       # suivi, comme une quête acceptée
+	notice.emit("Contrat pris : %s" % contract_title(c))
+	Sfx.play("quest_accept", -4.0)
+	contracts_changed.emit()
+	profile_changed.emit()
+	save()
+
+
+func contract_claim(i: int) -> void:
+	var c := contract(i)
+	if c.is_empty() or c.state != "complete":
+		return
+	c.state = "claimed"
+	add_gold(int(c.gold))
+	for it in c.get("items", []):
+		add_item(it.item_id, int(it.get("quantity", 1)))
+	gain_xp(float(c.xp))
+	notice.emit("Contrat rempli : %s (+%d XP, +%d or)" % [contract_title(c), int(c.xp), int(c.gold)])
+	if str(profile.get("tracked", "")) == "c:%d" % i:
+		profile.tracked = ""
+		for j in contracts().size():
+			if contracts()[j].state in ["active", "complete"]:
+				profile.tracked = "c:%d" % j
+				break
+		if profile.tracked == "":
+			for q2 in profile.quests:
+				if profile.quests[q2].state in ["complete", "active"]:
+					profile.tracked = q2
+					break
+	contract_done.emit(i)
+	contracts_changed.emit()
+	profile_changed.emit()
+	save()
+
+
+## Un geste qui compte pour les contrats en cours (bête abattue, récolte, objet fabriqué, marquée).
+func _contract_progress(kind: String, target: String) -> void:
+	var changed := false
+	for c in contracts():
+		if c.state != "active" or c.kind != kind or (c.target != "" and c.target != target):
+			continue
+		c.progress = int(c.progress) + 1
+		changed = true
+		if int(c.progress) >= int(c.count):
+			c.state = "complete"
+			notice.emit("Contrat rempli : %s — retourne au tableau" % contract_title(c))
+	if changed:
+		contracts_changed.emit()

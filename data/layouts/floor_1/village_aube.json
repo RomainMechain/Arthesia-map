@@ -97,7 +97,8 @@
     "ws_couture": { "template_type": "workshop", "template_id": "couture", "pos": [23, 12], "label": "Couture" },
     "ws_enchantement": { "template_type": "workshop", "template_id": "enchantement", "pos": [48, 42], "label": "Enchantement" },
     "ws_sculpture": { "template_type": "workshop", "template_id": "sculpture", "pos": [12, 16], "label": "Sculpture" },
-    "ws_cuisine": { "template_type": "workshop", "template_id": "cuisine", "pos": [25, 19], "label": "Cuisine" }
+    "ws_cuisine": { "template_type": "workshop", "template_id": "cuisine", "pos": [25, 19], "label": "Cuisine" },
+    "tableau_contrats": { "template_type": "board", "pos": [38, 30], "label": "Tableau des contrats" }
   },
   "exits": [
     { "id": "exit_sentier_lisiere", "to": "sentier_lisiere", "label": "Sentier de la Lisière", "rect": [66, 0, 4, 1], "arrival": [68, 2], "direction": "nord-est (position 30,32 sur la carte de nœuds)" },

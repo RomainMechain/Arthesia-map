@@ -21,12 +21,15 @@ static func index() -> Dictionary:
 		var b = JSON.parse_string(FileAccess.get_file_as_string("res://data/build/" + f))
 		if not b is Dictionary:
 			continue
-		var z := {"name": b.get("name", ""), "exits": [], "givers": {}, "names": {}, "mobs": {}, "res": {}}
+		var z := {"name": b.get("name", ""), "exits": [], "givers": {}, "names": {}, "mobs": {}, "res": {}, "cond": {}}
 		for e in b.get("exits", []):
 			z.exits.append({"id": e.id, "to": e.to, "hidden": bool(e.get("hidden", false))})
 		for it in b.get("interactables", []):
 			if it.has("mob"):
 				z.mobs[it.template_id] = str(it.mob.get("temper", "calm"))
+				var sp = it.mob.get("spawn", {})
+				if sp is Dictionary and sp.get("condition") != null:
+					z.cond[it.template_id] = true          # n'apparaît qu'à condition (le Veilleur…)
 			elif it.has("resource"):
 				z.res[it.template_id] = true
 			else:
@@ -82,6 +85,8 @@ static func giver_zone(qid: String) -> String:
 
 ## Prochaine étape de la quête `qid`, vue depuis la zone `here`. Vide si rien à montrer.
 static func step(gs: Node, qid: String, here: String) -> Dictionary:
+	if qid.begins_with("c:"):
+		return _contract_step(gs, gs.contract(int(qid.substr(2))), here)
 	var st: String = gs.quest_state(qid)
 	if st == "" or st == "turned_in":
 		return {}
@@ -148,3 +153,32 @@ static func _item_source(gs: Node, item_id: String, here: String) -> Dictionary:
 					best = {"spec": "mob:" + mid, "zone": zid}
 					best_h = h
 	return best
+
+
+## Contrat suivi : la cible, ou le tableau du village une fois rempli.
+static func _contract_step(gs: Node, c: Dictionary, here: String) -> Dictionary:
+	if c.is_empty() or not str(c.get("state", "")) in ["active", "complete"]:
+		return {}
+	var spec := ""
+	var zone := ""
+	var text: String = gs.contract_progress_text(c)
+	if c.state == "complete":
+		spec = "tableau_contrats"
+		zone = "village_aube"
+		text = "Rendre au tableau des contrats"
+	else:
+		match str(c.kind):
+			"hunt":
+				spec = "mob:" + str(c.target)
+				zone = _nearest_zone(here, func(z): return z.mobs.has(c.target))
+			"gather":
+				spec = "res:" + str(c.target)
+				zone = _nearest_zone(here, func(z): return z.res.has(c.target))
+			"craft":
+				spec = "ws_" + str(c.target)
+				zone = "village_aube"
+	if zone == "":
+		return {"zone": "", "spec": "", "exit": "", "text": text}
+	var r := route(here, zone)
+	return {"zone": zone, "spec": spec, "exit": r.exit, "text": text,
+		"where": "" if zone == here else str(index()[zone].name)}
