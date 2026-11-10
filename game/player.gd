@@ -74,7 +74,7 @@ func _build_layers() -> void:
 		l.centered = false
 		l.hframes = 12
 		l.vframes = 5
-		l.offset = sprite.offset - (Vector2(8, 4) if slot == "weapon" else Vector2.ZERO)
+		l.offset = sprite.offset - (Vector2(8, 6) if slot == "weapon" else Vector2.ZERO)
 		l.position = sprite.position
 		var m := ShaderMaterial.new()
 		m.shader = shader
@@ -327,6 +327,8 @@ func react(r: Dictionary, from: Vector2) -> void:
 	if gs and gs.settings.get("vibrate", true) and OS.has_feature("mobile"):
 		Input.vibrate_handheld(35)
 	if not fighter.alive():
+		if _act == "ko":
+			return                                     # déjà à terre : la défaite n'est déclenchée qu'une fois
 		_start_act("ko", 999.0)
 		_target = null
 		defeated.emit()

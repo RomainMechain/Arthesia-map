@@ -19,6 +19,7 @@ extends Node2D
 
 var _splash_t := 0.0
 var rare_spawner: Node = null
+var _defeat_pending := false
 
 const TAP_RADIUS := 16.0
 
@@ -27,11 +28,9 @@ var hud: CanvasLayer
 var _nearest: Node2D = null
 var _pending: Node2D = null
 var _ui: CanvasLayer
-var _dialog: PanelContainer
-var _dialog_name: Label
-var _dialog_text: Label
-var _dialog_btn: Button
+var _dialog: Control                 # game/ui/dialog_box.gd
 var _dialog_it: Node2D
+var _welcome := false                # l'accueil d'Yvenne est en cours (l'accueil avance à la fermeture)
 var _toast: Label
 var _toast_t := 0.0
 var _fx: Node2D
@@ -97,6 +96,9 @@ func _game_state() -> Node:
 
 
 func _process(delta: float) -> void:
+	if _dialog.visible and is_instance_valid(_dialog_it) \
+			and _dialog_it.global_position.distance_to(player.global_position) > 72.0:
+		_dialog.close()                                    # on s'est éloigné : la conversation s'arrête
 	var best: Node2D = null
 	var best_d := INF
 	for it in get_tree().get_nodes_in_group("interactables"):
@@ -116,6 +118,8 @@ func _process(delta: float) -> void:
 				elif best.marker and best.marker.text == "!" and best.marker.modulate.a > 0.5:
 					gs0.show_hint("quest")
 		_nearest = best
+	if _nearest and _nearest.get("_prompt"):         # l'invite disparaît pendant la conversation
+		_nearest._prompt.visible = not _dialog.visible
 	if _pending and _pending == _nearest:
 		player.stop()
 		_open(_pending)
@@ -153,6 +157,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		if k == KEY_ESCAPE:
+			if _dialog.visible:
+				_dialog.close()
+				get_viewport().set_input_as_handled()
+				return
 			hud.toggle_menu()
 			get_viewport().set_input_as_handled()
 			return
@@ -177,8 +185,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return                                                  # souris émulée depuis le toucher : ignorée
 	if event is InputEventMouseButton and event.pressed:
 		if _dialog.visible:
-			_dialog.visible = false
-			return
+			return                                          # la boîte gère ses clics ; ailleurs, rien
+
 		var world := _world(event.position)
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			var it := _interactable_at(world)
@@ -203,9 +211,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if hud and hud.blocks(event.position):
 		return
 	if _dialog.visible:
-		if pressed:
-			_dialog.visible = false
-		return
+		return                                              # la boîte gère ses touchers
 	var w := _world(event.position)
 	if pressed:
 		_pending = _interactable_at(w)
@@ -224,7 +230,7 @@ func _cast(slot: int, aim := Vector2.ZERO) -> void:
 
 func _talk_or_close() -> void:
 	if _dialog.visible:
-		_dialog.visible = false
+		_dialog.advance()
 	elif _nearest:
 		_open(_nearest)
 
@@ -236,104 +242,54 @@ func _interactable_at(world: Vector2) -> Node2D:
 	return null
 
 
-var _story: Array = []
-
-
 func _open(it: Node2D) -> void:
 	if it.has_method("harvest"):                   # ressource : on récolte au lieu de parler
 		_start_gather(it)
 		return
 	var gs := _game_state()
-	if gs and it.entry_id == "npc_yvenne" and gs.tutorial_step() == 0:
-		_open_story(it, gs.YVENNE_WELCOME.duplicate())
-		return
-	if gs:
+	_dialog_it = it
+	_welcome = gs != null and it.entry_id == "npc_yvenne" and gs.tutorial_step() == 0
+	if gs and not _welcome:
 		gs.tutorial_check("talk:" + it.entry_id)
-	var d: Dictionary = it.interact()
-	_dialog_it = it
-	_dialog_name.text = d.name
-	_dialog_role.text = d.role
-	_dialog_text.text = d.text
-	_dialog_extra.text = d.extra
-	_dialog_extra.visible = d.extra != ""
-	var spr: Sprite2D = it.get_node_or_null("Sprite")
-	_portrait_box.visible = spr != null
-	if spr:
-		var at := AtlasTexture.new()
-		at.atlas = spr.texture
-		var fw := spr.texture.get_width() / spr.hframes
-		at.region = Rect2(0, 0, fw, spr.texture.get_height())
-		_portrait.texture = at
-	var act: Dictionary = d.get("action", {})
-	_dialog_btn.visible = not act.is_empty()
-	if not act.is_empty():
-		_dialog_btn.text = act.label
-		_dialog_btn.set_meta("action", act)
-	_dialog.visible = true
+	player.stop()
+	_dialog.open(it, gs.YVENNE_WELCOME.duplicate() if _welcome else [])
 
 
-## Dialogue en plusieurs pages (accueil) : « Suivant », puis la dernière réplique fait avancer l'accueil.
-func _open_story(it: Node2D, lines: Array) -> void:
-	_story = lines
-	var d: Dictionary = it.interact()
-	_dialog_it = it
-	_dialog_name.text = d.name
-	_dialog_role.text = d.role
-	_dialog_extra.visible = false
-	var spr: Sprite2D = it.get_node_or_null("Sprite")
-	_portrait_box.visible = spr != null
-	if spr:
-		var at := AtlasTexture.new()
-		at.atlas = spr.texture
-		at.region = Rect2(0, 0, spr.texture.get_width() / spr.hframes, spr.texture.get_height())
-		_portrait.texture = at
-	_story_next()
-	_dialog.visible = true
-
-
-func _story_next() -> void:
-	_dialog_text.text = _story.pop_front()
-	_dialog_btn.visible = true
-	_dialog_btn.text = " Suivant " if not _story.is_empty() else " Merci "
-	_dialog_btn.set_meta("action", {"kind": "story"})
-
-
-func do_dialog_action() -> void:
-	if not _dialog_btn.has_meta("action"):
-		return
-	var act: Dictionary = _dialog_btn.get_meta("action")
-	if act.kind == "story":
-		if not _story.is_empty():
-			_story_next()
-			return
-		_dialog.visible = false
-		var gs2 := _game_state()
-		if gs2 and _dialog_it:
-			gs2.tutorial_check("talk:" + _dialog_it.entry_id)
-		return
+func _on_dialog_closed() -> void:
 	var gs := _game_state()
-	if gs:
-		match act.kind:
-			"accept":
-				gs.accept_quest(act.quest_id)
-			"turn_in":
-				gs.turn_in_quest(act.quest_id)
-			"shop":
-				hud.open_shop(act.shop_id)
-			"workshop":
-				hud.open_workshop(act.workshop_id)
-			"ferry":
-				Sfx.play("oars")
-				_dialog.visible = false
-				var to := Vector2(act.to[0], act.to[1])
-				player.stop()
-				gs.fade_do(func():
-					player.global_position = to
-					player.get_node("Camera2D").reset_smoothing())
-				return
-			"discovery":
-				gs.add_note(act.note, act.title, act.text)
-	_dialog.visible = false
+	if _welcome and gs and _dialog_it:              # fin de l'accueil : l'objectif suivant s'ouvre
+		_welcome = false
+		gs.tutorial_check("talk:" + _dialog_it.entry_id)
+	_refresh_markers()
+
+
+## Raccourci (tests, et touche d'action) : joue l'action principale de la conversation en cours.
+func do_dialog_action() -> void:
+	_dialog.primary()
+
+
+func _on_dialog_action(act: Dictionary) -> void:
+	var gs := _game_state()
+	if gs == null:
+		return
+	match act.kind:
+		"accept":
+			gs.accept_quest(act.quest_id)
+		"turn_in":
+			gs.turn_in_quest(act.quest_id)
+		"shop":
+			hud.open_shop(act.shop_id)
+		"workshop":
+			hud.open_workshop(act.workshop_id)
+		"ferry":
+			Sfx.play("oars")
+			var to := Vector2(act.to[0], act.to[1])
+			player.stop()
+			gs.fade_do(func():
+				player.global_position = to
+				player.get_node("Camera2D").reset_smoothing())
+		"discovery":
+			gs.add_note(act.note, act.title, act.text)
 	_refresh_markers()
 
 
@@ -460,17 +416,21 @@ func _on_exit(target: String, label: String) -> void:
 	if gs and gs.has_zone(target):
 		if not gs.is_travelling():
 			player.stop()
-			_dialog.visible = false
+			_dialog.close()
 			gs.travel(zone_id, target)
 	else:
 		toast("→ %s (zone à venir)" % label, 2.0)
 
 
+## Défaite : retour au village après un temps à terre. Pas d'`await` sur la zone elle-même : la
+## reprendre alors qu'elle vient d'être détruite (changement de scène) faisait planter le moteur.
 func _on_defeated() -> void:
-	await get_tree().create_timer(1.4).timeout
+	if _defeat_pending:
+		return
+	_defeat_pending = true
 	var gs := _game_state()
 	if gs:
-		gs.defeat()
+		get_tree().create_timer(1.4).timeout.connect(gs.defeat, CONNECT_ONE_SHOT)
 
 
 ## Nouveau titre : bandeau doré et gerbe de lumière autour du joueur.
@@ -598,10 +558,14 @@ func burst(pos: Vector2, color: Color, amount := 12, speed := 30.0, rise := true
 	get_tree().create_timer(p.lifetime + 0.3).timeout.connect(p.queue_free)
 
 
+## Gel d'image à l'impact. Le retour à la vitesse normale est confié à GameState (jamais détruit) :
+## une attente sur la zone elle-même reprenait parfois après sa destruction (changement de scène).
 func hitstop() -> void:
+	var gs := _game_state()
+	if gs == null:
+		return
 	Engine.time_scale = 0.05
-	await get_tree().create_timer(0.05, true, false, true).timeout
-	Engine.time_scale = 1.0
+	get_tree().create_timer(0.05, true, false, true).timeout.connect(gs.restore_time_scale, CONNECT_ONE_SHOT)
 
 
 # --------------------------------------------------------------------------- UI
@@ -614,10 +578,6 @@ func toast(text: String, seconds: float) -> void:
 
 
 var _toast_box: PanelContainer
-var _dialog_role: Label
-var _dialog_extra: Label
-var _portrait: TextureRect
-var _portrait_box: PanelContainer
 
 
 func _build_ui() -> void:
@@ -644,65 +604,8 @@ func _build_ui() -> void:
 	root.add_child(_toast_box)
 	_toast_box.visible = false
 
-	# dialogue : parchemin, portrait, plaque du nom
-	_dialog = PanelContainer.new()
-	_dialog.anchor_left = 0
-	_dialog.anchor_right = 1
-	_dialog.anchor_top = 1
-	_dialog.anchor_bottom = 1
-	_dialog.offset_left = 34
-	_dialog.offset_right = -34
-	_dialog.offset_top = -92
-	_dialog.offset_bottom = -6
-	_dialog.add_theme_stylebox_override("panel", UISkin.box("parchment", 8, 7))
-	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 7)
-	_dialog.add_child(hb)
-	_portrait_box = PanelContainer.new()
-	_portrait_box.add_theme_stylebox_override("panel", UISkin.box("frame_dark", 8, 5))
-	_portrait_box.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	_portrait = TextureRect.new()
-	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_portrait.custom_minimum_size = Vector2(40, 52)
-	_portrait_box.add_child(_portrait)
-	hb.add_child(_portrait_box)
-	var vb := VBoxContainer.new()
-	vb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vb.add_theme_constant_override("separation", 2)
-	hb.add_child(vb)
-	var name_row := HBoxContainer.new()
-	name_row.add_theme_constant_override("separation", 5)
-	vb.add_child(name_row)
-	var plate := PanelContainer.new()
-	plate.add_theme_stylebox_override("panel", UISkin.box("plate", 4, 3))
-	_dialog_name = UISkin.shadowed(Label.new(), UISkin.GOLD)
-	plate.add_child(_dialog_name)
-	name_row.add_child(plate)
-	_dialog_role = UISkin.ink(Label.new(), UISkin.INK_FAINT)
-	_dialog_role.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	name_row.add_child(_dialog_role)
-	_dialog_text = UISkin.ink(Label.new(), UISkin.INK)
-	_dialog_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_dialog_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vb.add_child(_dialog_text)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 4)
-	vb.add_child(row)
-	_dialog_extra = UISkin.ink(Label.new(), Color("a83a40"))
-	_dialog_extra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_dialog_extra.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	row.add_child(_dialog_extra)
-	_dialog_btn = Button.new()
-	_dialog_btn.pressed.connect(do_dialog_action)
-	_dialog_btn.focus_mode = Control.FOCUS_NONE
-	_dialog_btn.size_flags_vertical = Control.SIZE_SHRINK_END
-	row.add_child(_dialog_btn)
-	var close := Button.new()
-	close.text = " Fermer "
-	close.focus_mode = Control.FOCUS_NONE
-	close.size_flags_vertical = Control.SIZE_SHRINK_END
-	close.pressed.connect(func(): _dialog.visible = false)
-	row.add_child(close)
-	_dialog.visible = false
+	# dialogue : conversation en pages, puis choix (game/ui/dialog_box.gd)
+	_dialog = (load("res://game/ui/dialog_box.gd") as GDScript).new()
+	_dialog.action.connect(_on_dialog_action)
+	_dialog.closed.connect(_on_dialog_closed)
 	root.add_child(_dialog)

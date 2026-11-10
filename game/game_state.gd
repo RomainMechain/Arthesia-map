@@ -17,6 +17,7 @@ signal title_unlocked(title_id: String)
 signal settings_changed
 signal craft_done(item_id: String, discovered: bool)
 signal skill_unlocked(skill_id: String)
+signal quest_turned_in(quest_id: String)
 
 const SAVE_PATH := "user://arthesia_save.json"
 const SETTINGS_PATH := "user://arthesia_settings.json"
@@ -97,7 +98,7 @@ func reset_profile() -> void:
 		"alloc": {"hp": 0, "atk": 0, "def": 0, "agi": 0, "int": 0, "sag": 0},
 		"gold": 0, "inventory": {}, "kills": {}, "quests": {}, "visited": [],
 		"skills": [], "bar": ["", "", "", ""], "equipment": {},
-		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {},
+		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {}, "talked": {},
 		"tutorial": {"step": 0, "seen": {}, "kills_at_step": 0},
 	}
 	recompute_stats(true)
@@ -1188,6 +1189,8 @@ func on_kill(monster_id: String, level: int, role: String) -> void:
 
 ## Défaite : retour au cercle d'arrivée, 20 % des PV, « Ébranlé », perte de 3 % de l'or (max 20 x niveau).
 func defeat() -> void:
+	if _busy:
+		return                                         # déjà en route vers le village
 	var lost := mini(int(floor(profile.gold * CombatRules.DEFEAT_GOLD_SHARE)),
 		CombatRules.DEFEAT_GOLD_CAP_PER_LEVEL * int(profile.level))
 	profile.gold -= lost
@@ -1281,6 +1284,7 @@ func turn_in_quest(qid: String) -> void:
 		add_item(it.item_id, int(it.get("quantity", 1)))
 	gain_xp(int(rw.get("xp", 0)))
 	notice.emit("Quête rendue : %s (+%d XP, +%d or)" % [t.get("name", qid), int(rw.get("xp", 0)), int(rw.get("gold", 0))])
+	quest_turned_in.emit(qid)
 	check_unlocks()
 	quest_changed.emit(qid)
 	save()
@@ -1303,7 +1307,7 @@ func _load() -> bool:
 	if not (d is Dictionary) or int(d.get("version", 0)) != SAVE_VERSION:
 		return false                              # (migrations : à ajouter ici quand la version change)
 	profile = d
-	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next"]:          # sauvegardes plus anciennes
+	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next", "talked"]:          # sauvegardes plus anciennes
 		if not profile.has(k):
 			profile[k] = [] if k in ["visited", "titles"] else {}
 	if not profile.has("title"):
@@ -1344,14 +1348,21 @@ func enter_zone(zone_id: String, type: String) -> void:
 
 ## Fondu au noir, changement de scène, fondu retour. La nouvelle zone place le joueur
 ## à la sortie qui mène vers `arrival` (par défaut la zone quittée ; "" = point d'apparition).
+func restore_time_scale() -> void:
+	Engine.time_scale = 1.0
+
+
 func travel(from_zone: String, to_zone: String, arrival = null) -> void:
 	if _busy or not has_zone(to_zone):
 		return
+	Engine.time_scale = 1.0
 	_busy = true
 	arrival_from = from_zone if arrival == null else arrival
+	get_tree().call_group("reward_popup", "shutdown")   # rien d'animé pendant le changement de scène
 	var tw := create_tween()
 	tw.tween_property(_fade, "modulate:a", 1.0, 0.3)
 	await tw.finished
+	get_tree().call_group("reward_popup", "shutdown")
 	get_tree().change_scene_to_file(zone_path(to_zone))
 	await get_tree().process_frame
 	await get_tree().process_frame

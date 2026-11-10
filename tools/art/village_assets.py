@@ -655,14 +655,18 @@ def main():
     ui_kit.main()
     import item_icons                                            # icônes des objets (Sac, butin)
     item_icons.main()
-    import player_sheet                                          # joueur 8 directions
-    player_sheet.main()
+    import pixellab_player                                       # joueur 8 directions (PixelLab, 32 px)
+    pixellab_player.main()
+    import equipment_layers_pl                                   # équipement visible, calé sur ce joueur
+    equipment_layers_pl.main()
     import rive_assets                                           # Rive Paisible
     rive_assets.main()
     import foret_assets                                          # Forêt des Anciens
     foret_assets.main()
     import lisiere_assets                                        # Sentier de la Lisière
     lisiere_assets.main(standalone=False)
+    import pixellab_monster                                      # bêtes refaites avec PixelLab (après fauna)
+    pixellab_monster.main()
     sb.write_manifest()
     print(f"OK - {len(sb.SAVED)} assets au total")
 

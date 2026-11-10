@@ -61,13 +61,21 @@ func _run() -> void:
 	var yv: Node2D = z.find_child("npc_yvenne", true, false)
 	p.global_position = yv.global_position + Vector2(14, 6)
 	z._open(yv)
-	_check(z._dialog.visible and z._dialog_text.text.begins_with("Ah… encore un Marqué"), "Yvenne accueille le Marqué")
+	_check(z._dialog.visible and z._dialog._text.text.begins_with("Ah… encore un Marqué") and z._dialog._pager.text == "1 / 3",
+		"Yvenne accueille le Marqué (page %s)" % z._dialog._pager.text)
+	for i in 60:
+		await process_frame
 	await _shot("yvenne")
-	z.do_dialog_action()
-	z.do_dialog_action()
-	_check(z._dialog_btn.text.strip_edges() == "Merci", "3e réplique : bouton « Merci »")
-	z.do_dialog_action()
+	for i in 4:                                        # finir la ligne, page suivante…
+		z._dialog.advance()
+	_check(z._dialog._pager.text == "3 / 3", "les 3 répliques défilent (%s)" % z._dialog._pager.text)
+	z._dialog.advance()
+	_check(z._dialog._buttons.get_child_count() >= 1, "à la fin : les choix d'Yvenne (%d)" % z._dialog._buttons.get_child_count())
+	z._dialog.close()
 	_check(gs.tutorial_step() == 1 and not z._dialog.visible, "accueil terminé : objectif « répartir ses points »")
+	z._open(yv)
+	_check(z._dialog._pages.size() == 1, "deuxième visite : une réplique, puis les choix")
+	z._dialog.close()
 	# 3) points -> sentier -> chasse -> arme -> Aurin
 	for k in ["hp", "atk", "atk", "def", "def", "int"]:
 		gs.spend_point(k)

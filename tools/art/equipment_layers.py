@@ -30,6 +30,9 @@ WOOD, WOOD_D = P["earth2"], P["earth3"]
 # images de l'arme : plus grandes, le personnage placé à (WX, WY)
 WW, WH, WX, WY = 40, 34, 8, 4
 
+# longueur des armes (px) ; equipment_layers_pl.py la règle pour le joueur en 32 px
+LENGTHS = {"dague": 5, "lame": 8, "hachette": 7, "masse": 6, "lance": 11}
+
 CHARS = "OHLhSsTtBGPpKk"
 
 
@@ -195,7 +198,7 @@ def weapon_frame(style, hand, v):
     px_, py_ = -vy, vx                                    # perpendiculaire
     if px_ + py_ > 0:                                     # côté « lumière » : vers le haut-gauche
         px_, py_ = -px_, -py_
-    L = {"dague": 5, "lame": 8, "hachette": 7, "masse": 6, "lance": 11}[style]
+    L = LENGTHS[style]
     if style in ("dague", "lame"):
         _put(o, hx - vx, hy - vy, WOOD_D)                 # pommeau
         _put(o, hx, hy, WOOD)                             # poignée

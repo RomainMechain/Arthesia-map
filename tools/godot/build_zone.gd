@@ -265,7 +265,7 @@ func _player(b: Dictionary) -> CharacterBody2D:
 	s.hframes = 12
 	s.vframes = 5
 	s.centered = false
-	s.offset = Vector2(-12, -26)
+	s.offset = Vector2(-16, -30)          # planche PixelLab 32×32, pieds à y = 29
 	p.add_child(s)
 	p.add_child(_rect_shape(Rect2(-4, -5, 8, 5)))
 	var cam := Camera2D.new()

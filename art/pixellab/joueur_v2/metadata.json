@@ -1,0 +1,139 @@
+{
+  "group_id": "1ed6ba38-f586-4e3f-ba66-87fdb89dd438",
+  "states": [
+    {
+      "character": {
+        "id": "c76b6a1f-c107-4aa0-b7a2-473dec53cbb7",
+        "name": "Idle",
+        "prompt": "young traveler adventurer, short brown hair, blue tunic with brown leather belt, dark brown trousers, dark boots, bare hands, simple and friendly look, warm golden dawn light from the top-left, cozy 16-bit fantasy RPG style",
+        "size": {
+          "width": 32,
+          "height": 32
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-11-09T23:29:25.928363+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "marche": {
+            "north-east": [
+              "Idle/animations/marche/north-east/frame_000.png",
+              "Idle/animations/marche/north-east/frame_001.png",
+              "Idle/animations/marche/north-east/frame_002.png",
+              "Idle/animations/marche/north-east/frame_003.png"
+            ],
+            "south-east": [
+              "Idle/animations/marche/south-east/frame_000.png",
+              "Idle/animations/marche/south-east/frame_001.png",
+              "Idle/animations/marche/south-east/frame_002.png",
+              "Idle/animations/marche/south-east/frame_003.png"
+            ],
+            "south": [
+              "Idle/animations/marche/south/frame_000.png",
+              "Idle/animations/marche/south/frame_001.png",
+              "Idle/animations/marche/south/frame_002.png",
+              "Idle/animations/marche/south/frame_003.png"
+            ],
+            "north": [
+              "Idle/animations/marche/north/frame_000.png",
+              "Idle/animations/marche/north/frame_001.png",
+              "Idle/animations/marche/north/frame_002.png",
+              "Idle/animations/marche/north/frame_003.png"
+            ],
+            "east": [
+              "Idle/animations/marche/east/frame_000.png",
+              "Idle/animations/marche/east/frame_001.png",
+              "Idle/animations/marche/east/frame_002.png",
+              "Idle/animations/marche/east/frame_003.png"
+            ]
+          },
+          "repos": {
+            "south": [
+              "Idle/animations/repos/south/frame_000.png",
+              "Idle/animations/repos/south/frame_001.png",
+              "Idle/animations/repos/south/frame_002.png",
+              "Idle/animations/repos/south/frame_003.png"
+            ],
+            "north": [
+              "Idle/animations/repos/north/frame_000.png",
+              "Idle/animations/repos/north/frame_001.png",
+              "Idle/animations/repos/north/frame_002.png",
+              "Idle/animations/repos/north/frame_003.png"
+            ],
+            "north-east": [
+              "Idle/animations/repos/north-east/frame_000.png",
+              "Idle/animations/repos/north-east/frame_001.png",
+              "Idle/animations/repos/north-east/frame_002.png",
+              "Idle/animations/repos/north-east/frame_003.png"
+            ],
+            "south-east": [
+              "Idle/animations/repos/south-east/frame_000.png",
+              "Idle/animations/repos/south-east/frame_001.png",
+              "Idle/animations/repos/south-east/frame_002.png",
+              "Idle/animations/repos/south-east/frame_003.png"
+            ],
+            "east": [
+              "Idle/animations/repos/east/frame_000.png",
+              "Idle/animations/repos/east/frame_001.png",
+              "Idle/animations/repos/east/frame_002.png",
+              "Idle/animations/repos/east/frame_003.png"
+            ]
+          },
+          "attaque": {
+            "south-east": [
+              "Idle/animations/attaque/south-east/frame_000.png",
+              "Idle/animations/attaque/south-east/frame_001.png",
+              "Idle/animations/attaque/south-east/frame_002.png"
+            ],
+            "north": [
+              "Idle/animations/attaque/north/frame_000.png",
+              "Idle/animations/attaque/north/frame_001.png",
+              "Idle/animations/attaque/north/frame_002.png"
+            ],
+            "south": [
+              "Idle/animations/attaque/south/frame_000.png",
+              "Idle/animations/attaque/south/frame_001.png",
+              "Idle/animations/attaque/south/frame_002.png"
+            ],
+            "east": [
+              "Idle/animations/attaque/east/frame_000.png",
+              "Idle/animations/attaque/east/frame_001.png",
+              "Idle/animations/attaque/east/frame_002.png"
+            ],
+            "north-east": [
+              "Idle/animations/attaque/north-east/frame_000.png",
+              "Idle/animations/attaque/north-east/frame_001.png",
+              "Idle/animations/attaque/north-east/frame_002.png"
+            ]
+          },
+          "ko": {
+            "south": [
+              "Idle/animations/ko/south/frame_000.png",
+              "Idle/animations/ko/south/frame_001.png",
+              "Idle/animations/ko/south/frame_002.png",
+              "Idle/animations/ko/south/frame_003.png",
+              "Idle/animations/ko/south/frame_004.png",
+              "Idle/animations/ko/south/frame_005.png",
+              "Idle/animations/ko/south/frame_006.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-11-09T23:53:23.251248"
+}

@@ -204,12 +204,10 @@ func _crossfade(pair: Array[AudioStreamPlayer], path: String, is_music: bool) ->
 
 
 func _set_loop(st: AudioStream) -> void:
-	if st is AudioStreamWAV:
-		var w := st as AudioStreamWAV
-		w.loop_mode = AudioStreamWAV.LOOP_FORWARD
-		w.loop_begin = 0
-		w.loop_end = int(w.get_length() * w.mix_rate)
-	elif st is AudioStreamOggVorbis:
+	# WAV (ambiances) : la boucle est réglée à l'import (edit/loop_mode=2, assets/audio/ambience/*.import).
+	# Ne jamais la modifier ici : une fin de boucle calculée à la main pouvait dépasser les données
+	# et faire lire le fil audio hors mémoire (plantage intermittent).
+	if st is AudioStreamOggVorbis:
 		(st as AudioStreamOggVorbis).loop = true
 	elif st is AudioStreamMP3:
 		(st as AudioStreamMP3).loop = true

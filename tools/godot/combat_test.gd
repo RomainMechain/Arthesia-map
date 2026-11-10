@@ -251,8 +251,10 @@ func _run() -> void:
 	gs.fighter.effects.clear()
 	gs.fighter.hp = 1.0
 	p.global_position = loup.global_position + Vector2(14, 0)
-	for i in 600:
-		if _z() and _z().zone_id == "village_aube":
+	# on ne lit pas la scène courante pendant le changement de zone (pointeur possiblement libéré) :
+	# on attend que GameState ait fini le voyage
+	for i in 900:
+		if gs.current_zone == "village_aube" and not gs.is_travelling():
 			break
 		await physics_frame
 	await _frames(30)

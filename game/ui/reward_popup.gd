@@ -23,6 +23,8 @@ var _ray_color := GOLD
 
 
 func _ready() -> void:
+	add_to_group("reward_popup")
+	tree_exiting.connect(shutdown)
 	_gs = (get_node_or_null("/root/GameState") if is_inside_tree() else null)
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -54,12 +56,13 @@ func _ready() -> void:
 		_gs.title_unlocked.connect(_on_title)
 		_gs.skill_unlocked.connect(_on_skill)
 		_gs.craft_done.connect(_on_craft)
+		_gs.quest_turned_in.connect(_on_quest_done)
 
 
 func _exit_tree() -> void:
 	if _gs:
 		for pair in [[_gs.leveled_up, _on_level], [_gs.title_unlocked, _on_title], [_gs.skill_unlocked, _on_skill],
-				[_gs.craft_done, _on_craft]]:
+				[_gs.craft_done, _on_craft], [_gs.quest_turned_in, _on_quest_done]]:
 			if (pair[0] as Signal).is_connected(pair[1]):
 				(pair[0] as Signal).disconnect(pair[1])
 
@@ -101,6 +104,22 @@ func _on_skill(sid: String) -> void:
 		"desc": sk.get("description", ""), "lines": lines, "color": Color("8fd8d0"), "sound": "unlock"})
 
 
+func _on_quest_done(qid: String) -> void:
+	var t: Dictionary = _gs.tpl("quests", qid)
+	var rw: Dictionary = t.get("rewards", {})
+	var lines := []
+	if int(rw.get("xp", 0)) > 0:
+		lines.append(["+%d XP" % int(rw.xp), GOOD])
+	if int(rw.get("gold", 0)) > 0:
+		lines.append(["+%d or" % int(rw.gold), GOLD.darkened(0.35)])
+	var icon: Texture2D = UISkin.icon("quete")
+	for i in rw.get("items", []):
+		lines.append(["%s ×%d" % [_gs.item_name(i.item_id), int(i.get("quantity", 1))], INK_SOFT])
+		icon = UISkin.item_icon(i.item_id)
+	push({"heading": "Quête accomplie", "title": t.get("name", qid), "icon": icon, "lines": lines,
+		"color": GOLD, "sound": "quest_done"})
+
+
 func _on_craft(item_id: String, discovered: bool) -> void:
 	var t: Dictionary = _gs.tpl("items", item_id)
 	var rank: String = _gs.item_rank(item_id)
@@ -126,7 +145,23 @@ func _on_craft(item_id: String, discovered: bool) -> void:
 
 
 # --------------------------------------------------------------------------- file et affichage
+## Changement de zone (ou fermeture) : plus rien ne s'anime ni ne se redessine pendant que la scène
+## se détruit — la fenêtre animée à cet instant faisait planter le moteur.
+func shutdown() -> void:
+	_queue.clear()
+	visible = false
+	set_process(false)
+	set_process_input(false)
+	if _rays:
+		_rays.visible = false
+
+
 func push(entry: Dictionary) -> void:
+	if not is_processing():
+		set_process(true)
+		set_process_input(true)
+		if _rays:
+			_rays.visible = true
 	_queue.append(entry)
 	if not visible:
 		_next()
@@ -245,17 +280,40 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## Rayons d'aube derrière la carte : fins triangles qui tournent, en paliers d'opacité (pixel).
+## Rayons d'aube derrière la carte : une texture calculée une seule fois (14 rayons, en paliers
+## d'opacité), qu'on fait tourner. Pas de polygone redessiné à chaque image : dessiné pendant que la
+## scène se détruit, il faisait planter le moteur.
+static var _rays_tex: Texture2D
+
+
+static func _make_rays() -> Texture2D:
+	const S := 440
+	var img := Image.create(S, S, false, Image.FORMAT_RGBA8)
+	var c := Vector2(S, S) / 2.0
+	for y in S:
+		for x in S:
+			var d := Vector2(x, y) - c
+			var r := d.length()
+			if r > S / 2.0 or r < 1.0:
+				continue
+			var a := fposmod(d.angle(), TAU / 14.0) - TAU / 28.0
+			if absf(a) < 0.09:
+				var k := 0.16 if int(floor(fposmod(d.angle(), TAU) / (TAU / 14.0))) % 2 == 0 else 0.08
+				img.set_pixel(x, y, Color(1, 1, 1, k * clampf(1.0 - r / (S / 2.0), 0.0, 1.0) * 1.6))
+	return ImageTexture.create_from_image(img)
+
+
 func _draw_rays() -> void:
+	if not visible or not is_inside_tree():
+		return
+	if _rays_tex == null:
+		_rays_tex = _make_rays()
 	var c := get_viewport_rect().size / 2.0
-	var n := 14
-	var a0 := _t * 0.25
-	for i in n:
-		var a := a0 + i * TAU / n
-		var w := 0.09
-		var r := 220.0
-		var pts := PackedVector2Array([c, c + Vector2.from_angle(a - w) * r, c + Vector2.from_angle(a + w) * r])
-		_rays.draw_colored_polygon(pts, Color(_ray_color, 0.16 if i % 2 == 0 else 0.08))
+	if c.x < 2.0 or c.y < 2.0:
+		return
+	_rays.draw_set_transform(c, _t * 0.25, Vector2.ONE)
+	_rays.draw_texture(_rays_tex, -Vector2(_rays_tex.get_size()) / 2.0, _ray_color)
+	_rays.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	var k := minf(1.0, _shown / 0.3)
-	if k > 0.05:                                    # jamais de cercle de rayon nul (triangulation)
+	if k > 0.05:
 		_rays.draw_circle(c, 70.0 * k, Color(_ray_color, 0.12))

@@ -16,6 +16,7 @@ extends Node2D
 @export var info := ""
 ## Données propres à la carte : traversée {to}, découverte {note, title}
 @export var data: Dictionary = {}
+var _prompt: Label
 
 const INTERACT_RADIUS := 26.0
 
@@ -50,6 +51,36 @@ func _process(delta: float) -> void:
 
 func set_highlight(on: bool) -> void:
 	name_label.visible = on
+	if get("leash") != null:                     # bête : seulement son nom
+		return
+	if on and _prompt == null:
+		_prompt = UISkin.shadowed(Label.new(), Color("ffe08a"))
+		_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_prompt.size = Vector2(80, 12)
+		_prompt.position = name_label.position + Vector2(name_label.size.x / 2.0 - 40.0, 10)
+		_prompt.z_index = 30
+		add_child(_prompt)
+	if _prompt:
+		_prompt.text = ("Toucher · " if OS.has_feature("mobile") else "E · ") + _verb()
+		_prompt.visible = on
+
+
+## L'action qu'on fera en interagissant (affichée sous le nom).
+func _verb() -> String:
+	if has_method("harvest"):
+		return "Récolter"
+	match template_type:
+		"shop":
+			return "Commerce"
+		"workshop":
+			return "Fabriquer"
+		"ferry":
+			return "Traverser"
+		"discovery":
+			return "Examiner"
+		"player_market":
+			return "Consulter"
+	return "Parler"
 
 
 func _gs() -> Node:

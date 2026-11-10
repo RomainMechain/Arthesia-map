@@ -1,0 +1,67 @@
+{
+  "group_id": "aae58453-e35d-4754-a27c-919c14b5ff29",
+  "states": [
+    {
+      "character": {
+        "id": "811be774-27ef-4202-9691-24ed769ebe50",
+        "name": "Idle",
+        "prompt": "slender wolf standing on all four legs, golden fur tinted by an eternal dawn light (warm amber and pale gold, lighter on the back), pale calm eyes without pupils, a small golden diamond-shaped mark on its shoulder, low bushy tail with a pale tip, elegant and too calm for a predator",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "dog",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-11-09T23:53:15.833636+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "marche": {
+            "east": [
+              "Idle/animations/marche/east/frame_000.png",
+              "Idle/animations/marche/east/frame_001.png",
+              "Idle/animations/marche/east/frame_002.png",
+              "Idle/animations/marche/east/frame_003.png"
+            ]
+          },
+          "attaque": {
+            "east": [
+              "Idle/animations/attaque/east/frame_000.png",
+              "Idle/animations/attaque/east/frame_001.png",
+              "Idle/animations/attaque/east/frame_002.png",
+              "Idle/animations/attaque/east/frame_003.png",
+              "Idle/animations/attaque/east/frame_004.png",
+              "Idle/animations/attaque/east/frame_005.png"
+            ]
+          },
+          "repos": {
+            "east": [
+              "Idle/animations/repos/east/frame_000.png",
+              "Idle/animations/repos/east/frame_001.png",
+              "Idle/animations/repos/east/frame_002.png",
+              "Idle/animations/repos/east/frame_003.png",
+              "Idle/animations/repos/east/frame_004.png",
+              "Idle/animations/repos/east/frame_005.png",
+              "Idle/animations/repos/east/frame_006.png",
+              "Idle/animations/repos/east/frame_007.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-11-09T23:59:04.865791"
+}
