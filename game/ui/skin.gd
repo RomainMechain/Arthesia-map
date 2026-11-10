@@ -91,9 +91,11 @@ static func theme() -> Theme:
 		t.set_color(st, "Button", INK)
 	t.set_color("font_disabled_color", "Button", Color("665c55"))
 	# onglets
-	t.set_stylebox("tab_selected", "TabContainer", box("tab_active", 4, 4))
-	t.set_stylebox("tab_unselected", "TabContainer", box("tab_inactive", 4, 4))
-	t.set_stylebox("tab_hovered", "TabContainer", box("tab_inactive", 4, 4))
+	for st in [["tab_selected", "tab_active"], ["tab_unselected", "tab_inactive"], ["tab_hovered", "tab_inactive"]]:
+		var tb := box(st[1], 4, 4)
+		tb.content_margin_left = 2                   # 8 onglets doivent tenir dans le Carnet
+		tb.content_margin_right = 2
+		t.set_stylebox(st[0], "TabContainer", tb)
 	t.set_stylebox("tab_focus", "TabContainer", StyleBoxEmpty.new())
 	t.set_stylebox("panel", "TabContainer", StyleBoxEmpty.new())
 	t.set_color("font_selected_color", "TabContainer", INK)

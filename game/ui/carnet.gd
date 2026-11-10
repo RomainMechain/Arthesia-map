@@ -68,8 +68,9 @@ func _ready() -> void:
 	_tabs.focus_mode = Control.FOCUS_NONE
 	_tabs.set_anchors_preset(Control.PRESET_FULL_RECT)
 	holder.add_child(_tabs)
-	for t in ["Personnage", "Équipement", "Compétences", "Sac", "Quêtes", "Carte", "Recettes"]:
+	for t in ["Personnage", "Équipement", "Compétences", "Sac", "Quêtes", "Carte", "Recettes", "Bestiaire"]:
 		_pages[t] = _spread(t)
+	_tabs.set_tab_title(0, "Perso")
 	_tabs.tab_changed.connect(func(_i):
 		Sfx.play("ui_page", -3.0)
 		refresh())
@@ -317,6 +318,7 @@ func refresh() -> void:
 	_build_quetes(_pages["Quêtes"][0], _pages["Quêtes"][1])
 	_build_carte(_pages["Carte"][0], _pages["Carte"][1])
 	_build_recettes(_pages["Recettes"][0], _pages["Recettes"][1])
+	_build_bestiaire(_pages["Bestiaire"][0], _pages["Bestiaire"][1])
 	for t in _pages:
 		for page in _pages[t]:
 			_fit(page)
@@ -869,7 +871,8 @@ func _build_quetes(left: VBoxContainer, right: VBoxContainer) -> void:
 		var r := _row(left, i, qid == _quest_sel, func(): _quest_sel = q2; refresh())
 		i += 1
 		r.add_child(_icon(UISkin.icon("quete")))
-		var n := _label(r, _gs.tpl("quests", qid).get("name", qid), INK if st != "turned_in" else INK_FAINT)
+		var n := _label(r, ("◆ " if qid == _gs.tracked_quest() else "") + _gs.tpl("quests", qid).get("name", qid),
+			INK if st != "turned_in" else INK_FAINT)
 		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		n.clip_text = true                          # un nom long ne doit pas élargir la page
 		n.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -933,9 +936,19 @@ func _build_quetes(left: VBoxContainer, right: VBoxContainer) -> void:
 		k += 1
 		ri.add_child(_icon(UISkin.item_icon(it.item_id)))
 		_label(ri, "%s × %d" % [_gs.item_name(it.item_id), int(it.get("quantity", 1))], INK)
-	if st2 == "complete":
+	if st2 in ["active", "complete"]:
 		_spacer(right)
-		_label(right, "Retourne voir celui qui te l'a confiée.", ACCENT, 10, true)
+		var stp: Dictionary = QuestGuide.step(_gs, _quest_sel, _gs.current_zone)
+		if stp.get("text", "") != "":
+			var w: String = (" — " + str(stp.where)) if stp.get("where", "") != "" else ""
+			_label(right, "Prochaine étape : %s%s" % [stp.text, w], ACCENT if st2 == "complete" else INK_SOFT, 10, true)
+		var tracked: bool = _gs.tracked_quest() == _quest_sel
+		var q3: String = _quest_sel
+		var bt := _button(" Ne plus suivre " if tracked else " ◆ Suivre ", func():
+			_gs.track_quest(q3)
+			refresh())
+		bt.size_flags_horizontal = Control.SIZE_SHRINK_END
+		right.add_child(bt)
 
 
 # --------------------------------------------------------------------------- Recettes
@@ -1194,3 +1207,162 @@ func _build_carte(left: VBoxContainer, right: VBoxContainer) -> void:
 		+ ("  ·  " + ZONE_TYPES.get(z.type, z.type) if st != "locked" else "")), ACCENT if st == "locked" else INK_SOFT)
 	var txt: String = z.get("description", "") if st in ["here", "visited"] else (z.get("hint", "") if z.get("hint") else "Personne ne sait ce qu'il y a là-bas.")
 	_label(card, txt, INK_SOFT, 10, true)
+
+# --------------------------------------------------------------------------- Bestiaire
+const TEMPER_TEXT := {
+	"calm": "Paisible : elle ne t'attaque que si tu la frappes.",
+	"predator": "Prédatrice : elle fond sur toi dès qu'elle te repère (le « ! » rouge).",
+	"skittish": "Craintive : elle s'enfuit quand tu approches. Frappe avant qu'elle file.",
+	"sentinel": "Sentinelle : elle garde sa place et frappe qui s'en approche.",
+	"swimmer": "Nageuse : elle plonge pour esquiver, puis ressurgit pour mordre.",
+	"charger": "Chargeuse : elle prend son élan et fonce droit devant. Écarte-toi de sa ligne.",
+	"ambusher": "Embusquée : presque invisible dans la lumière, elle frappe quand tu passes trop près.",
+	"guardian": "Gardienne : lente mais puissante, elle ne lâche pas le terrain qu'elle protège.",
+	"dormant": "Endormie : on la prend pour un arbre mort… jusqu'à ce qu'on approche.",
+}
+const ROLE_TEXT := {"normal": "commune", "elite": "élite", "boss": "boss", "rare": "rare"}
+var _beast_sel := ""
+
+
+## Toutes les bêtes du monde (index des zones), dans l'ordre de niveau : {id: {temper, zones[]}}.
+func _bestiary() -> Dictionary:
+	var out := {}
+	var idx: Dictionary = QuestGuide.index()
+	for zid in idx:
+		for mid in idx[zid].mobs:
+			if not out.has(mid):
+				out[mid] = {"temper": str(idx[zid].mobs[mid]), "zones": []}
+			out[mid].zones.append(str(idx[zid].name))
+	return out
+
+
+func _beast_frame(mid: String) -> Texture2D:
+	var path := "res://assets/art/monsters/%s_idle.png" % mid
+	if not ResourceLoader.exists(path):
+		return null
+	var tex: Texture2D = load(path)
+	var at := AtlasTexture.new()
+	at.atlas = tex
+	at.region = Rect2(0, 0, tex.get_width() / 8.0, tex.get_height())
+	return at
+
+
+func _move_name(id: String) -> String:
+	var s := id.replace("_", " ")
+	return s.substr(0, 1).to_upper() + s.substr(1)
+
+
+func _move_hint(mv: Dictionary) -> String:
+	var area: Dictionary = mv.get("area", {}) if mv.get("area") is Dictionary else {}
+	var parts := PackedStringArray()
+	match area.get("shape", ""):
+		"arc":
+			parts.append("devant elle, de près")
+		"circle":
+			parts.append("tout autour d'elle")
+		"line":
+			parts.append("en ligne droite, loin")
+	if mv.get("charge", false):
+		parts.append("elle fonce")
+	if float(mv.get("telegraph_seconds", 0)) > 0.0:
+		parts.append("annoncée par une zone rouge : sors-en")
+	elif mv.get("damage_type") == "magical":
+		parts.append("magique")
+	return ", ".join(parts)
+
+
+func _build_bestiaire(left: VBoxContainer, right: VBoxContainer) -> void:
+	var all := _bestiary()
+	var ids: Array = all.keys()
+	ids.sort_custom(func(a, b):
+		var la := int(_gs.tpl("monsters", a).get("level", 1))
+		var lb := int(_gs.tpl("monsters", b).get("level", 1))
+		return la < lb or (la == lb and str(a) < str(b)))
+	var seen: Dictionary = _gs.profile.get("seen", {})
+	var n_seen := ids.filter(func(m): return seen.has(m)).size()
+	_section(left, "Bestiaire", "%d / %d" % [n_seen, ids.size()], INK_FAINT)
+	if not ids.has(_beast_sel):
+		var first_seen := ids.filter(func(m): return seen.has(m))
+		_beast_sel = first_seen[0] if not first_seen.is_empty() else (ids[0] if not ids.is_empty() else "")
+	var i := 0
+	for mid in ids:
+		var known: bool = seen.has(mid)
+		var m2: String = mid
+		var r := _row(left, i, mid == _beast_sel, func(): _beast_sel = m2; refresh())
+		i += 1
+		var ic := _icon(_beast_frame(mid), 18)
+		ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		if not known:
+			ic.modulate = Color(0.1, 0.06, 0.1, 0.55)       # silhouette : pas encore croisée
+		r.add_child(ic)
+		var n := _label(r, _gs.tpl("monsters", mid).get("name", mid) if known else "???", INK if known else INK_FAINT)
+		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		n.clip_text = true
+		n.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		var k := int(_gs.profile.kills.get(mid, 0))
+		_label(r, ("× %d" % k) if k > 0 else ("niv. %d" % int(_gs.tpl("monsters", mid).get("level", 1)) if known else ""), INK_SOFT)
+	if _beast_sel == "":
+		_section(right, "Créature")
+		return
+	# --- droite : la créature choisie
+	var t: Dictionary = _gs.tpl("monsters", _beast_sel)
+	var info: Dictionary = all[_beast_sel]
+	if not seen.has(_beast_sel):
+		_section(right, "Créature", "inconnue", INK_FAINT)
+		var sil := _big_icon(_beast_frame(_beast_sel))
+		sil.custom_minimum_size = Vector2(56, 40)
+		sil.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		sil.modulate = Color(0.1, 0.06, 0.1, 0.55)
+		right.add_child(sil)
+		_label(right, "Tu ne l'as pas encore croisée.", INK_SOFT, 10, true)
+		_label(right, "On en parle du côté de : " + ", ".join(PackedStringArray(info.zones)), INK_FAINT, 10, true)
+		return
+	_section(right, t.get("name", _beast_sel), "niv. %d · %s" % [int(t.get("level", 1)), ROLE_TEXT.get(t.get("role", "normal"), "")], INK_FAINT)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 6)
+	right.add_child(top)
+	var pic := _big_icon(_beast_frame(_beast_sel))
+	pic.custom_minimum_size = Vector2(56, 44)
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	top.add_child(pic)
+	var tv := VBoxContainer.new()
+	tv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tv.add_theme_constant_override("separation", 0)
+	top.add_child(tv)
+	_label(tv, TEMPER_TEXT.get(info.temper, ""), INK, 10, true)
+	_label(tv, "Vaincue : %d fois" % int(_gs.profile.kills.get(_beast_sel, 0)), INK_SOFT)
+	_label(right, t.get("description", ""), INK_SOFT, 10, true)
+	_section(right, "Attaques")
+	var j := 0
+	for mv in t.get("moveset", []):
+		var r2 := _row(right, j)
+		j += 1
+		var col := VBoxContainer.new()
+		col.add_theme_constant_override("separation", -1)
+		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r2.add_child(col)
+		_label(col, _move_name(str(mv.get("id", "?"))), INK)
+		var hint := _move_hint(mv)
+		if hint != "":
+			_label(col, hint, INK_SOFT, 10, true)
+	_section(right, "Butin")
+	var ls: Dictionary = _gs.profile.get("loot_seen", {}).get(_beast_sel, {})
+	var k2 := 0
+	for l in t.get("loot_table", []):
+		var iid: String = str(l.get("item_id", ""))
+		var got: bool = ls.has(iid)
+		var r3 := _row(right, k2)
+		k2 += 1
+		var ic2 := _icon(UISkin.item_icon(iid))
+		if not got:
+			ic2.modulate = Color(0.1, 0.06, 0.1, 0.5)
+		r3.add_child(ic2)
+		var ln := _label(r3, _gs.item_name(iid) if got else "???", INK if got else INK_FAINT)
+		ln.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		ln.clip_text = true
+		ln.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		var ch := float(l.get("chance", 0.0))
+		_label(r3, "rare" if ch > 0.0 and ch < 0.05 else "", ACCENT)
+	_label(right, "Trouvée : " + ", ".join(PackedStringArray(info.zones)), INK_FAINT, 10, true)

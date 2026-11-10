@@ -1,0 +1,120 @@
+{
+  "_doc": "Vie des PNJ (game/interactable.gd). wander : [dx, dy] en px autour de leur place (0 = immobile, se tourne seulement). barks : petites phrases lancées quand on passe près. after : répliques qui remplacent leur dialogue une fois la quête rendue (la dernière quête rendue de la liste l'emporte).",
+  "yvenne_ancienne": {
+    "wander": [0, 0],
+    "barks": ["Le puits ne baisse jamais. Ni ne monte.", "Approche, enfant. Mes yeux ne portent plus si loin.", "Encore une matinée parfaite. Comme toutes les autres."],
+    "after": {
+      "silence_des_bois": [
+        "Les bois ont retrouvé un peu de leur bruit, grâce à toi. Un peu seulement.",
+        "Les loups dorés… je me demande qui leur a donné cette couleur.",
+        "Tu n'es pas comme les autres Marqués. Eux, ils ne reviennent jamais me voir."
+      ],
+      "offrandes_aube": [
+        "La mousse que tu m'as rapportée brille encore, dans ma jarre. Elle ne fane pas.",
+        "Le rituel s'est bien passé. Enfin… je crois. Rien n'a changé, et c'est peut-être ça qui m'inquiète.",
+        "Si la lumière se nourrit de quelque chose, j'aimerais savoir de quoi."
+      ],
+      "lumiere_qui_ne_vacille_jamais": [
+        "Un mécanisme… J'ai passé ma vie à remercier un mécanisme.",
+        "Ne le dis pas aux autres. Pas encore. Ils ne sont pas prêts, et moi non plus.",
+        "Va plus loin que la forêt, Marqué. Les réponses ne viendront pas jusqu'au puits."
+      ]
+    }
+  },
+  "aldric_aubergiste": {
+    "wander": [14, 6],
+    "barks": ["Une chope ? Elle est propre. Elle l'est toujours.", "Le ragoût du jour est le même que celui d'hier. Personne ne s'en plaint.", "Entrez donc, il reste de la place près du feu !"],
+    "after": {
+      "marche_equitable": [
+        "Tes champignons dorés ont fait un malheur. Les clients en redemandent !",
+        "Je garde ton couvert au chaud, Marqué. Tu l'as bien mérité.",
+        "Dis, tu n'as pas remarqué ? Mes plats ne refroidissent jamais. Ça devrait me réjouir…"
+      ]
+    }
+  },
+  "garin_pecheur": {
+    "wander": [8, 0],
+    "barks": ["Chut… tu vas faire fuir le poisson.", "Rien ne mord, aujourd'hui. Comme hier.", "Là ! Non… c'était un reflet."],
+    "after": {
+      "intro_peche": [
+        "Trois truites argentées… et toutes les trois portaient la même marque sur le flanc.",
+        "Je t'avais promis une histoire. Une nuit, une seule, le ciel s'est éteint. J'ai vu des lumières bouger sous le lac, comme des lanternes qu'on promène.",
+        "Le lendemain, l'aube était revenue, et personne au village ne se souvenait de rien. Sauf moi."
+      ]
+    }
+  },
+  "thessaly": {
+    "wander": [0, 0],
+    "barks": ["Des lames, des onguents, du fil ! Approche !", "Tout est à vendre, sauf mon comptoir.", "Les Marqués paient toujours comptant. C'est ce que j'aime chez eux."]
+  },
+  "aurin_ermite": {
+    "wander": [8, 4],
+    "barks": ["Écoute… Tu entends ? Non. Moi non plus.", "Le vent ne passe plus sous mon auvent depuis des lunes.", "Reste sur le sentier, Marqué."],
+    "after": {
+      "veille_silencieuse": [
+        "Les loups se tiennent plus loin, depuis ton passage. Pour un temps.",
+        "Ils reviendront. Ils reviennent toujours à la même place, comme s'ils n'étaient jamais partis.",
+        "Va voir la rive, si tu veux mon avis. L'eau y est trop calme pour être honnête."
+      ]
+    }
+  },
+  "bertold_ravaudeur": {
+    "wander": [0, 0],
+    "barks": ["Une maille, deux mailles… encore déchiré.", "Fais attention aux crabes, ils pincent les chevilles.", "Le lac ne fait pas de vagues. Jamais."],
+    "after": {
+      "filets_a_ravauder": [
+        "Mes filets tiennent, grâce à tes roseaux. Jusqu'à la prochaine déchirure.",
+        "Ce matin, j'ai trouvé une écaille dorée prise dans les mailles. Grande comme ma paume.",
+        "Si tu vas au-delà des roseaux, ne me dis pas ce que tu y as vu. Je préfère ne pas savoir."
+      ]
+    }
+  },
+  "maelis_passeuse": {
+    "wander": [12, 4],
+    "barks": ["La barque est prête, si tu veux traverser.", "Jusqu'aux roseaux, pas plus loin !", "Tu entends ? On dirait que l'eau chante, parfois."],
+    "after": {
+      "pinces_sur_les_galets": [
+        "Les barques sont tranquilles, grâce à toi. Les crabes ont compris.",
+        "Tu en as vu, des crabes, hein ? Ils avaient tous la même taille. Exactement la même.",
+        "Je te dois une traversée. Gratuite, comme toujours."
+      ],
+      "ce_qui_remue_sous_l_eau": [
+        "Les pétales que tu m'as rapportés ne flottent pas. Ils restent posés sur l'eau, comme sur du verre.",
+        "Les anguilles ne remontent plus. Mais quelque chose, au fond, a bougé quand tu les as abattues.",
+        "Ma grand-mère avait raison. On chante, sous le lac. J'ai entendu, la nuit dernière. Enfin… le matin dernier."
+      ]
+    }
+  },
+  "isarn_bucheron": {
+    "wander": [12, 6],
+    "barks": ["Hm.", "Pas ces troncs-là. Ceux-là, on n'y touche pas.", "Le bois sent le neuf, même mort depuis cent ans."],
+    "after": {
+      "le_bois_qui_ne_vieillit_pas": [
+        "Le village aura son bois. Merci. Tu as la main sûre.",
+        "Tu as vu ? Les copeaux ne brunissent pas. Ils restent blonds comme au premier coup de hache.",
+        "Mon grand-père disait qu'il fallait écouter les arbres avant de les couper. Je commence à le croire."
+      ],
+      "les_motifs_sous_l_ecorce": [
+        "Les morceaux d'écorce… Mère Yvenne les a regardés longtemps sans rien dire.",
+        "Les cercles se répètent. Toujours les mêmes, d'un tronc à l'autre, comme une écriture.",
+        "Si quelqu'un a écrit sur ces arbres, il était là avant l'aube. Avant nous tous."
+      ]
+    }
+  },
+  "vesna_traqueuse": {
+    "wander": [18, 8],
+    "barks": ["Silence. Tu marches comme un sanglier.", "Ses traces sont fraîches. Elles le sont toujours.", "Garde un œil sur les fougères. Les sangliers y dorment."],
+    "after": {
+      "sangliers_des_fougeres": [
+        "Les cueilleurs reviennent sur les sentiers. Bon travail.",
+        "Les sangliers chargeaient toujours dans la même direction, tu as remarqué ? Vers le nord.",
+        "Tu chasses bien, pour un Marqué. La plupart ne savent même pas tenir une lame."
+      ],
+      "piste_du_cerf_blanc": [
+        "Les traces s'arrêtent au cercle de pierres. Net. Comme si le cerf s'était dissous.",
+        "Les ours gardaient ce chemin pour quelqu'un. Ou pour quelque chose.",
+        "Je ne le suivrai pas plus loin. Mais toi, tu le feras, n'est-ce pas ?"
+      ]
+    }
+  }
+}

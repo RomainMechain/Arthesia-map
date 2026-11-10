@@ -155,6 +155,17 @@ func _draw() -> void:
 		var mp4 := _to_map((n as Node2D).global_position, v)
 		if r.grow(-1).has_point(mp4):
 			_quest_mark(mp4 + Vector2(0, -2), mk2.text == "?")
+	# quête suivie : losange doré (la cible, ou la sortie à prendre), au bord si hors cadre
+	var hud_n: Node = get_parent().get_parent() if get_parent() else null
+	var gst := get_node_or_null("/root/GameState")
+	if hud_n and hud_n.has_method("track_target") and gst and gst.objective().is_empty() 			and gst.tracked_quest() != "" and zone:
+		var tw = zone.find_target(hud_n.track_target())
+		if tw != null:
+			var mt := _to_map(tw as Vector2, v).clamp(r.position + Vector2(4, 4), r.end - Vector2(5, 5))
+			var k := 3.0 + (0.5 + 0.5 * sin(_t * 4.0))
+			var dia := PackedVector2Array([mt + Vector2(0, -k - 1), mt + Vector2(k + 1, 0), mt + Vector2(0, k + 1), mt + Vector2(-k - 1, 0)])
+			draw_colored_polygon(dia, C_OUTLINE)
+			draw_colored_polygon(PackedVector2Array([mt + Vector2(0, -k), mt + Vector2(k, 0), mt + Vector2(0, k), mt + Vector2(-k, 0)]), Color("ffe08a"))
 	# toi
 	var pp := _to_map(_player_tile() * T, v)
 	var pl := get_tree().get_first_node_in_group("player")

@@ -45,6 +45,7 @@ var marked := false
 var _glow_t := 0.0
 var dormant := false                # endormie (Veilleur) : un arbre mort, jusqu'au réveil
 var _waiting := false               # pas encore apparue (condition non remplie)
+var _seen := false                  # déjà notée au bestiaire (cette vie de la scène)
 var _cond_t := 0.0
 
 var _home := Vector2.ZERO
@@ -176,6 +177,11 @@ func _process(delta: float) -> void:
 	var dist := to_p.length()
 	if name_label:
 		name_label.visible = dist < 40.0 and not provoked           # en combat : le cadre de cible du HUD
+	if dist < 90.0 and not _seen and not dormant and not submerged and (temper != "ambusher" or provoked):  # bestiaire : croisée
+		_seen = true
+		var gss := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+		if gss:
+			gss.see_monster(template_id)
 	_bar_t = maxf(0.0, _bar_t - delta)
 	if _alert_t > 0.0:
 		_alert_t -= delta
@@ -478,6 +484,9 @@ func _die() -> void:
 			loot = loot + _roll_loot()
 			loot.append(["eclat_d_aube_fige", 1])
 		z.drop_loot(global_position + Vector2(0, -6), loot)
+		if gs:
+			for l in loot:
+				gs.see_loot(template_id, str(l[0]))
 	# la lumière de l'aube les quitte : figé blanc, puis grains dorés qui montent
 	if _mat:
 		_mat.set_shader_parameter("flash", 1.0)

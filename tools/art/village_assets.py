@@ -589,7 +589,8 @@ NPC_KEYS = {
 def npc(template_id):
     keys = dict(sb.KEYS_CHAR)
     keys.update(NPC_KEYS[template_id])
-    return sb.bounce_frames(sb.from_ascii(sb.PLAYER_DOWN, keys), (0, 0, -1, -1))
+    import npc_sheets                                    # face / dos / profil, repos + marche
+    return npc_sheets.sheet(keys)
 
 
 # --------------------------------------------------------------------------- tuiles de champs

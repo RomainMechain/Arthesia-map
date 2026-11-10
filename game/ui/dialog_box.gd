@@ -114,16 +114,17 @@ func open(who: Node2D, intro: Array = []) -> void:
 	if not who.get("quests") is Array or (who.quests.is_empty() and who.get("template_type") != "npc"):
 		_simple(d)                                # échoppe, atelier, barque, découverte… : une page
 		return
-	var talked: bool = _gs != null and _gs.profile.get("talked", {}).has(who.entry_id)
-	var lines: Array = intro.duplicate() if not intro.is_empty() else []
+	var key: String = who.dialogue_key() if who.has_method("dialogue_key") else "base"
+	var talked: bool = _gs != null and str(_gs.profile.get("talked", {}).get(who.entry_id, "")) == key
+	var all: Array = who.current_dialogues() if who.has_method("current_dialogues") else Array(who.dialogues)
+	var lines: Array = intro.duplicate()
 	if intro.is_empty():
-		var all: Array = Array(who.dialogues) if who.get("dialogues") else []
 		if talked and not all.is_empty():
-			lines = [all[randi() % all.size()]]   # déjà rencontré : une réplique, puis les choix
+			lines = [all[randi() % all.size()]]   # déjà entendu : une réplique, puis les choix
 		else:
-			lines = all
+			lines = all                            # première fois (ou nouvelles répliques) : tout défile
 	if _gs:
-		_gs.profile.get("talked", {})[who.entry_id] = true
+		_gs.profile.get("talked", {})[who.entry_id] = key
 	_show_pages(lines.map(func(l): return {"text": l}), _menu_choices())
 
 
@@ -150,7 +151,7 @@ func _menu_choices() -> Array:
 		ch.append({"label": "… %s" % q.name, "act": {"kind": "progress_page", "quest_id": q.quest_id}})
 	if it.get("template_type") == "shop":
 		ch.append({"label": "Commerce", "act": {"kind": "shop", "shop_id": it.template_id}})
-	if not (Array(it.dialogues) if it.get("dialogues") else []).is_empty():
+	if not _lines().is_empty():
 		ch.append({"label": "Discuter", "act": {"kind": "talk"}})
 	var hints: Array = it.locked_hints()
 	if not hints.is_empty() and offer.is_empty() and done.is_empty():
@@ -160,6 +161,10 @@ func _menu_choices() -> Array:
 
 
 var _extra_hint := ""
+
+
+func _lines() -> Array:
+	return it.current_dialogues() if it.has_method("current_dialogues") else Array(it.dialogues)
 
 
 ## Fiche d'une quête proposée : récit (coupé en pages), puis objectifs et récompenses.
@@ -332,7 +337,7 @@ func _choose(a: Dictionary) -> void:
 			_show_pages([{"text": _menu_line()}], _menu_choices())
 		"talk":
 			_extra_hint = ""
-			_show_pages(Array(it.dialogues).map(func(l): return {"text": l}), _menu_choices())
+			_show_pages(_lines().map(func(l): return {"text": l}), _menu_choices())
 		"quest_page":
 			_quest_pages(a.quest_id)
 		"progress_page":

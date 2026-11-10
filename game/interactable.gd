@@ -39,14 +39,221 @@ func _ready() -> void:
 	add_child(_icon)
 	marker.visible = false
 	refresh_marker()
+	_life_setup()
 
 
 func _process(delta: float) -> void:
 	_anim_t += delta * 3.0
-	if sprite and sprite.hframes > 1:
+	if _living:
+		_live(delta)
+	elif sprite and sprite.hframes > 1:
 		sprite.frame = int(_anim_t) % sprite.hframes
 	if _icon and _icon.visible:
 		_icon.position = Vector2(0, _icon_y + roundf(sin(_anim_t * 0.9) * 1.5))
+
+# --------------------------------------------------------------------------- PNJ vivants
+## data/npc_life.json : petits déplacements autour de leur place, se tourner vers le joueur,
+## phrases lancées en passant, répliques qui changent une fois leur quête rendue.
+## Planche 4×3 : lignes face / dos / profil (retourné pour la gauche), colonnes repos 0-1, marche 2-3.
+const WALK_SPEED := 11.0
+const NOTICE := 44.0                  # se tourne vers toi
+const BARK_DIST := 58.0
+static var _life_db: Dictionary = {}
+static var _bark_at := -100.0         # dernière phrase lancée (tous PNJ confondus) : pas de cacophonie
+var life: Dictionary = {}
+var _living := false
+var _home := Vector2.ZERO
+var _goal := Vector2.ZERO
+var _walking := false
+var _idle_t := 0.0
+var _row := 0
+var _bark_box: PanelContainer
+var _bark_label: Label
+var _bark_until := 0.0
+var _bark_ready := 0.0
+var _was_near := false
+
+
+static func life_db() -> Dictionary:
+	if _life_db.is_empty():
+		var d = JSON.parse_string(FileAccess.get_file_as_string("res://data/npc_life.json"))
+		_life_db = d if d is Dictionary else {"_": {}}
+	return _life_db
+
+
+func _life_setup() -> void:
+	if not (template_type in ["npc", "shop"]) or sprite == null or sprite.vframes < 3:
+		return
+	var db := life_db()
+	life = db.get(template_id, db.get("thessaly", {}) if template_type == "shop" else {})
+	_living = true
+	_home = position
+	_goal = position
+	_idle_t = randf_range(1.0, 6.0)
+	_bark_ready = randf_range(2.0, 8.0)
+
+
+func _player() -> Node2D:
+	return get_tree().get_first_node_in_group("player") as Node2D
+
+
+func _talking_to_me() -> bool:
+	var z := get_tree().get_first_node_in_group("zone")
+	return z != null and z.get("_dialog") != null and z._dialog.visible and z.get("_dialog_it") == self
+
+
+func _live(delta: float) -> void:
+	var p := _player()
+	var to_p: Vector2 = (p.global_position - global_position) if p else Vector2(9999, 9999)
+	var near: bool = to_p.length() < NOTICE
+	var talking := _talking_to_me()
+	var moving := false
+	if near or talking:
+		_walking = false
+		_face(to_p)
+	elif _walking:
+		var step := _goal - position
+		if step.length() < 0.6:
+			_walking = false
+			position = _goal
+			_idle_t = randf_range(3.0, 8.0)
+		else:
+			var d := step.normalized()
+			position += d * minf(WALK_SPEED * delta, step.length())
+			_face(d)
+			moving = true
+	else:
+		_idle_t -= delta
+		if _idle_t <= 0.0:
+			_pick_goal()
+	# image : repos (lent) ou marche
+	var col: int = (2 + int(_anim_t * 2.0) % 2) if moving else (int(_anim_t * 0.5) % 2)
+	sprite.frame = _row * 4 + col
+	# phrases en passant
+	_bark_ready -= delta
+	var in_range: bool = to_p.length() < BARK_DIST
+	if in_range and not _was_near and not talking and _bark_ready <= 0.0:
+		var now := Time.get_ticks_msec() / 1000.0
+		if now - _bark_at > 5.0:
+			_bark_at = now
+			_bark_ready = randf_range(35.0, 60.0)
+			bark(_bark_line())
+	_was_near = in_range
+	if _bark_box and _bark_box.visible:
+		var now2 := Time.get_ticks_msec() / 1000.0
+		if now2 > _bark_until or talking:
+			_bark_box.visible = false
+		else:
+			_bark_box.modulate.a = clampf((_bark_until - now2) / 0.4, 0.0, 1.0)
+
+
+## Se tourner : face, dos ou profil (retourné vers la gauche).
+func _face(d: Vector2) -> void:
+	if d.length() < 0.01:
+		return
+	if absf(d.x) > absf(d.y) * 1.2:
+		_row = 2
+		sprite.flip_h = d.x < 0.0
+	else:
+		_row = 0 if d.y > 0.0 else 1
+		sprite.flip_h = false
+
+
+func _pick_goal() -> void:
+	var w: Array = life.get("wander", [0, 0])
+	if w.size() < 2 or (float(w[0]) <= 0.0 and float(w[1]) <= 0.0):
+		_idle_t = randf_range(4.0, 9.0)
+		_row = 0 if randf() < 0.6 else 2                     # immobile : regarde ailleurs, de temps en temps
+		sprite.flip_h = randf() < 0.5
+		return
+	var g := (_home + Vector2(randf_range(-1, 1) * float(w[0]), randf_range(-1, 1) * float(w[1]))).round()
+	if _blocked(g):
+		_idle_t = randf_range(1.0, 3.0)
+		return
+	_goal = g
+	_walking = true
+
+
+## Un mur, un tronc, de l'eau profonde entre ici et là ? (rayon physique, sans notre corps ni le joueur)
+func _blocked(to: Vector2) -> bool:
+	if not is_inside_tree():
+		return true
+	var space := get_world_2d().direct_space_state
+	var q := PhysicsRayQueryParameters2D.create(global_position, global_position + (to - position))
+	var ex: Array[RID] = []
+	var own := get_node_or_null("Collision")
+	if own is CollisionObject2D:
+		ex.append((own as CollisionObject2D).get_rid())
+	var p := _player()
+	if p is CollisionObject2D:
+		ex.append((p as CollisionObject2D).get_rid())
+	q.exclude = ex
+	return not space.intersect_ray(q).is_empty()
+
+
+## La phrase lancée en passant : une quête à rendre ou à prendre d'abord, sinon une des siennes.
+func _bark_line() -> String:
+	var states := quests.map(func(q): return _state(q))
+	if "complete" in states:
+		return ["Alors, c'est fait ?", "Tu as ce qu'il me faut ?", "Reviens me voir, Marqué !"][randi() % 3]
+	if not available_quests().is_empty() and randf() < 0.6:
+		return ["Hé, Marqué ! J'aurais besoin d'aide.", "Tu aurais un moment ?", "Approche, j'ai quelque chose à te demander."][randi() % 3]
+	var b: Array = life.get("barks", [])
+	return str(b[randi() % b.size()]) if not b.is_empty() else ""
+
+
+## Bulle au-dessus de la tête, quelques secondes.
+func bark(text: String) -> void:
+	if text == "":
+		return
+	if _bark_box == null:
+		_bark_box = PanelContainer.new()
+		_bark_box.add_theme_stylebox_override("panel", UISkin.box("parchment", 8, 3))
+		_bark_box.z_index = 40
+		_bark_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_bark_label = UISkin.ink(Label.new(), Color("4f3324"))
+		_bark_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_bark_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_bark_box.add_child(_bark_label)
+		add_child(_bark_box)
+	_bark_label.text = text
+	_bark_label.custom_minimum_size = Vector2(clampf(text.length() * 4.2, 40.0, 120.0), 0)
+	_bark_box.visible = true
+	_bark_box.modulate.a = 1.0
+	_bark_box.reset_size()
+	_bark_until = Time.get_ticks_msec() / 1000.0 + 2.5 + text.length() * 0.04
+	_place_bark()
+	await get_tree().process_frame                      # taille exacte connue après une image
+	if is_instance_valid(_bark_box):
+		_bark_box.reset_size()
+	_place_bark()
+
+
+func _place_bark() -> void:
+	if is_instance_valid(_bark_box):
+		_bark_box.position = Vector2(roundf(-_bark_box.size.x / 2.0), roundf(_icon_y - 6.0 - _bark_box.size.y))
+
+
+## Le dialogue du moment : celui d'après la dernière quête rendue (data/npc_life.json), sinon l'ordinaire.
+func current_dialogues() -> Array:
+	return _dialogue_set()[1]
+
+
+func dialogue_key() -> String:
+	return _dialogue_set()[0]
+
+
+func _dialogue_set() -> Array:
+	var key := "base"
+	var lines: Array = Array(dialogues)
+	var gs := _gs()
+	var after: Dictionary = life_db().get(template_id, {}).get("after", {})
+	if gs:
+		for qid in after:
+			if gs.quest_state(qid) == "turned_in":
+				key = qid
+				lines = after[qid]
+	return [key, lines]
 
 
 func set_highlight(on: bool) -> void:

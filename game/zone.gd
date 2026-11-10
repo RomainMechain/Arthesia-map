@@ -362,6 +362,23 @@ func find_target(name: String):
 				bd = d
 				best = m.global_position + Vector2(0, -10)
 		return best
+	if name.begins_with("mob:") or name.begins_with("res:"):   # suivi de quête : la plus proche
+		var want := name.substr(4)
+		var best2 = null
+		var bd2 := INF
+		var group := "mobs" if name.begins_with("mob:") else "interactables"
+		for m in get_tree().get_nodes_in_group(group):
+			if m.get("template_id") != want:
+				continue
+			if group == "mobs" and (not m.is_alive() or m.submerged):
+				continue
+			var d2: float = m.global_position.distance_to(player.global_position)
+			if group == "interactables" and m.has_method("can_gather") and m.can_gather() != "":
+				d2 += 5000.0                                # épuisée : seulement s'il n'y en a pas d'autre
+			if d2 < bd2:
+				bd2 = d2
+				best2 = m.global_position + Vector2(0, -10)
+		return best2
 	var ex := get_node_or_null("Sorties/" + name)
 	if ex and ex.get_child_count() > 0:
 		return ex.global_position + (ex.get_child(0) as Node2D).position

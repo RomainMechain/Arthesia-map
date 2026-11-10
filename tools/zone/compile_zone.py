@@ -554,10 +554,12 @@ class Zone:
                 continue
             if kind == "npc":
                 item["frames"] = 4
+                item["rows"] = 3
                 item["sprite"] = res(f"characters/npcs/{tid}_idle.png")
                 item["dialogues"] = t.get("dialogues", [])
             elif kind == "shop":
                 item["frames"] = 4
+                item["rows"] = 3
                 item["sprite"] = res("characters/npcs/thessaly_idle.png")
                 item["y"] -= 12                         # derrière le comptoir : visible de la taille à la tête
                 item["dialogues"] = [t.get("description", "")]
@@ -1112,7 +1114,7 @@ def render_preview(build, out):
     def draw(item, nframes=None):
         spr = load(item["sprite"])
         if nframes and nframes > 1:
-            spr = spr.crop((0, 0, spr.width // nframes, spr.height))
+            spr = spr.crop((0, 0, spr.width // nframes, spr.height // int(item.get("rows", 1))))
         x, y = int(item["x"]) - spr.width // 2, int(item["y"]) - spr.height
         if -spr.width < x < W and -spr.height < y < H:
             img.alpha_composite(spr, (max(0, x), max(0, y)),

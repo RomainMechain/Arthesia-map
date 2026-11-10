@@ -98,7 +98,7 @@ func reset_profile() -> void:
 		"alloc": {"hp": 0, "atk": 0, "def": 0, "agi": 0, "int": 0, "sag": 0},
 		"gold": 0, "inventory": {}, "kills": {}, "quests": {}, "visited": [],
 		"skills": [], "bar": ["", "", "", ""], "equipment": {},
-		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {}, "talked": {},
+		"professions": {}, "gathers": {}, "titles": [], "title": "", "notes": {}, "crafts": {}, "rare_t": {}, "rare_next": {}, "talked": {}, "tracked": "", "seen": {}, "loot_seen": {},
 		"tutorial": {"step": 0, "seen": {}, "kills_at_step": 0},
 	}
 	recompute_stats(true)
@@ -1173,6 +1173,7 @@ func on_marked_kill() -> void:
 
 func on_kill(monster_id: String, level: int, role: String) -> void:
 	profile.kills[monster_id] = int(profile.kills.get(monster_id, 0)) + 1
+	see_monster(monster_id)
 	gain_xp(CombatRules.monster_xp(level, role, profile.level))
 	for qid in profile.quests:
 		var q: Dictionary = profile.quests[qid]
@@ -1218,10 +1219,36 @@ func accept_quest(qid: String) -> void:
 	var objs: Array = tpl("quests", qid).get("objectives", [])
 	profile.quests[qid] = {"state": "active", "progress": objs.map(func(_o): return 0)}
 	notice.emit("Quête acceptée : %s" % tpl("quests", qid).get("name", qid))
+	profile.tracked = qid                              # la dernière quête acceptée est suivie
 	tutorial_check()
 	_refresh_quests()
 	quest_changed.emit(qid)
 	save()
+
+
+## Quête suivie (flèche de guidage, repère de la carte, rappel à l'écran) ; "" si aucune.
+func tracked_quest() -> String:
+	var q: String = str(profile.get("tracked", ""))
+	return q if quest_state(q) in ["active", "complete"] else ""
+
+
+func track_quest(qid: String) -> void:
+	profile.tracked = qid if tracked_quest() != qid else ""
+	profile_changed.emit()
+	save()
+
+
+## Bestiaire : une créature croisée, un butin vu.
+func see_monster(monster_id: String) -> void:
+	if not profile.seen.has(monster_id):
+		profile.seen[monster_id] = true
+		notice.emit("Bestiaire : %s" % tpl("monsters", monster_id).get("name", monster_id))
+
+
+func see_loot(monster_id: String, item_id: String) -> void:
+	var d: Dictionary = profile.loot_seen.get(monster_id, {})
+	d[item_id] = true
+	profile.loot_seen[monster_id] = d
 
 
 func quest_progress_text(qid: String) -> Array:
@@ -1284,6 +1311,12 @@ func turn_in_quest(qid: String) -> void:
 		add_item(it.item_id, int(it.get("quantity", 1)))
 	gain_xp(int(rw.get("xp", 0)))
 	notice.emit("Quête rendue : %s (+%d XP, +%d or)" % [t.get("name", qid), int(rw.get("xp", 0)), int(rw.get("gold", 0))])
+	if str(profile.get("tracked", "")) == qid:        # suivie : on passe à la suivante en cours
+		profile.tracked = ""
+		for q2 in profile.quests:
+			if profile.quests[q2].state in ["complete", "active"]:
+				profile.tracked = q2
+				break
 	quest_turned_in.emit(qid)
 	check_unlocks()
 	quest_changed.emit(qid)
@@ -1307,7 +1340,7 @@ func _load() -> bool:
 	if not (d is Dictionary) or int(d.get("version", 0)) != SAVE_VERSION:
 		return false                              # (migrations : à ajouter ici quand la version change)
 	profile = d
-	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next", "talked"]:          # sauvegardes plus anciennes
+	for k in ["professions", "gathers", "equipment", "visited", "titles", "notes", "crafts", "rare_t", "rare_next", "talked", "seen", "loot_seen"]:          # sauvegardes plus anciennes
 		if not profile.has(k):
 			profile[k] = [] if k in ["visited", "titles"] else {}
 	if not profile.has("title"):

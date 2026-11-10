@@ -230,11 +230,14 @@ func _interactable(it: Dictionary) -> Node2D:
 		var s := Sprite2D.new()
 		s.name = "Sprite"
 		s.texture = tex
+		var nr: int = int(it.get("rows", 1))
 		s.hframes = nf
+		s.vframes = nr
 		s.centered = false
-		s.offset = Vector2(-floori(tex.get_width() / float(nf) / 2.0), -tex.get_height())
+		var fh: float = tex.get_height() / float(nr)
+		s.offset = Vector2(-floori(tex.get_width() / float(nf) / 2.0), -fh)
 		n.add_child(s)
-		top = -tex.get_height() - 2.0
+		top = -fh - 2.0
 		if not it.has("mob") and not it.has("resource"):   # PNJ : on ne les traverse pas
 			var body := StaticBody2D.new()
 			body.name = "Collision"

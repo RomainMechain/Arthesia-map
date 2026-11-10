@@ -24,6 +24,10 @@ var _target_bar: UISkin.Bar
 var _target: Node2D
 var _target_t := 0.0
 var _quest_box: PanelContainer
+var _track_box: PanelContainer      # rappel discret de la quête suivie (sous la mini-carte)
+var _track_name: Label
+var _track_step: Label
+var _track_where: Label
 var _quest_list: VBoxContainer
 var _feed: VBoxContainer
 var _slots: Array = []
@@ -125,10 +129,14 @@ class GuideArrow extends Control:
 
 	func _draw() -> void:
 		var gs: Node = hud._gs
-		if gs == null or gs.objective().is_empty():
+		if gs == null:
 			return
-		var targets: Dictionary = gs.objective().get("targets", {})
-		var name: String = targets.get(gs.current_zone, targets.get("*", ""))
+		var name := ""
+		if not gs.objective().is_empty():
+			var targets: Dictionary = gs.objective().get("targets", {})
+			name = targets.get(gs.current_zone, targets.get("*", ""))
+		elif gs.tracked_quest() != "":
+			name = hud.track_target()
 		if name == "":
 			return
 		if name == "hud:carnet":
@@ -154,12 +162,33 @@ class GuideArrow extends Control:
 			var c := size / 2.0
 			var d := (p - c).normalized()
 			var e := Vector2(clampf(p.x, view.position.x, view.end.x), clampf(p.y, view.position.y, view.end.y))
+			var pad := Rect2(size.x - 150.0, size.y - 118.0, 150.0, 118.0)   # boutons d'action
+			if pad.has_point(e):
+				if absf(d.x) > absf(d.y):
+					e.y = pad.position.y - 4.0
+				else:
+					e.x = pad.position.x - 4.0
 			e += d * sin(_t * 4.0) * 2.0
 			var n := d.orthogonal()
 			draw_circle(e, 9, ink)
 			draw_circle(e, 8, Color("4a3450"))
 			var tri2 := PackedVector2Array([e + d * 6.0, e - d * 3.0 + n * 4.0, e - d * 3.0 - n * 4.0])
 			draw_colored_polygon(tri2, gold)
+
+
+## Cible de la flèche pour la quête suivie : la sortie à prendre, ou la cible dans la zone.
+## Recalculée au plus toutes les 0,5 s (l'index est en cache, la route est un petit parcours).
+var _tt := ""
+var _tt_at := -1.0
+
+
+func track_target() -> String:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _tt_at > 0.5:
+		_tt_at = now
+		var s: Dictionary = QuestGuide.step(_gs, _gs.tracked_quest(), _gs.current_zone)
+		_tt = str(s.get("exit", "")) if str(s.get("exit", "")) != "" else str(s.get("spec", ""))
+	return _tt
 
 
 ## Place un contrôle par rapport à un coin : (ax, ay) = ancre (0 ou 1), (x, y) = décalage depuis l'ancre.
@@ -256,6 +285,24 @@ func _ready() -> void:
 	minimap = (load("res://game/ui/minimap.gd") as GDScript).new()
 	minimap.tapped.connect(toggle_map)
 	_root.add_child(_place(minimap, 1, 0, -86, 36, 82, 58))
+	_track_box = PanelContainer.new()
+	_track_box.add_theme_stylebox_override("panel", UISkin.box("parchment", 8, 4))
+	_track_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_track_box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	var trv := VBoxContainer.new()
+	trv.add_theme_constant_override("separation", -2)
+	_track_box.add_child(trv)
+	_track_name = UISkin.ink(_mk(""), Color("a83a40"))
+	_track_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	trv.add_child(_track_name)
+	_track_step = UISkin.ink(_mk(""), UISkin.INK)
+	_track_step.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	trv.add_child(_track_step)
+	_track_where = UISkin.ink(_mk(""), UISkin.INK_FAINT)
+	_track_where.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	trv.add_child(_track_where)
+	_root.add_child(_place(_track_box, 1, 0, -4, 96, 0, 0))
+	_track_box.visible = false
 
 	# --- fil d'annonces
 	_feed = VBoxContainer.new()
@@ -534,6 +581,23 @@ func _on_quest(_q: String) -> void:
 	_refresh_static()
 
 
+## Rappel de la quête suivie : son nom, l'étape en cours (et la zone, si c'est ailleurs).
+func _refresh_track(tutorial: bool) -> void:
+	var qid: String = _gs.tracked_quest() if _gs else ""
+	_track_box.visible = qid != "" and not tutorial
+	if not _track_box.visible:
+		return
+	var nm: String = _gs.tpl("quests", qid).get("name", qid)
+	_track_name.text = "◆ " + (nm if nm.length() <= 26 else nm.substr(0, 25) + "…")
+	var s: Dictionary = QuestGuide.step(_gs, qid, _gs.current_zone)
+	var txt: String = s.get("text", "")
+	_track_step.text = txt if txt.length() <= 34 else txt.substr(0, 33) + "…"
+	_track_where.text = ("› " + str(s.where)) if s.get("where", "") != "" else ""   # cible dans une autre zone
+	_track_where.visible = _track_where.text != ""
+	_track_box.offset_left = _track_box.offset_right      # repartir de la taille minimale (grandit vers la gauche)
+	_track_box.offset_bottom = _track_box.offset_top
+
+
 func _refresh_static() -> void:
 	if not _gs:
 		return
@@ -566,6 +630,7 @@ func _refresh_static() -> void:
 		_quest_list.add_child(ot)
 	# (les quêtes en cours ne s'affichent plus à l'écran : elles sont dans le Carnet › Quêtes)
 	_quest_box.visible = any
+	_refresh_track(any)
 	# bouton d'attaque : l'arme portée (sinon le poing)
 	var w: String = _gs.equipped("weapon")
 	_attack.icon = UISkin.item_icon(w) if w != "" else UISkin.icon("attaque")
