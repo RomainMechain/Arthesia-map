@@ -712,7 +712,8 @@ func _build_comp(left: VBoxContainer, right: VBoxContainer) -> void:
 		var r := _row(list, i, sid == _selected_skill, func(): _selected_skill = "" if _selected_skill == s2 else s2; refresh())
 		i += 1
 		r.add_child(_icon(UISkin.icon(sid)))
-		var n := _label(r, sk.get("name", sid), INK)
+		var tr := SkillFx.tier(sid)
+		var n := _label(r, sk.get("name", sid), INK if tr < 2 else Color(SkillFx.TIER_COLORS[tr]))   # la rareté colore le nom
 		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var slot: int = p.bar.find(sid)
 		if slot >= 0:
@@ -741,6 +742,8 @@ func _build_comp(left: VBoxContainer, right: VBoxContainer) -> void:
 		_label(hd, sk.get("name", ""), INK)
 		_push(hd)
 		_label(hd, "%d mana · %d s" % [int(sk.get("mana_cost", 0)), int(sk.get("cooldown_seconds", 0))], INK_SOFT)
+		var tr2 := SkillFx.tier(_selected_skill)
+		_label(d, "Compétence " + SkillFx.TIER_NAMES[tr2], Color(SkillFx.TIER_COLORS[tr2]))
 		_label(d, sk.get("description", ""), INK_SOFT, 10, true)
 		_label(d, _effect_text(sk), GOOD)
 	else:

@@ -105,6 +105,10 @@ func reset_profile() -> void:
 	check_unlocks(false)
 
 
+func has_skill(sid: String) -> bool:
+	return sid in profile.get("skills", [])
+
+
 func recompute_stats(full := false) -> void:
 	var s := {}
 	for k in CombatRules.BASE_STATS:
@@ -120,6 +124,17 @@ func recompute_stats(full := false) -> void:
 				s[e.stat] = s.get(e.stat, 0.0) * (1.0 + float(e.amount_percent) / 100.0)
 			elif e.get("type") == "stat_bonus":
 				s[e.stat] = s.get(e.stat, 0.0) + float(e.amount)
+	# compétences passives : bonus fixes, puis en % (le bouclier de Matin d'Halvard se déclenche en combat)
+	for pass_i in 2:
+		for sid in profile.skills:
+			var psk := tpl("skills", sid)
+			if psk.get("kind") != "passive":
+				continue
+			for e in psk.get("effects", []):
+				if pass_i == 0 and e.get("type") == "stat_bonus":
+					s[e.stat] = s.get(e.stat, 0.0) + float(e.amount)
+				elif pass_i == 1 and e.get("type") == "stat_bonus_percent":
+					s[e.stat] = s.get(e.stat, 0.0) * (1.0 + float(e.amount_percent) / 100.0)
 	var ratio := fighter.hp / fighter.max_hp() if fighter.base.size() > 0 and fighter.max_hp() > 0 else 1.0
 	fighter.id = "player"
 	fighter.display_name = "Vous"
@@ -837,6 +852,8 @@ func check_unlocks(announce := true) -> void:
 			continue
 		if eval_condition(sk.get("unlock_condition")):
 			profile.skills.append(path)
+			if sk.get("kind") == "passive":
+				recompute_stats()                      # ses bonus s'appliquent tout de suite
 			if sk.get("kind") == "active":
 				var free: int = profile.bar.find("")
 				if free >= 0:

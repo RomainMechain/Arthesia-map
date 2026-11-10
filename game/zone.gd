@@ -338,6 +338,9 @@ func _update_gather(delta: float) -> void:
 		float_text(player.global_position + Vector2(0, -30 - y * 10), "+%d %s" % [p[1], gs.item_name(p[0]) if gs else p[0]], Color("a8c84e"))
 		y += 1
 	Sfx.play("fish" if it.profession() == "peche" else "gather_done")
+	var gsm := _game_state()
+	if gsm and gsm.has_skill("mains_de_ravaudeur"):
+		SkillFx.passive("mains_de_ravaudeur", player, self)
 	if gs:
 		gs.on_gather(it.template_id, it.profession(), int(it.res.get("level", 1)))
 	_stop_gather("")

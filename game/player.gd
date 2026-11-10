@@ -146,6 +146,9 @@ func _sync_layers() -> void:
 			continue
 		l.frame_coords = sprite.frame_coords
 		l.flip_h = sprite.flip_h
+		l.position = sprite.position                     # les gestes des compétences
+		l.scale = sprite.scale
+		l.modulate.a = sprite.modulate.a
 	# dos tourné (haut, haut-côté) : l'arme passe derrière le corps
 	var w: Sprite2D = _layers.weapon
 	var behind := sprite.frame_coords.y >= 3 and sprite.frame_coords.x < 10
@@ -193,6 +196,7 @@ func _physics_process(delta: float) -> void:
 	if dir != Vector2.ZERO and _act != "attack":
 		facing = dir.normalized()
 	_animate(delta, dir != Vector2.ZERO)
+	_patience(delta, dir != Vector2.ZERO)
 	queue_redraw()
 
 
@@ -272,16 +276,27 @@ func cast(slot: int, aim := Vector2.ZERO) -> String:
 	facing = d
 	_start_act("attack", 0.28)
 	var z := _zone()
+	var own_fx := SkillFx.has(sid)                       # animation propre (game/combat/skill_fx.gd)
+	if own_fx:
+		SkillFx.play(sid, self, z, area, d, _targets(area, d))
+	var delay := SkillFx.impact_delay(sid)               # le coup porte avec l'animation
 	for e in sk.get("effects", []):
 		match e.type:
 			"damage":
-				_strike(area, d, func(): return float(e.get("base", 0)) + float(e.get("power", 0)) * fighter.skill_stat(sk.get("damage_type", "physical")),
-					{"skill": sk, "debuffs": sk.get("effects", []).filter(func(x): return x.type == "debuff")})
+				var raw_fn := func(): return float(e.get("base", 0)) + float(e.get("power", 0)) * fighter.skill_stat(sk.get("damage_type", "physical"))
+				var opts := {"skill": sk, "no_fx": own_fx, "debuffs": sk.get("effects", []).filter(func(x): return x.type == "debuff")}
+				if delay > 0.0:
+					get_tree().create_timer(delay).timeout.connect(func():
+						if is_instance_valid(self) and not is_down():
+							_strike(area, facing if facing != Vector2.ZERO else d, raw_fn, opts))
+				else:
+					_strike(area, d, raw_fn, opts)
 			"heal":
 				var amount := fighter.heal(float(e.get("base", 0)) + float(e.get("power", 0)) * fighter.stat("sag"))
 				if z:
 					z.float_text(global_position + Vector2(0, -22), "+%d" % roundi(amount), Color("a8c84e"))
-					z.show_strike(global_position, {"shape": "self"}, d, Color("a8c84e"))
+					if not own_fx:
+						z.show_strike(global_position, {"shape": "self"}, d, Color("a8c84e"))
 			"shield":
 				var st := "atk" if sk.get("damage_type") == "physical" else "sag"
 				var amount := float(e.get("base", 0)) + float(e.get("amount_power", 0)) * fighter.stat(st)
@@ -293,13 +308,8 @@ func cast(slot: int, aim := Vector2.ZERO) -> String:
 	return ""
 
 
-## Résout un coup sur toutes les bêtes dans la zone (une ligne ne touche que la première).
-func _strike(area: Dictionary, d: Vector2, raw_fn: Callable, opts: Dictionary) -> void:
-	Sfx.play("swing_heavy" if opts.has("skill") else "swing", -8.0)
-	var z := _zone()
-	if z:
-		z.show_strike(global_position + Vector2(0, -8), area, d,
-			Color("ffe08a") if opts.has("skill") else Color("fff4d6"), UISkin.item_icon(opts.get("weapon", "")) if opts.get("weapon", "") != "" else null)
+## Bêtes dans la zone du coup (une ligne ne touche que la première).
+func _targets(area: Dictionary, d: Vector2) -> Array:
 	var origin := global_position + Vector2(0, -4)
 	var hits := []
 	for m in get_tree().get_nodes_in_group("mobs"):
@@ -308,6 +318,18 @@ func _strike(area: Dictionary, d: Vector2, raw_fn: Callable, opts: Dictionary) -
 	if area.get("shape") == "line" and hits.size() > 1:
 		hits.sort_custom(func(a, b): return (a.global_position - origin).dot(d) < (b.global_position - origin).dot(d))
 		hits = [hits[0]]
+	return hits
+
+
+## Résout un coup sur toutes les bêtes dans la zone (une ligne ne touche que la première).
+func _strike(area: Dictionary, d: Vector2, raw_fn: Callable, opts: Dictionary) -> Array:
+	var z := _zone()
+	if not opts.get("no_fx", false):
+		Sfx.play("swing_heavy" if opts.has("skill") else "swing", -8.0)
+	if z and not opts.get("no_fx", false):
+		z.show_strike(global_position + Vector2(0, -8), area, d,
+			Color("ffe08a") if opts.has("skill") else Color("fff4d6"), UISkin.item_icon(opts.get("weapon", "")) if opts.get("weapon", "") != "" else null)
+	var hits := _targets(area, d)
 	for m in hits:
 		var r: Dictionary = m.fighter.take_hit(raw_fn.call(), fighter)
 		if opts.has("skill"):
@@ -316,14 +338,29 @@ func _strike(area: Dictionary, d: Vector2, raw_fn: Callable, opts: Dictionary) -
 				m.fighter.add_effect(opts.skill.id, opts.skill.get("name", ""), db.stat, float(db.get("duration_seconds", 8)), -absf(float(db.get("amount_percent", 10))))
 		if z:
 			z.report_hit(m, r, self)
+	return hits
 
 
 ## Appelé par la zone quand on encaisse un coup.
 func react(r: Dictionary, from: Vector2) -> void:
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
 	if r.dodged:
+		if gs and gs.has_skill("instinct_de_traqueuse") and _passive_ready("instinct", 0.8):
+			SkillFx.passive("instinct_de_traqueuse", self, _zone())
 		return
 	_flash()
-	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	if float(r.get("absorbed", 0.0)) > 0.0:
+		SkillFx.glance(self, _zone(), from)                # le coup glisse sur la carapace / les facettes
+	elif gs and gs.has_skill("peau_d_ambre") and _passive_ready("ambre", 0.6):
+		SkillFx.passive("peau_d_ambre", self, _zone(), {"from": from})
+	if gs and gs.has_skill("matin_d_halvard") and fighter.alive() and fighter.hp < fighter.max_hp() * 0.25 \
+			and _passive_ready("halvard", 90.0):              # tenir encore un instant (une fois toutes les 90 s)
+		var sk: Dictionary = gs.tpl("skills", "matin_d_halvard")
+		for e in sk.get("effects", []):
+			if e.get("type") == "shield":
+				fighter.shield = maxf(fighter.shield, float(e.get("base", 0)) + float(e.get("amount_power", 0)) * fighter.stat("sag"))
+				fighter.shield_expires_at = Fighter.now() + float(e.get("duration_seconds", 10))
+		SkillFx.passive("matin_d_halvard", self, _zone())
 	if gs and gs.settings.get("vibrate", true) and OS.has_feature("mobile"):
 		Input.vibrate_handheld(35)
 	if not fighter.alive():
@@ -356,6 +393,66 @@ func _flash() -> void:
 		create_tween().tween_method(func(v): lm.set_shader_parameter("flash", v), 1.0, 0.0, 0.14)
 	var tw := create_tween()
 	tw.tween_method(func(v): _mat.set_shader_parameter("flash", v), 1.0, 0.0, 0.14)
+
+
+# --------------------------------------------------------------------------- passives
+var _passive_at := {}
+var _still_t := 0.0
+
+
+func _passive_ready(key: String, gap: float) -> bool:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - float(_passive_at.get(key, -999.0)) < gap:
+		return false
+	_passive_at[key] = now
+	return true
+
+
+## Patience du pêcheur : immobile, hors combat, des ronds dans l'eau à ses pieds.
+func _patience(delta: float, moving: bool) -> void:
+	var gs := (get_node_or_null("/root/GameState") if is_inside_tree() else null)
+	if moving or gs == null or not gs.has_skill("patience_du_pecheur") or Fighter.now() - fighter.last_combat_at < 5.0:
+		_still_t = 0.0
+		return
+	_still_t += delta
+	if _still_t > 3.0:
+		_still_t = 0.4
+		SkillFx.passive("patience_du_pecheur", self, _zone())
+
+
+# --------------------------------------------------------------------------- poses (compétences)
+var _sprite_pos = null                # position de repos du sprite (les calques d'équipement suivent)
+var _pose_tw: Tween
+var _shake_tw: Tween
+
+
+## Geste : le sprite glisse de `off` et se déforme (`sc`) en `t_in`, puis revient en `t_out`
+## (0 : il reste, un autre geste prendra le relais). Visuel seulement : le corps ne bouge pas.
+func pose(off: Vector2, sc: Vector2, t_in: float, t_out: float) -> void:
+	if sprite == null:
+		return
+	if _sprite_pos == null:
+		_sprite_pos = sprite.position
+	if _pose_tw:
+		_pose_tw.kill()
+	_pose_tw = create_tween().set_parallel(true)
+	_pose_tw.tween_property(sprite, "position", (_sprite_pos as Vector2) + off.round(), t_in)
+	_pose_tw.tween_property(sprite, "scale", sc, t_in)
+	if t_out > 0.0:
+		_pose_tw.chain().tween_property(sprite, "position", _sprite_pos, t_out)
+		_pose_tw.parallel().tween_property(sprite, "scale", Vector2.ONE, t_out)
+
+
+## Petite secousse de la caméra.
+func shake(amount: float, seconds: float) -> void:
+	if camera == null:
+		return
+	if _shake_tw:
+		_shake_tw.kill()
+	_shake_tw = create_tween()
+	_shake_tw.tween_method(func(k: float):
+		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)).round() * amount * (1.0 - k), 0.0, 1.0, seconds)
+	_shake_tw.tween_callback(func(): camera.offset = Vector2.ZERO)
 
 
 # --------------------------------------------------------------------------- animation

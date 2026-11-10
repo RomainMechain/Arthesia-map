@@ -182,6 +182,75 @@ def sfx():
     S["splash"] = mix((0, bandpass(noise(0.4), 600, 4000) * env(int(SR * 0.4), 0.003, 0.18, 3), 0.9),
                       *[(0.04 + i * 0.05, np.sin(2 * math.pi * (700 + 200 * i) * t(0.06)) * env(int(SR * 0.06), 0.001, 0.03, 3), 0.25)
                         for i in range(4)])
+    # compétences (une signature par compétence, docs : game/combat/skill_fx.gd)
+    S["sk_frappe"] = reverb(mix((0, whoosh(0.3, 150, 1100), 0.8),
+                                (0.07, lowpass(noise(0.2), 600) * env(int(SR * 0.2), 0.002, 0.09, 3), 0.9),
+                                (0.07, np.sin(2 * math.pi * 70 * t(0.22)) * env(int(SR * 0.22), 0.002, 0.12, 3), 0.8)), 0.15)
+    S["sk_trait"] = reverb(mix((0, np.sin(2 * math.pi * np.linspace(700, 1900, int(SR * 0.12)) * t(0.12)) * env(int(SR * 0.12), 0.03, 0.08, 2), 0.35),
+                               (0.08, whoosh(0.22, 1500, 6000), 0.6),
+                               (0.09, bell(NOTE["A5"], 0.6, 0.9), 0.4), (0.11, bell(NOTE["E5"] * 2, 0.5, 0.8), 0.25)), 0.3)
+    S["sk_croc"] = reverb(mix((0, whoosh(0.12, 900, 4000), 0.6), (0.06, wood(1100, 0.04), 0.7),
+                              (0.075, wood(800, 0.05), 0.8),
+                              (0.075, lowpass(noise(0.1), 1200) * env(int(SR * 0.1), 0.001, 0.04, 3), 0.6)), 0.1)
+    S["sk_soins"] = reverb(mix((0, bandpass(noise(0.7), 300, 1500) * env(int(SR * 0.7), 0.25, 0.4, 2), 0.35),
+                               (0.15, bell(NOTE["D5"], 1.2, 0.3), 0.3), (0.35, bell(NOTE["A5"], 1.2, 0.3), 0.25),
+                               (0.55, bell(NOTE["F5"], 1.4, 0.3), 0.22)), 0.45, 1.3)
+    # compétences : communes
+    S["sk_lourd"] = reverb(mix((0, whoosh(0.25, 120, 600, rise=True), 0.5), (0.2, whoosh(0.3, 150, 1000), 0.8),
+                               (0.26, lowpass(noise(0.25), 500) * env(int(SR * 0.25), 0.002, 0.12, 3), 1.0),
+                               (0.26, np.sin(2 * math.pi * 55 * t(0.3)) * env(int(SR * 0.3), 0.002, 0.16, 3), 0.9)), 0.2)
+    S["sk_eclat"] = reverb(mix((0, np.sin(2 * math.pi * np.linspace(400, 1400, int(SR * 0.16)) * t(0.16)) * env(int(SR * 0.16), 0.08, 0.06, 2), 0.35),
+                               (0.15, bandpass(noise(0.3), 800, 5000) * env(int(SR * 0.3), 0.002, 0.12, 3), 0.8),
+                               (0.15, bell(NOTE["D5"], 0.6, 0.9), 0.35)), 0.3)
+    S["sk_lame"] = reverb(mix((0, whoosh(0.24, 700, 5000), 0.7), (0.02, bell(NOTE["A5"], 0.5, 0.7), 0.25),
+                              (0.06, bell(NOTE["D5"] * 2, 0.4, 0.7), 0.15)), 0.25)
+    S["sk_carapace"] = reverb(mix(*[(i * 0.045, wood(260 + 40 * i, 0.07), 0.6) for i in range(5)],
+                                  (0.2, lowpass(noise(0.2), 700) * env(int(SR * 0.2), 0.002, 0.08, 3), 0.5)), 0.15)
+    # compétences : peu communes
+    S["sk_lynx"] = reverb(mix((0, bandpass(noise(0.18), 3000, 9000) * env(int(SR * 0.18), 0.06, 0.05, 2), 0.3),
+                              (0.16, whoosh(0.14, 1200, 6000), 0.7), (0.24, wood(1300, 0.03), 0.6),
+                              (0.27, wood(1000, 0.03), 0.6), (0.27, bandpass(noise(0.12), 2000, 7000) * env(int(SR * 0.12), 0.001, 0.05, 3), 0.5)), 0.2)
+    S["sk_chant"] = reverb(mix((0, np.sin(2 * math.pi * 82 * t(1.0)) * env(int(SR * 1.0), 0.05, 0.6, 2), 0.9),
+                               (0, np.sin(2 * math.pi * 123 * t(1.0)) * env(int(SR * 1.0), 0.1, 0.5, 2), 0.4),
+                               (0.1, bell(NOTE["D4"], 1.2, 0.2), 0.3), (0.3, bandpass(noise(0.6), 200, 900) * env(int(SR * 0.6), 0.1, 0.3, 2), 0.3)), 0.5, 1.4)
+    S["sk_estoc"] = reverb(mix((0, bell(NOTE["E5"] * 2, 0.3, 1.0), 0.3), (0.08, whoosh(0.1, 2000, 8000), 0.6),
+                               (0.12, wood(1500, 0.03), 0.7), (0.13, bell(NOTE["A5"], 0.4, 1.0), 0.3)), 0.2)
+    S["sk_rupture"] = reverb(mix(*[(i * 0.08, bell(f, 0.3, 1.0), 0.22) for i, f in enumerate((NOTE["D5"], NOTE["A5"], NOTE["F5"]))],
+                                 (0.3, bandpass(noise(0.4), 300, 3000) * env(int(SR * 0.4), 0.002, 0.15, 3), 0.9),
+                                 *[(0.32 + i * 0.05, wood(500 - 60 * i, 0.05), 0.5) for i in range(4)]), 0.25)
+    S["sk_tranchante"] = reverb(mix((0, whoosh(0.22, 400, 3000), 0.7),
+                                    (0.05, bandpass(noise(0.2), 2500, 9000) * env(int(SR * 0.2), 0.001, 0.03, 1.5), 0.6),
+                                    (0.07, bell(1180, 0.4, 0.4), 0.4), (0.1, wood(900, 0.04), 0.4)), 0.2)
+    S["sk_secousse"] = reverb(mix((0, whoosh(0.35, 80, 400, rise=True), 0.4),
+                                  (0.32, lowpass(noise(0.6), 300) * env(int(SR * 0.6), 0.002, 0.3, 2), 1.0),
+                                  (0.32, np.sin(2 * math.pi * np.linspace(60, 35, int(SR * 0.6)) * t(0.6)) * env(int(SR * 0.6), 0.002, 0.35, 2), 1.0),
+                                  *[(0.4 + i * 0.06, wood(300 + 50 * i, 0.06), 0.3) for i in range(4)]), 0.3, 1.3)
+    S["sk_seve"] = reverb(mix((0, bandpass(noise(0.9), 1500, 5000) * env(int(SR * 0.9), 0.3, 0.4, 2), 0.25),
+                              *[(0.1 + i * 0.12, pluck(f, 0.6, 0.4), 0.35) for i, f in enumerate((NOTE["D4"], NOTE["F4"], NOTE["A4"], NOTE["D5"]))]), 0.4, 1.2)
+    S["sk_toile"] = reverb(mix((0, whoosh(0.3, 1500, 7000), 0.5),
+                               *[(0.12 + i * 0.05, bell(2400 + 300 * i, 0.15, 1.0), 0.15) for i in range(6)],
+                               (0.4, pluck(NOTE["A4"], 0.5, 0.8), 0.4)), 0.3)
+    # compétences : rares
+    S["sk_consignes"] = reverb(mix(*[(i * 0.15, wood(1600, 0.03), 0.6) for i in range(3)],
+                                   *[(i * 0.15, bell(NOTE["A5"] if i < 2 else NOTE["D5"] * 2, 0.3, 1.0), 0.2) for i in range(3)],
+                                   (0.45, whoosh(0.14, 1000, 7000), 0.8), (0.5, bell(NOTE["D5"], 0.9, 0.8), 0.45),
+                                   (0.5, lowpass(noise(0.2), 900) * env(int(SR * 0.2), 0.002, 0.08, 3), 0.7)), 0.35, 1.2)
+    S["sk_figee"] = reverb(mix((0, np.sin(2 * math.pi * np.linspace(1800, 300, int(SR * 0.4)) * t(0.4)) * env(int(SR * 0.4), 0.002, 0.3, 2), 0.3),
+                               *[(0.25 + i * 0.07, bell(f, 1.4, 0.9), 0.3) for i, f in enumerate((NOTE["D5"], NOTE["A5"], NOTE["F5"] * 2, NOTE["D5"] * 2))],
+                               (0.25, bandpass(noise(0.15), 3000, 9000) * env(int(SR * 0.15), 0.001, 0.05, 3), 0.5)), 0.5, 1.5)
+    # compétence légendaire
+    S["sk_verdict"] = reverb(mix((0, np.sin(2 * math.pi * 73 * t(1.6)) * env(int(SR * 1.6), 0.4, 0.8, 2), 0.5),
+                                 *[(0.05 + i * 0.1, bell(NOTE[n], 1.6, 0.6), 0.18) for i, n in enumerate(("D4", "A4", "D5", "F5"))],
+                                 (0.6, whoosh(0.3, 200, 5000, rise=False), 0.6),
+                                 (0.72, lowpass(noise(0.8), 400) * env(int(SR * 0.8), 0.002, 0.4, 2), 1.0),
+                                 (0.72, np.sin(2 * math.pi * np.linspace(70, 30, int(SR * 0.8)) * t(0.8)) * env(int(SR * 0.8), 0.002, 0.4, 2), 0.9),
+                                 *[(0.74 + i * 0.03, bell(f, 2.0, 0.8), 0.3) for i, f in enumerate((NOTE["D5"], NOTE["F5"], NOTE["A5"], NOTE["D5"] * 2))]), 0.55, 1.6)
+    # passives : discrets
+    S["pv_ambre"] = reverb(mix((0, lowpass(noise(0.15), 700) * env(int(SR * 0.15), 0.01, 0.08, 3), 0.6),
+                               (0.02, np.sin(2 * math.pi * np.linspace(300, 180, int(SR * 0.15)) * t(0.15)) * env(int(SR * 0.15), 0.005, 0.08, 3), 0.4)), 0.2)
+    S["pv_instinct"] = reverb(mix((0, whoosh(0.16, 2000, 8000), 0.6), (0.04, bell(NOTE["E5"] * 2, 0.4, 1.0), 0.18)), 0.3)
+    S["pv_halvard"] = reverb(mix(*[(i * 0.12, bell(f, 1.8, 0.4), 0.3) for i, f in enumerate((NOTE["D4"], NOTE["A4"], NOTE["D5"]))],
+                                 (0, bandpass(noise(1.0), 300, 1200) * env(int(SR * 1.0), 0.3, 0.5, 2), 0.25)), 0.5, 1.4)
     # butin, or, potions
     S["loot"] = reverb(mix((0, pluck(NOTE["A4"], 0.35, 0.7), 0.7), (0.07, pluck(NOTE["D5"], 0.45, 0.7), 0.7)), 0.25)
     S["gold"] = reverb(mix(*[(i * 0.045, bell(f, 0.25, 0.9), 0.4) for i, f in enumerate((2100, 2600, 2350, 2900))]), 0.2)
